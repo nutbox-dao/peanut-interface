@@ -4,7 +4,9 @@ node_js:
 
 cache: npm
 
-script: npm run build
+script:
+  - npm run build
+  - cp dist/index.html dist/404.html
 
 deploy:
   provider: pages
