@@ -12,7 +12,9 @@ module.exports = {
         "miningpooldata":"矿池数据",
         "sptotaldelegate":"SP总代理量",
         "totalpnut":"PNUT总产量",
+        "apy":"年化收益率",
         "rewardperblock":"每区块奖励",
+
         "adddelegate":"增加代理",
         "minusdelegate":"减少代理",
         "canceldelegate":"取消代理",
@@ -39,7 +41,7 @@ module.exports = {
         "tsteembalance":"TSTEEM余额",
         "tsbdbalance":"TSBD余额",
         "pnutbalance":"PNUT余额",
-        "imadmin":"管理员",
+
         "input":"输入",
         "error":"错误",
         "delegateerror":"代理错误！",

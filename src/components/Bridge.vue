@@ -247,7 +247,7 @@
       },
       fillMaxTrans(){
         if (this.isSteemToTSteem){
-          let b = parseFloat(this.transValue) * 0.002
+          let b = parseFloat(this.balanceOfSeem) * 0.002
           let steemfee = b >0.1? b : 0.1
           this.transValue = parseFloat(this.balanceOfSeem) - steemfee
           this.transValue = this.transValue.toFixed(3)
@@ -288,80 +288,80 @@
         return await this.steemWrap(account, to, amount, memo, currency, address, fee)
       },
       async steemToTSteem() {
-          try{
-            this.isLoading = true
-            this.canTransFlag = false
-            //steem转帐
-            let addr = this.$store.state.addr
-            let from = this.$store.state.username
-            // let to = process.env.VUE_APP_STEEM
-            let to = process.env.VUE_APP_STEEM_DEX
-            let amount = parseFloat(this.transValue).toFixed(3)
-            let currency =  'STEEM'
-            let memo = addr+" +"+amount+' TSTEEM'
-             let res = await this.steemTransfer(from, to, amount, memo, currency, addr)
+        try{
+          this.isLoading = true
+          this.canTransFlag = false
+          //steem转帐
+          let addr = this.$store.state.addr
+          let from = this.$store.state.username
+          // let to = process.env.VUE_APP_STEEM
+          let to = process.env.VUE_APP_STEEM_DEX
+          let amount = parseFloat(this.transValue).toFixed(3)
+          let currency =  'STEEM'
+          let memo = addr+" +"+amount+' TSTEEM'
+           let res = await this.steemTransfer(from, to, amount, memo, currency, addr)
 
-             if(res.success === true){
-                  //转帐成功才铸币
-                  // console.log(123, "转帐成功才铸币")
-                  // let instance2 = this.$store.state.steemInstance2
-                  // let value = this.web3.utils.toWei(amount, 'ether')
-                  // let value2 = this.dataToSun(amount)
-                  // await instance2.steemToTsteem(from, addr, value2).send()
+           if(res.success === true){
+                //转帐成功才铸币
+                // console.log(123, "转帐成功才铸币")
+                // let instance2 = this.$store.state.steemInstance2
+                // let value = this.web3.utils.toWei(amount, 'ether')
+                // let value2 = this.dataToSun(amount)
+                // await instance2.steemToTsteem(from, addr, value2).send()
 
-                 await  this.sleep()
-                 await this.getBalance()
-                 await this.getSteemStates()
-                 this.transValue = ''
-                 this.isLoading = false
-                 this.canTransFlag = true
-              }else{
-                  this.transValue = ''
-                  this.isLoading = false
-                  this.canTransFlag = true
-                  this.maskInfo = this.$t('message.error')+"\n"+res.message
-                  this.showMask = true
-              }
-          }
-          catch(e){
-            this.isLoading = false
-            this.canTransFlag = true
-            this.maskInfo = this.$t('message.error')+"\n"+e.message
-            this.showMask = true
-          }
+               await  this.sleep()
+               await this.getBalance()
+               await this.getSteemStates()
+               this.transValue = ''
+               this.isLoading = false
+               this.canTransFlag = true
+            }else{
+                this.transValue = ''
+                this.isLoading = false
+                this.canTransFlag = true
+                this.maskInfo = this.$t('message.error')+"\n"+res.message
+                this.showMask = true
+            }
+        }
+        catch(e){
+          this.isLoading = false
+          this.canTransFlag = true
+          this.maskInfo = this.$t('message.error')+"\n"+e.message
+          this.showMask = true
+        }
         },
       async TSteemToSteem() {
-          try{
-            this.isLoading = true
-            this.canTransFlag = false
-            // let from =  process.env.VUE_APP_STEEM
-            let to = this.$store.state.username
-            let addr = this.$store.state.addr
-            let instance = this.$store.state.steemInstance
-            //销毁
-            let ss = parseFloat(this.transValue).toFixed(3)
-            // let value = this.web3.utils.toWei(ss, 'ether')
-            let value = this.dataToSun(ss)
-            await instance.tsteemToSteem(to, value).send()
+        try{
+          this.isLoading = true
+          this.canTransFlag = false
+          // let from =  process.env.VUE_APP_STEEM
+          let to = this.$store.state.username
+          let addr = this.$store.state.addr
+          let instance = this.$store.state.steemInstance
+          //销毁
+          let ss = parseFloat(this.transValue).toFixed(3)
+          // let value = this.web3.utils.toWei(ss, 'ether')
+          let value = this.dataToSun(ss)
+          await instance.tsteemToSteem(to, value).send()
 
-            //steem转帐
-            // let amount = ss+' STEEM'
-            // // let amount = "100.200 STEEM"
-            // let active = process.env.VUE_APP_STEEMWIF
-            // let memo = addr+" -"+ss+' TSTEEM'
-            // await  this.steem.broadcast.transferAsync(active, from, to, amount, memo)
-            await  this.sleep()
-            await this.getBalance()
-            await this.getSteemStates()
-            this.transValue = ''
+          //steem转帐
+          // let amount = ss+' STEEM'
+          // // let amount = "100.200 STEEM"
+          // let active = process.env.VUE_APP_STEEMWIF
+          // let memo = addr+" -"+ss+' TSTEEM'
+          // await  this.steem.broadcast.transferAsync(active, from, to, amount, memo)
+          await  this.sleep()
+          await this.getBalance()
+          await this.getSteemStates()
+          this.transValue = ''
+          this.isLoading = false
+          this.canTransFlag = true
+        }
+        catch(e){
             this.isLoading = false
-            this.canTransFlag = true
-          }
-          catch(e){
-              this.isLoading = false
-              this.maskInfo = this.$t('message.error') + "\n" + e
-              this.showMask = true
-          }
+            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.showMask = true
+        }
         },
       async trans(){
         if (this.isSteemToTSteem){
@@ -396,7 +396,7 @@
         }
       },
       fillMaxSbdTrans(){
-        let f = parseFloat(this.transSbdValue) * 0.002
+        let f = parseFloat(this.balanceOfSbd) * 0.002
         let sbdfee = f >0.015? f : 0.015
         if (this.isSbdToTSbd){
           this.transSbdValue = parseFloat(this.balanceOfSbd) - sbdfee

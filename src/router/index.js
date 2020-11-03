@@ -21,7 +21,7 @@ const routes = [
           requireAuth:true
       }
   },
-    {
+  {
     path: '/bridge',
     name: 'bridge',
     component: Bridge,
@@ -29,44 +29,40 @@ const routes = [
        requireAuth:true
     }
   },
-
-
   {
     path: '/login',
     name: 'login',
     component: Login
   },
-
   {
     path: '/wallet',
     name: 'wallet',
     component: Wallet,
     meta:{
           requireAuth:true
-      }
+    }
   },
-
-    {
+  {
     path: '/contract',
     name: 'contract',
     component: Contract
   },
-    {
+  {
     path: '/contact',
     name: 'contact',
     component: Contact
   },
-    {
+  {
     path: '/tools',
     name: 'tools',
     component: Tools
   },
-    {
+  {
     path: '/questions',
     name: 'questions',
     component: Questions
   },
-    {
+  {
     path: '/swap',
     name: 'swap',
     component: Swap

@@ -24,10 +24,10 @@
           <div class="loginfo">
             <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
             <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
+
             <div v-if="$store.state.username">
               <div class="drop">
                   <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
-
                   <b-dropdown-item-button @click="setzhlang">
                     {{ $t('message.zh') }}
                   </b-dropdown-item-button>
@@ -43,6 +43,10 @@
             <div v-if="$store.state.username">
               <div class="drop">
                   <b-dropdown id="dropdown-grouped" :text="this.$t('message.about')" variant="transparent" class="m-2">
+
+                   <!-- <b-dropdown-item-button @click="mywallet">
+                     <router-link to="/wallet">{{ $t('message.mywallet') }}</router-link>
+                  </b-dropdown-item-button> -->
 
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://docs.nutbox.io">{{ $t('message.docs') }}</a>
@@ -78,7 +82,6 @@
 
     <router-view/>
 
-
   </div>
 </template>
 
@@ -97,9 +100,9 @@
       bridge(){
         this.$router.push({path: '/bridge'})
       },
-        mywallet(){
-          this.$router.push({path: '/wallet'})
-        },
+      mywallet(){
+        this.$router.push({path: '/wallet'})
+      },
 
       logout(){
         this.$store.commit('clearUser')

@@ -12,7 +12,9 @@ module.exports = {
         "miningpooldata":"Mining Pool Data",
         "sptotaldelegate":"Total Delegated SP",
         "totalpnut":"Total PNUT",
+         "apy":"APY",
         "rewardperblock":"Rewards per Block",
+
         "adddelegate":"Increase Delegation",
         "minusdelegate":"Decrease Delegation",
         "canceldelegate":"Cancel Delegation",
@@ -39,7 +41,7 @@ module.exports = {
         "tsteembalance":"TSTEEM Balance",
         "tsbdbalance":"TSBD Balance",
         "pnutbalance":"PNUT Balance",
-        "imadmin":"Administrator",
+
         "input":"Input",
         "error":"Error!",
         "delegateerror":"Delegation Error！",

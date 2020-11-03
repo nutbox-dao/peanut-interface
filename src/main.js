@@ -63,7 +63,8 @@ const privateKey = process.env.VUE_APP_KEY
 const tronWeb2 = new TronWeb(fullNode,solidityNode,eventServer,privateKey)
 // console.log(16112,  tronWeb2)
 
-
+// import {timeFormat} from "./utils/timeFormat"
+// import {formatSeconds} from "./utils/formatSeconds"
 import {getSteemInstance} from "./utils/getSteemInstance"
 import {getSteemTronLink} from "./utils/getSteemTronLink"
 import {getSbdInstance} from "./utils/getSbdInstance"
@@ -80,7 +81,8 @@ import { steemDelegation, steemWrap} from "./utils/steemOperations"
 // import {approve} from "./utils/approve"
 // import {getTsteemAllowance} from "./utils/getTsteemAllowance"
 
-
+// Vue.prototype.timeFormat = timeFormat
+// Vue.prototype.formatSeconds = formatSeconds
 Vue.prototype.getSteemInstance = getSteemInstance
 Vue.prototype.getSteemTronLink = getSteemTronLink
 Vue.prototype.getSbdInstance = getSbdInstance
@@ -89,7 +91,7 @@ Vue.prototype.getNutTronLink = getNutTronLink
 Vue.prototype.getNutsInstance = getNutsInstance
 Vue.prototype.getNutsPool = getNutsPool
 Vue.prototype.getNutPoolTronLink = getNutPoolTronLink
-Vue.prototype.axios  = axios
+Vue.prototype.axios = axios
 Vue.prototype.sleep  = sleep
 Vue.prototype.tronWeb2 = tronWeb2
 Vue.prototype.dataFromSun = dataFromSun

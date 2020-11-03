@@ -19,6 +19,7 @@
                 {{ $t('message.sptotaldelegate') }}： {{ totalDepositedSP }} SP<br>
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
+                {{ $t('message.apy') }}： {{ apy }} %<br>
             </div>
             <hr>
             <!--<div >-->
@@ -101,16 +102,15 @@
     <!-- 增加或减少代理弹窗 -->
     <transition name="fade">
       <ChangeDelegateMask
-              :changeDegate = 'delegateOpt'
-              :balanceOfSP = 'balanceOfSp'
-              :balanceOfDelegate = 'balanceOfDelegate'
-              :balanceOfDelegate2 = 'balanceOfDelegate2'
-              :spToVests = 'spToVests'
+          :changeDegate = 'delegateOpt'
+          :balanceOfSP = 'balanceOfSp'
+          :balanceOfDelegate = 'balanceOfDelegate'
+          :balanceOfDelegate2 = 'balanceOfDelegate2'
+          :spToVests = 'spToVests'
 
-              v-if="showDelegateMask"
-              @hideMask="showDelegateMask=false"
+          v-if="showDelegateMask"
+          @hideMask="showDelegateMask=false"
       >
-
       </ChangeDelegateMask>
     </transition>
 
@@ -131,8 +131,7 @@
       </div>
     </transition>
   </div>
-
-   </div>
+  </div>
 </template>
 
 <script>
@@ -145,17 +144,16 @@
         balanceOfDelegate: '',
         balanceOfDelegate2: '',
         totalDepositedSP:'',
+        totalDepositedSP2:'',
         rewardsPerBlock:'',
         totalPendingPeanuts:'',
+        apy:'',
 
         isLoading: true,
         loadingFlag: false,
 
         balanceOfSeem: '',
         balanceOfSp: '',
-
-        timestamp: '',
-        startTime: '',
 
         checkFlag: true,
         checkDelegateFlag: false,
@@ -164,10 +162,6 @@
 
         nutBalanceOf: '',
         nutBalanceOf2: '',
-        nutStartTime:'',
-        miningRate: '',
-        difficulty:'',
-        nutSPR:'',
 
         showMask:false,
         maskInfo:"",
@@ -183,17 +177,17 @@
     },
     methods: {
       checkDelegateValue(){
-            let reg = /^\d+(\.\d+)?$/
-            let res = reg.test(this.delegatevalue)
-            let res1 = false
-            if(parseFloat(this.delegatevalue) >= 1){
-              res1 = true
-            }
-            //代理量应小于SP量
-            let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
-            // console.log(699, "res2", res2)
-            let res3 = this.fee <= parseFloat(this.balanceOfSeem)
-            this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
+        let reg = /^\d+(\.\d+)?$/
+        let res = reg.test(this.delegatevalue)
+        let res1 = false
+        if(parseFloat(this.delegatevalue) >= 1){
+          res1 = true
+        }
+        //代理量应小于SP量
+        let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
+        // console.log(699, "res2", res2)
+        let res3 = this.fee <= parseFloat(this.balanceOfSeem)
+        this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
       async getOtherBalance(){  //nuts
         let addr = this.$store.state.addr
@@ -202,12 +196,9 @@
 
         this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
         this.nutBalanceOf2 = this.dataFromSun(a)
-          // console.log(123, "nutbalance", this.nutBalanceOf)
-          // console.log(124, "nutbalance2", this.nutBalanceOf2)
 
         let poolinstance = this.$store.state.nutPoolInstance2
         let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
-
         let p = this.dataFromSun(f.amount) * this.vestsToSp
         this.balanceOfDelegate =  this.formatData(p)
         this.balanceOfDelegate2 = p
@@ -215,6 +206,7 @@
         let g = await poolinstance.getTotalDepositedSP().call()
         let g2 = this.dataFromSun(g) * this.vestsToSp
         this.totalDepositedSP = this.formatData(g2)
+        this.totalDepositedSP2 = g2
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
@@ -224,15 +216,15 @@
 
       },
       async getSteemStates(){
-            let username = this.$store.state.username
-            let s = await this.steem.api.getAccountsAsync([username])
-            this.balanceOfSeem = s[0].balance
-            let a = await this.steem.api.getDynamicGlobalPropertiesAsync()
-            this.spToVests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_steem)
-            this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
-            let sp = parseFloat(s[0].vesting_shares) * this.vestsToSp
-            let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * this.vestsToSp
-            this.balanceOfSp = (sp - delegatedSp).toFixed(3)
+        let username = this.$store.state.username
+        let s = await this.steem.api.getAccountsAsync([username])
+        this.balanceOfSeem = s[0].balance
+        let a = await this.steem.api.getDynamicGlobalPropertiesAsync()
+        this.spToVests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_steem)
+        this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
+        let sp = parseFloat(s[0].vesting_shares) * this.vestsToSp
+        let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * this.vestsToSp
+        this.balanceOfSp = (sp - delegatedSp).toFixed(3)
         },
       fillMaxDelegate(){
         this.delegatevalue = this.balanceOfSp - 5
@@ -295,18 +287,89 @@
       hideMask(){
         this.showMask=false
       },
+
       async getPendingPnut(){
-            let nutPool = this.$store.state.nutPoolInstance
-            let s = await nutPool.getPendingPeanuts().call()
-            this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
-            // this.pendingPnut = this.tronWeb2.fromSun(s)
+        let nutPool = this.$store.state.nutPoolInstance
+        let s = await nutPool.getPendingPeanuts().call()
+        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
+        // console.log(599, "pending pnut", this.pendingPnut)
         },
+      async getSteemPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/steem',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
+        }
+      },
+      async getTronPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/tron',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
+        }
+      },
+      async getPnutPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.justswap.io/v2/allpairs',
+          headers: {
+            "accept": "application/json",
+          },
+          params: {
+            page_size : 1500,
+            page_num: 1
+          }
+        })
+        // console.log(111,res.data.data)
+        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
+        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
+        // console.log(114,price)
+        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
+        res = null
+        return price
+      },
+      async calPnutApy(){
+        let steemPrice = await this.getSteemPrice()
+        let tronPrice = await this.getTronPrice()
+        let pnutPrice = await this.getPnutPrice()
+        let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
+        this.apy = (apy * 100).toFixed(3)
+        localStorage.setItem('apy', this.apy)
+      },
 
       async getDelegateList(){
             let nutPool = this.$store.state.nutPoolInstance
             // let s = await nutPool.delegatorList(1).call()
             let s = await nutPool.getDelegatorListLength().call()
             console.log(256, "lists", this.tronWeb2.toBigNumber(s).toFixed(0))
+            let length = parseInt(this.tronWeb2.toBigNumber(s))
+            console.log(2567, "lists", length)
+
+            for(let i = 0; i < length; i++){
+              let p = await nutPool.delegatorList(i).call()
+              let res = await nutPool.delegators(p).call()
+              console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
+            }
         }
     },
 
@@ -315,13 +378,13 @@
       ChangeDelegateMask,
       },
 
-    async mounted() {
-       if(!this.$store.state.username){
-            this.$router.push({path: '/login'})
-        }
+    mounted() {
+      if(!this.$store.state.username){
+        this.$router.push({path: '/login'})
+      }
       let that = this
       let instance = this.$store.state.steemInstance2
-      async  function main(){
+      async function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
           console.log(888, "instance为空，是刷新页面")
@@ -336,8 +399,9 @@
             await that.getNutTronLink()
             await  that.getNutPoolTronLink()
 
-              // await that.getDelegateList()
+            //await that.getDelegateList()
             that.loadingFlag = true
+
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
             that.showMask = true
@@ -358,11 +422,23 @@
           }
         }
         that.isLoading = false
+        await that.calPnutApy()
       }
-      await main()
+      main()
 
-      setInterval(that.getPendingPnut, 3000)
+      //初始化年化收益率
+      if(localStorage.getItem("apy") == null){
+        this.apy = 52.786
+      }else{
+        this.apy = localStorage.getItem("apy")
+      }
 
+      //设置定时器以更新当前收益
+      let timer = setInterval(this.getPendingPnut, 3000)
+      // 通过$once来监听定时器，在beforeDestroy钩子时被清除。
+      this.$once('hook:beforeDestroy', () => {
+        clearInterval(timer)
+      })
     },
 
     }
@@ -447,7 +523,8 @@
     font-size: 1rem;
     line-height: 1.2rem;;
     box-sizing: border-box;
-    padding-top: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     justify-content: space-between;
     -webkit-box-pack: justify;
     height: 100%;
@@ -476,7 +553,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0px;
-    appearance: textfield;
+    /*appearance: textfield;*/
 }
 #maxBtn{
   height: 100%;
@@ -627,4 +704,3 @@
   }
 
 </style>
-
