@@ -273,8 +273,8 @@
           this.isLoading = true
           this.loadingFlag = false
           let instance = this.$store.state.nutPoolInstance
-          await instance.withdrawPeanuts().send()
-          await  this.sleep()
+          await instance.withdrawPeanuts().send({feeLimit:20_000_000})
+          await this.sleep()
           await this.getOtherBalance()
           this.isLoading = false
           this.loadingFlag = true
@@ -365,11 +365,11 @@
             let length = parseInt(this.tronWeb2.toBigNumber(s))
             console.log(2567, "lists", length)
 
-            for(let i = 0; i < length; i++){
-              let p = await nutPool.delegatorList(i).call()
-              let res = await nutPool.delegators(p).call()
-              console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
-            }
+            // for(let i = 0; i < length; i++){
+            //   let p = await nutPool.delegatorList(i).call()
+            //   let res = await nutPool.delegators(p).call()
+            //   console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
+            // }
         }
     },
 
@@ -399,7 +399,7 @@
             await that.getNutTronLink()
             await  that.getNutPoolTronLink()
 
-            //await that.getDelegateList()
+            // await that.getDelegateList()
             that.loadingFlag = true
 
           }catch(e){

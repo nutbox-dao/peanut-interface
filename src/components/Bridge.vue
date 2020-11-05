@@ -342,7 +342,7 @@
           let ss = parseFloat(this.transValue).toFixed(3)
           // let value = this.web3.utils.toWei(ss, 'ether')
           let value = this.dataToSun(ss)
-          await instance.tsteemToSteem(to, value).send()
+          await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
 
           //steem转帐
           // let amount = ss+' STEEM'
@@ -469,7 +469,7 @@
           //销毁
           let ss = parseFloat(this.transSbdValue).toFixed(3)
           let value = this.dataToSun(ss)
-          await instance.tsbdToSbd(to, value).send()
+          await instance.tsbdToSbd(to, value).send({feeLimit:20_000_000})
 
           //sbd转帐
           // let amount = ss+' SBD'
