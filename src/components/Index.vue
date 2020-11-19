@@ -29,9 +29,9 @@
                     <p class="box-title">
                       {{ $t('message.input') }}
                     </p>
-                    <p class="box-title">
+                    <!-- <p class="box-title">
                       {{ $t('message.spbalance') }}：{{ balanceOfSp }}
-                    </p>
+                    </p> -->
                   </div>
                   <div class="round-box-content-container">
                         <input
@@ -40,7 +40,7 @@
                         placeholder="0.0" v-model="delegatevalue"
                         @keyup="checkDelegateValue" type="number" inputmode="decimal"
                         pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
-                        <button id="maxBtn" @click="fillMaxDelegate">Max</button>
+                        <!-- <button id="maxBtn" @click="fillMaxDelegate">Max</button> -->
                   </div>
                 </div>
 
@@ -184,7 +184,8 @@
           res1 = true
         }
         //代理量应小于SP量
-        let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
+        // let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
+        let res2 = true
         // console.log(699, "res2", res2)
         let res3 = this.fee <= parseFloat(this.balanceOfSeem)
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
@@ -336,7 +337,7 @@
             "accept": "application/json",
           },
           params: {
-            page_size : 1500,
+            page_size : 2500,
             page_num: 1
           }
         })

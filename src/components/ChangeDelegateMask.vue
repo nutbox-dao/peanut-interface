@@ -7,9 +7,9 @@
               {{ $t('message.adddelegate') }}
           </div>
           <div class="round-box">
-            <div class="operate-balance" style="text-align:right;margin-bottom:12px;color:gray;font-size:14px;color:rgb(86, 90, 105)">
+            <!-- <div class="operate-balance" style="text-align:right;margin-bottom:12px;color:gray;font-size:14px;color:rgb(86, 90, 105)">
                 {{ $t('message.spbalance') }}：{{ balanceOfSP }}
-            </div>
+            </div> -->
             <div class="input-container">
                 <div class="round-box-content-container">
                     <input
@@ -18,7 +18,7 @@
                             placeholder="0.0" v-model="addvalue"
                             @keyup="checkAddValue" type="number" inputmode="decimal"
                             pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
-                    <button class="maxBtn" @click="fillMaxDelegate">Max</button>
+                    <!-- <button class="maxBtn" @click="fillMaxDelegate">Max</button> -->
                 </div>
             </div>
           </div>
@@ -139,8 +139,8 @@
                     res1 = true
                 }
                 //增加量应小于SP量
-                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfSP) - 5
-                this.canAddFlag = this.checkAddFlag = res && res1 && res2
+                // let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfSP) - 5
+                this.canAddFlag = this.checkAddFlag = res && res1
             },
             checkSubValue(){
                 let reg = /^\d+(\.\d+)?$/
