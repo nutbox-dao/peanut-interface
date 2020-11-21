@@ -63,6 +63,11 @@
                   </b-dropdown-item-button>
                    <b-dropdown-divider></b-dropdown-divider>
 
+                   <b-dropdown-item-button>
+                    <a target="_blank" href="https://blog.nutbox.io/@nutbox/nutbox-dao-governance-is-online--the-procedure-of-nutbox-proposal-is-operating--20201105t090030122z">{{ $t('message.nps') }}</a>
+                  </b-dropdown-item-button>
+                   <b-dropdown-divider></b-dropdown-divider>
+
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://discord.gg/wyJeDhP">{{ $t("message.discord") }}</a>
                   </b-dropdown-item-button>

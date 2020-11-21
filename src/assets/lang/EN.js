@@ -52,6 +52,7 @@ module.exports = {
         "needtronlink":"Please install TronLink",
 
         "whitePaper":"White Paper",
+        "nps":"Nutbox Proposal System",
         "userBook":"User Handbook",
         "questions":"Questions",
         "contract":"Contract",
