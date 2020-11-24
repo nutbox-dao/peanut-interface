@@ -45,7 +45,7 @@
                 </div>
 
               <div class="confirm-box" style="margin-bottom:10px">
-                <button class="confirm-btn" @click="delegate" :disabled="!checkDelegateFlag">
+                <button class="confirm-btn" @click="delegate" :disabled="!checkDelegateFlag || underMaintenance">
                   {{ $t('message.confirmdelegate') }}
                 </button>
               </div>
@@ -60,13 +60,13 @@
             <div v-if="balanceOfDelegate2 > 0">
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
-                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))" >
+                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem)) || underMaintenance" >
                   {{ $t('message.adddelegate') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))">
+                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem)) || underMaintenance">
                   {{ $t('message.minusdelegate') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))">
+                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem)) || underMaintenance">
                   {{ $t('message.canceldelegate') }}
                 </button>
               </div>
@@ -85,7 +85,7 @@
 
               <!-- 提现按钮 -->
               <div class="confirm-box">
-                <button class="confirm-btn" @click="withdrawPeanuts" :disabled="!loadingFlag">
+                <button class="confirm-btn" @click="withdrawPeanuts" :disabled="!loadingFlag || underMaintenance">
                   {{ $t('message.withdraw') }}
                 </button>
               </div>
@@ -173,6 +173,9 @@
         fee: process.env.VUE_APP_DELEGATE_FEE,
 
         vestsToSp: 0,
+
+        // temporary flag for maintenance
+        underMaintenance: true
       }
     },
     methods: {
