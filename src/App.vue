@@ -1,5 +1,9 @@
 <template>
   <div id="app">
+    <b-navbar toggleable="lg" type="light" variant="warning" id="notice">
+      Nutbox service is under temporary maintenance for upgrading system and smart contract performance, and will be back in next 12~16 hours. <br /> For any questions or issues, please contact us at Discord channel or WeChat group.
+    </b-navbar>
+
     <b-navbar toggleable="lg" type="light" variant="info" id="navmanu">
       <b-navbar-brand @click="backtoindex">
           <img src="../static/images/logo.svg" class="d-inline-block align-top" alt="nutboxs">
@@ -276,5 +280,8 @@
   #nav-collapse a:hover{
     /*color: darkcyan;*/
     text-decoration: none;
+  }
+  #notice {
+    padding: 1rem 5rem;
   }
 </style>
