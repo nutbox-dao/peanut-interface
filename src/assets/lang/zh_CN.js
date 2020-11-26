@@ -52,6 +52,7 @@ module.exports = {
         "needtronlink":"请安装tronlink钱包",
 
         "whitePaper":"白皮书",
+        "nps":"Nutbox提案系统",
         "userBook":"用户手册(测试网)",
         "questions":"常见问题",
         "contract":"合约地址",

@@ -29,22 +29,19 @@
             <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
             <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
 
-            <div v-if="$store.state.username">
-              <div class="drop">
-                  <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
-                  <b-dropdown-item-button @click="setzhlang">
-                    {{ $t('message.zh') }}
-                  </b-dropdown-item-button>
+            <div class="drop">
+                <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
+                <b-dropdown-item-button @click="setzhlang">
+                  {{ $t('message.zh') }}
+                </b-dropdown-item-button>
 
-                  <b-dropdown-divider></b-dropdown-divider>
-                  <b-dropdown-item-button @click="setenlang">
-                    {{ $t('message.en') }}
-                  </b-dropdown-item-button>
-                </b-dropdown>
-              </div>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item-button @click="setenlang">
+                  {{ $t('message.en') }}
+                </b-dropdown-item-button>
+              </b-dropdown>
             </div>
 
-            <div v-if="$store.state.username">
               <div class="drop">
                   <b-dropdown id="dropdown-grouped" :text="this.$t('message.about')" variant="transparent" class="m-2">
 
@@ -67,16 +64,22 @@
                   </b-dropdown-item-button>
                    <b-dropdown-divider></b-dropdown-divider>
 
+                   <b-dropdown-item-button>
+                    <a target="_blank" href="https://blog.nutbox.io/@nutbox/nutbox-dao-governance-is-online--the-procedure-of-nutbox-proposal-is-operating--20201105t090030122z">{{ $t('message.nps') }}</a>
+                  </b-dropdown-item-button>
+                   <b-dropdown-divider></b-dropdown-divider>
+
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://discord.gg/wyJeDhP">{{ $t("message.discord") }}</a>
                   </b-dropdown-item-button>
 
+              <div v-if="$store.state.username">
                   <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item-button @click="logout" style="text-align:center">
                     {{ $t('message.logout') }}
                   </b-dropdown-item-button>
-                </b-dropdown>
               </div>
+                </b-dropdown>
             </div>
 
           </div>
