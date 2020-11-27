@@ -1,5 +1,5 @@
 const getNutsPool = async function(){
-  let res = await this.axios.get('/PeanutsPool.json')
+  let res = await this.axios.get('/PeanutsPoolV2.json')
   // console.log(66799, res.data)
   let contract = this.tronWeb2.address.fromHex(res.data.networks['*'].address)
   // console.log(588, 'pnut pool',res.data.networks['*'].address)

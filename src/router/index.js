@@ -6,6 +6,7 @@ import Bridge from '../components/Bridge'
 import Wallet from "../components/Wallet"
 import Contract from "../components/footers/Contract"
 import Contact from "../components/footers/Contact"
+import DelegatorLists from "../components/footers/DelegatorLists"
 import Tools from "../components/footers/Tools"
 import Questions from "../components/footers/Questions"
 import Swap from "../components/footers/Swap"
@@ -51,6 +52,11 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: Contact
+  },
+  {
+    path: '/delegatorlists',
+    name: 'delegatorlists',
+    component: DelegatorLists
   },
   {
     path: '/tools',

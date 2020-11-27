@@ -13,12 +13,23 @@
 
 
       <p><strong>NutboxPnut</strong> <br>
-          TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW
+        TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW
+      </p>
+
+      <p><strong>PnutPool</strong> <br>
+        TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E
       </p>
 
       <p><strong>注意：</strong> <br>
-        请注意假币骗局！请不要以代币的名字查询和交易代币，应以代币的合约地址为准！
+        假币骗局！请不要以代币的名字查询和交易代币，应以代币的合约地址为准！
       </p>
+
+      <p><strong>Tronscan查询：</strong> <br>
+
+        <a target="_blank" href="https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions">https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions</a>
+      </p>
+
+
 
     </div>
 

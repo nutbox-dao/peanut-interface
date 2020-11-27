@@ -40,7 +40,7 @@
                         placeholder="0.0" v-model="delegatevalue"
                         @keyup="checkDelegateValue" type="number" inputmode="decimal"
                         pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
-                        <!-- <button id="maxBtn" @click="fillMaxDelegate">Max</button> -->
+                        <!-- <button id="maxBtn" @click="fillMaxDelegate">Max</button>-->
                   </div>
                 </div>
 
@@ -118,7 +118,7 @@
     <transition name="fade">
       <SmallLoading v-if="isLoading"></SmallLoading>
     </transition>
-<!-- 错误提示弹窗 -->
+     <!-- 错误提示弹窗 -->
     <transition name="fade">
       <div class="mask" v-if="showMask" @click="hideMask">
         <div class="mask-box">
@@ -175,7 +175,7 @@
         vestsToSp: 0,
 
         // temporary flag for maintenance
-        underMaintenance: true
+        underMaintenance: false
       }
     },
     methods: {
@@ -360,21 +360,6 @@
         this.apy = (apy * 100).toFixed(3)
         localStorage.setItem('apy', this.apy)
       },
-
-      async getDelegateList(){
-            let nutPool = this.$store.state.nutPoolInstance
-            // let s = await nutPool.delegatorList(1).call()
-            let s = await nutPool.getDelegatorListLength().call()
-            console.log(256, "lists", this.tronWeb2.toBigNumber(s).toFixed(0))
-            let length = parseInt(this.tronWeb2.toBigNumber(s))
-            console.log(2567, "lists", length)
-
-            // for(let i = 0; i < length; i++){
-            //   let p = await nutPool.delegatorList(i).call()
-            //   let res = await nutPool.delegators(p).call()
-            //   console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
-            // }
-        }
     },
 
     components: {
@@ -391,7 +376,7 @@
       async function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          console.log(888, "instance为空，是刷新页面")
+          // console.log(888, "instance为空，是刷新页面")
           try{
             await that.getSteemInstance()
             await that.getSbdInstance()
@@ -403,7 +388,6 @@
             await that.getNutTronLink()
             await  that.getNutPoolTronLink()
 
-            // await that.getDelegateList()
             that.loadingFlag = true
 
           }catch(e){
@@ -412,7 +396,7 @@
             return
           }
         } else{
-          console.log(22333, "啥也没干！")
+          // console.log(22333, "啥也没干！")
           try{
             await that.getSteemStates()
             await that.getOtherBalance()

@@ -8,6 +8,7 @@ module.exports = {
         "yourdata":"Your Data",
         "spbalance":"SP Balance",
         "yourspdelegate":"Your Delegated SP",
+        "delegateList":"delegateList",
 
         "miningpooldata":"Mining Pool Data",
         "sptotaldelegate":"Total Delegated SP",

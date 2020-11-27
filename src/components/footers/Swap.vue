@@ -1,5 +1,5 @@
 <template>
-  <div id="content">
+<div id="content">
     <h1>交易对</h1>
 
     <div class="text">

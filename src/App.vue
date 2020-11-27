@@ -1,9 +1,5 @@
 <template>
   <div id="app">
-    <b-navbar toggleable="lg" type="light" variant="warning" id="notice">
-      Nutbox service is under temporary maintenance for upgrading system and smart contract performance, and will be back in next 12~16 hours. <br /> For any questions or issues, please contact us at Discord channel or WeChat group.
-    </b-navbar>
-
     <b-navbar toggleable="lg" type="light" variant="info" id="navmanu">
       <b-navbar-brand @click="backtoindex">
           <img src="../static/images/logo.svg" class="d-inline-block align-top" alt="nutboxs">
@@ -67,8 +63,12 @@
                    <b-dropdown-item-button>
                     <a target="_blank" href="https://blog.nutbox.io/@nutbox/nutbox-dao-governance-is-online--the-procedure-of-nutbox-proposal-is-operating--20201105t090030122z">{{ $t('message.nps') }}</a>
                   </b-dropdown-item-button>
-                   <b-dropdown-divider></b-dropdown-divider>
+                  <b-dropdown-divider></b-dropdown-divider>
 
+                  <b-dropdown-item-button>
+                     <router-link to="/delegatorlists">{{ $t('message.delegateList') }}</router-link>
+                  </b-dropdown-item-button>
+                  <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://discord.gg/wyJeDhP">{{ $t("message.discord") }}</a>
                   </b-dropdown-item-button>
