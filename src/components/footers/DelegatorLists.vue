@@ -1,6 +1,6 @@
 <template>
 <div id="content">
-    <h1>{{ $t('message.delegateList') }}</h1>
+    <h1>{{ $t('message.delegatorList') }}</h1>
     <div class="text">
       <b-table striped hover :items="items" :fields="fields"></b-table>
     </div>
@@ -49,11 +49,12 @@
         this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
       },
       async getDelegateList(){
-        let nutPool = this.$store.state.nutPoolInstance
+        let nutPool = this.$store.state.nutPoolInstance2
         // let s = await nutPool.delegatorList(1).call()
         let s = await nutPool.getDelegatorListLength().call()
-        console.log(256, "lists", this.tronWeb2.toBigNumber(s).toFixed(0))
-        let length = parseInt(this.tronWeb2.toBigNumber(s))
+        // console.log(256, "lists", this.tronWeb2.toBigNumber(s).toFixed(0))
+        // let length = parseInt(this.tronWeb2.toBigNumber(s))
+        let length = s * 1
         console.log(2567, "lists", length)
 
         for(let i = 0; i < length; i++){
@@ -71,37 +72,15 @@
     },
     mounted() {
       let that = this
-      let instance = this.$store.state.steemInstance2
       async function main(){
-        if(Object.keys(instance).length === 0){
-          //如果刷新页面, instance未定义
-          // console.log(888, "instance为空，是刷新页面")
-          try{
-            await that.getSteemInstance()
-            await that.getSbdInstance()
-            await that.getNutsInstance()
-            await that.getNutsPool()
-            await that.getSteemStates()
-
-            await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
-            await that.getDelegateList()
-
-          }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
-            that.showMask = true
-          }
-        } else{
-          // console.log(22333, "啥也没干！")
-          try{
-            await that.getSteemStates()
-            await that.getDelegateList()
-            await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
-          }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
-            that.showMask = true
-          }
+        try{
+          await that.getNutsPool()
+          await that.getSteemStates()
+          // await that.sleep()
+          await that.getDelegateList()
+        }catch(e){
+          that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+          that.showMask = true
         }
 
       }

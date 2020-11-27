@@ -65,7 +65,7 @@
           </div>
           <!-- 按钮 -->
           <div class="confirm-box">
-            <button class="confirm-btn" @click="trans" :disabled="!canTransFlag || underMaintenance">
+            <button class="confirm-btn" @click="trans" :disabled="!canTransFlag">
               {{ $t('message.confirmconvert') }}
             </button>
           </div>
@@ -140,7 +140,7 @@
         </div>
         <!-- 按钮 -->
         <div class="confirm-box">
-          <button class="confirm-btn" @click="transSbd" :disabled="!canTransSbdFlag || underMaintenance">
+          <button class="confirm-btn" @click="transSbd" :disabled="!canTransSbdFlag">
             {{ $t('message.confirmconvert') }}
           </button>
         </div>
@@ -213,8 +213,6 @@
         checkSbdFlag: true,
         canTransSbdFlag: false,
 
-        // temporary flag for maintenance
-        underMaintenance: true
       }
     },
     methods: {

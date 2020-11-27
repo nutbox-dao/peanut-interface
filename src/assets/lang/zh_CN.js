@@ -8,7 +8,7 @@ module.exports = {
         "yourdata":"您的数据",
         "spbalance":"SP余额",
         "yourspdelegate":"您的SP代理量",
-        "delegateList":"代理列表",
+        "delegatorList":"代理列表",
 
 
         "miningpooldata":"矿池数据",

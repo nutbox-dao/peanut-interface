@@ -66,7 +66,7 @@
                   <b-dropdown-divider></b-dropdown-divider>
 
                   <b-dropdown-item-button>
-                     <router-link to="/delegatorlists">{{ $t('message.delegateList') }}</router-link>
+                     <router-link to="/delegatorlists">{{ $t('message.delegatorList') }}</router-link>
                   </b-dropdown-item-button>
                   <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item-button>
