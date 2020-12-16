@@ -48,9 +48,9 @@ setup()
 
 
 //设置steem节点, 挂载到全局
-steem.api.setOptions({ url: 'https://api.justyy.com' })
+// steem.api.setOptions({ url: 'https://api.justyy.com' })
 // steem.api.setOptions({ url: 'https://cn.steems.top' })
-// steem.api.setOptions({ url: 'https://api.steemit.com' })
+steem.api.setOptions({ url: 'https://api.steemit.com' })
 Vue.prototype.steem = steem
 
 //tron网络
