@@ -69,8 +69,14 @@
                      <router-link to="/delegatorlists">{{ $t('message.delegatorList') }}</router-link>
                   </b-dropdown-item-button>
                   <b-dropdown-divider></b-dropdown-divider>
+
                   <b-dropdown-item-button>
-                    <a target="_blank" href="https://discord.gg/wyJeDhP">{{ $t("message.discord") }}</a>
+                    <a target="_blank" href="https://blog.nutbox.io">{{ $t('message.blog') }}</a>
+                  </b-dropdown-item-button>
+                  <b-dropdown-divider></b-dropdown-divider>
+
+                  <b-dropdown-item-button>
+                    <a target="_blank" href="https://discord.gg/zPkMuGY">{{ $t("message.discord") }}</a>
                   </b-dropdown-item-button>
 
               <div v-if="$store.state.username">

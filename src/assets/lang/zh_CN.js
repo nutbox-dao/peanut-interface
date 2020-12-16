@@ -64,6 +64,7 @@ module.exports = {
         "docs":"文档",
         "discord":"Discord",
         "about":"关于",
+        "blog":"博客",
 
         "contractAddr":"合约地址",
         "attention":"注意:",

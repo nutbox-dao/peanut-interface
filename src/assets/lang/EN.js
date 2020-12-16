@@ -63,6 +63,7 @@ module.exports = {
         "docs":"Docs",
         "discord":"Discord",
         "about":"About",
+        "blog":"Blog",
 
         "contractAddr":"Contract Address",
         "attention":"Attention:",
