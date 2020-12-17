@@ -67,7 +67,7 @@ module.exports = {
 
         "contractAddr":"Contract Address",
         "attention":"Attention:",
-        "attensionInfo":"",
+        "attensionInfo":"It is a fake-token fraud! The only way to determine the token is based on its smart contract address, please do not search or trade the token through a name.",
 
         "language":"Language",
         "zh":"中文",

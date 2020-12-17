@@ -1,6 +1,6 @@
 <template>
   <div id="content">
-    <h1>合约地址</h1>
+    <h1>{{ $t('message.contractAddr') }}</h1>
 
     <div class="text">
    <p><strong>NutboxSteem</strong> <br>
@@ -20,11 +20,11 @@
         TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E
       </p>
 
-      <p><strong>注意：</strong> <br>
-        假币骗局！请不要以代币的名字查询和交易代币，应以代币的合约地址为准！
+      <p><strong>{{$t('message.attention')}}</strong> <br>
+      {{$t('message.attensionInfo')}}
       </p>
 
-      <p><strong>Tronscan查询：</strong> <br>
+      <p><strong>Tronscan：</strong> <br>
 
         <a target="_blank" href="https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions">https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions</a>
       </p>
