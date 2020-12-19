@@ -91,22 +91,15 @@
                         {{ nutBalanceOf }}
                     </p>
                 </div>
-                <!--<div class="round-box-title-container">-->
-                    <!--<p class="box-title">-->
-                        <!--TSTEEM总量-->
-                    <!--</p>-->
-                    <!--<p class="box-title">-->
-                        <!--{{ totalSupply }}-->
-                    <!--</p>-->
-                <!--</div>-->
-                <!--<div class="round-box-title-container">-->
-                    <!--<p class="box-title">-->
-                        <!--PNUT总量-->
-                    <!--</p>-->
-                    <!--<p class="box-title">-->
-                        <!--{{ nutTotalSupply }}-->
-                    <!--</p>-->
-                <!--</div>-->
+
+                <div class="round-box-title-container">
+                    <p class="box-title">
+                        {{ $t('message.balanceOfTsp') }}
+                    </p>
+                    <p class="box-title">
+                        {{ balanceOfTsp }}
+                    </p>
+                </div>
 
             </div>
 
@@ -149,6 +142,9 @@
                 balanceOfSbd: '',
                 balanceOfSp: '',
                 vestsToSp:'',
+
+                balanceOfTsp:'',
+                balanceOfTsp2:'',
 
                 nutBalanceOf: '',
                 nutBalanceOf2: '',
@@ -208,6 +204,13 @@
                 let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * vestsToSp
                 this.balanceOfSp = (sp - delegatedSp).toFixed(3)
             },
+             async getTspBalance(){// tsp
+                let addr = this.$store.state.addr
+                let instance = this.$store.state.tspInstance2
+                let a = await instance.balanceOf(addr).call()
+                this.balanceOfTsp = this.formatData(this.dataFromSun(a))
+                this.balanceOfTsp2 = this.dataFromSun(a)
+            },
             async owner() {
                 let addr = this.anyaddr
                 let instance = this.$store.state.steemInstance2
@@ -244,6 +247,9 @@
                     await that.getTsbdBalance()
                     await that.getOtherBalance()
 
+                    await that.getTspInstance()
+                    await that.getTspBalance()
+
                     // await that.owner()
                     that.isLoading = false
                 } else{
@@ -252,6 +258,7 @@
                     await that.getBalance()
                     await that.getTsbdBalance()
                     await that.getOtherBalance()
+                    await that.getTspBalance()
 
                     that.isLoading = false
                 }

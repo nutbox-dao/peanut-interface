@@ -10,6 +10,7 @@ import DelegatorLists from "../components/footers/DelegatorLists"
 import Tools from "../components/footers/Tools"
 import Questions from "../components/footers/Questions"
 import Swap from "../components/footers/Swap"
+import TSPMine from "../components/TSPMine"
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
       meta:{
           requireAuth:true
       }
+  },
+  {
+    path: '/tspmine',
+    name: 'tspmine',
+    component: TSPMine
   },
   {
     path: '/bridge',

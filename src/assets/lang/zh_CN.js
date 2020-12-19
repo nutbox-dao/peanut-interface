@@ -9,6 +9,7 @@ module.exports = {
         "spbalance":"SP余额",
         "yourspdelegate":"您的SP代理量",
         "delegatorList":"代理列表",
+        "tspDepositList":"TSP储蓄列表",
 
 
         "miningpooldata":"矿池数据",
@@ -53,6 +54,23 @@ module.exports = {
         "needkeychain":"请安装steem-keychain钱包",
         "needtronlink":"请安装tronlink钱包",
 
+        "tspMine":"TSP挖矿",
+        "yourTspAmount":"储蓄的TSP数量",
+        "balanceOfTsp":"TSP 余额",
+        "tspMinlingFee":"挖矿手续费",
+        "totalDepositTsp":"TSP总储蓄量",
+        "tsptosteemintro":"转换的STEEM将在33-40天内陆续返还",
+        "confirmDeposit":"确认储蓄",
+        "tspIsCirculatingSP": "备注：TSP是流通的SP",
+        "addTspDeposit":"增加储蓄",
+        "minusTspDeposit":"减少储蓄",
+        "cancelTspDeposit":"取消储蓄",
+        "confirmAddTspDeposit":"确认增加储蓄",
+        "confirmMinusTspDeposit":"确认减少储蓄",
+        "confirmCancelTspDeposit":"确认取消储蓄",
+        "notEnoughFee":"手续费不足",
+        "approveNutbox":"授权Nutbox",
+
         "whitePaper":"白皮书",
         "nps":"Nutbox提案系统",
         "userBook":"用户手册(测试网)",
@@ -65,6 +83,7 @@ module.exports = {
         "discord":"Discord",
         "about":"关于",
         "blog":"博客",
+        "changeSteemNode":"切换steem节点",
 
         "contractAddr":"合约地址",
         "attention":"注意:",

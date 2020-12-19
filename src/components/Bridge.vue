@@ -2,6 +2,7 @@
   <div class="wallet">
     <div>
       <div class="changebox">
+        <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="beforeTsp">TSP</p>
         <p :class="[steemFlag ? 'titleSelected' : 'titleUnSelected']" @click="beforeSteem">STEEM</p>
         <p :class="[sbdFlag ? 'titleSelected' : 'titleUnSelected']" @click="beforeSbd">SBD</p>
       </div>
@@ -159,6 +160,84 @@
 
       </div>
 
+      <!--tsp兑换-->
+      <div v-if="tspFlag" class="exchange">
+        <!-- 上面的框 -->
+        <div class="round-box">
+          <div class="round-box-title-container">
+            <p class="box-title">
+              from
+            </p>
+            <p class="box-title">
+              {{ $t('message.balance') }}: {{ isSteemToTsp ? balanceOfSeem : balanceOfTsp }}
+            </p>
+          </div>
+          <div class="round-box-content-container">
+            <input
+                    class="mb-2 mr-sm-2 mb-sm-0 user input"
+                    :class="checkTspFlag ? 'isok': 'isfalse'"
+                    placeholder="0.0" v-model="transTspValue"
+                    @keyup="checkTransTspValue" type="number" inputmode="decimal"
+                    pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
+            <div style="display:flex">
+              <button class="maxBtn" @click="fillMaxTspTrans">Max</button>
+              <img class="coin-icon" src="../../static/images/sbd.svg" alt="" v-if="isSteemToTsp">
+              <img class="coin-icon" src="../../static/images/tsbd.svg" alt="" v-else>
+              <div style="margin-top:18px;margin-left:8px">{{ isSteemToTsp ? "STEEM" : "TSP" }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- 中间箭头 -->
+        <div class="pink-arrow-box">
+          <div style="margin:0 auto;" @click="changeTransTspOrder">
+            <img class="pink-arrow" src="../../static/images/pink-arrow.svg">
+          </div>
+        </div>
+        <!-- 下面的框 -->
+        <div class="round-box">
+          <div class="round-box-title-container">
+            <p class="box-title">
+              to
+            </p>
+            <p class="box-title">
+              {{ $t('message.balance') }}: {{ isSteemToTsp ? balanceOfTsp : balanceOfSeem  }}
+            </p>
+          </div>
+          <div class="round-box-content-container">
+            <input
+                    class="mb-2 mr-sm-2 mb-sm-0 user input"
+                    placeholder="0.0" v-model="transTspValue"
+                    pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
+            <div style="display:flex">
+              <img class="coin-icon" src="../../static/images/tsbd.svg" alt="" v-if="isSteemToTsp">
+              <img class="coin-icon" src="../../static/images/sbd.svg" alt="" v-else>
+              <div style="margin-top:18px;margin-left:8px">{{ isSteemToTsp ? "TSP" : "STEEM" }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- 按钮 -->
+        <div class="confirm-box">
+          <button class="confirm-btn" @click="transTsp" :disabled="!canTransTspFlag">
+            {{ $t('message.confirmconvert') }}
+          </button>
+        </div>
+
+        <!--手续费-->
+        <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px">
+          {{ $t('message.servicecharge') }}： 0.2%，{{ $t('message.atleastcharge') }} {{ steemtotspfee }} STEEM
+        </p>
+        <!-- 兑换率 -->
+        <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px" v-if="isSteemToTsp">
+          {{ $t('message.convertrate') }}： 1 STEEM = 1 TSP
+        </p>
+        <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px" v-else>
+          {{ $t('message.convertrate') }}： 1 TSP= 1 STEEM<br>
+          {{ $t('message.tsptosteemintro') }}
+        </p>
+
+
+      </div>
+
     </div>
 
     <!--加载动画-->
@@ -182,6 +261,7 @@
 
 <script>
   import SmallLoading from './SmallLoading'
+  import {transferSteem} from '../utils/steemOperations.js'
   export default {
     name: "Bridge",
     data() {
@@ -194,8 +274,14 @@
         balanceOfSbd: '',
         balanceOfSp: '',
 
-        steemFlag: true,
+        steemFlag: false,
         sbdFlag: false,
+        tspFlag: true,
+        steemtotspfee: process.env.VUE_APP_STEEM_TSP_FEE || 1,
+
+        balanceOfTsp: '',
+        balanceOfTsp2: '',
+        steemFlag: false,
 
         showMask: false,
 
@@ -213,16 +299,28 @@
         checkSbdFlag: true,
         canTransSbdFlag: false,
 
+        isSteemToTsp: true,  // tsp
+        transTspValue: '',
+        checkTspFlag: true,
+        canTransTspFlag:false,
+
       }
     },
     methods: {
       beforeSteem(){
         this.steemFlag = true
         this.sbdFlag = false
+        this.tspFlag = false
       },
       beforeSbd(){
         this.steemFlag = false
         this.sbdFlag = true
+        this.tspFlag = false
+      },
+      beforeTsp(){
+        this.steemFlag = false
+        this.sbdFlag = false
+        this.tspFlag = true
       },
       async getBalance(){ //tsteem
         let addr = this.$store.state.addr
@@ -238,6 +336,14 @@
         let a = await instance.balanceOf(addr).call()
         this.balanceOfTsbd = this.formatData(this.dataFromSun(a))
         this.balanceOfTsbd2 = this.dataFromSun(a)
+      },
+      async getTspBalance(){// tsp
+        let addr = this.$store.state.addr
+        let instance = this.$store.state.tspInstance2
+        console.log(123456333,'getBalanceOf')
+        let a = await instance.balanceOf(addr).call()
+        this.balanceOfTsp2 = this.dataFromSun(a)
+        this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
       },
       async getSteemStates(){
         let username = this.$store.state.username
@@ -283,9 +389,9 @@
         this.transValue = ''
       },
 
-      async steemTransfer(account, to, amount, memo, currency, address){
+      async steemTransfer(account, to, amount, memo, currency, address, transFee){
         let b = parseFloat(amount) * 0.002
-        let fee = b > 0.1 ? b : 0.1
+        let fee = b > transFee ? b : transFee
         return await this.steemWrap(account, to, amount, memo, currency, address, fee)
       },
       async steemToTSteem() {
@@ -300,7 +406,7 @@
           let amount = parseFloat(this.transValue).toFixed(3)
           let currency =  'STEEM'
           let memo = addr+" +"+amount+' TSTEEM'
-           let res = await this.steemTransfer(from, to, amount, memo, currency, addr)
+           let res = await this.steemTransfer(from, to, amount, memo, currency, addr, 0.1)
 
            if(res.success === true){
                 //转帐成功才铸币
@@ -499,6 +605,132 @@
         }
       },
 
+      checkTransTspValue(){
+        let reg = /^\d+(\.\d+)?$/
+        let res = reg.test(this.transTspValue)
+        let res1 = false
+        if(parseFloat(this.transTspValue ) > 0){
+          res1 = true
+        }
+        let f = parseFloat(this.transTspValue) * 0.002
+        let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
+        if (this.isSteemToTsp){
+          let res2 = parseFloat(this.transTspValue) <= parseFloat(parseFloat(this.balanceOfSeem) - tspfee).toFixed(3)
+          this.canTransTspFlag = res1 && res && res2
+          this.checkTspFlag = this.canTransTspFlag
+        }else{
+          let res3 = parseFloat(this.transTspValue) <= parseFloat(this.balanceOfTsp2)
+          let res4 = parseFloat(this.balanceOfTsp2) >= tspfee
+          this.canTransTspFlag = res1 && res && res3 && res4
+          this.checkTspFlag = this.canTransTspFlag
+        }
+      },
+      fillMaxTspTrans(){
+        let f = parseFloat(this.transTspValue) * 0.002
+        let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
+        if (this.isSteemToTsp){
+          this.transTspValue = parseFloat(this.balanceOfSeem) - tspfee
+          this.transTspValue = this.transTspValue.toFixed(3)
+        }else{
+          this.transTspValue = parseFloat(this.balanceOfTsp2)
+          this.transTspValue = this.transTspValue.toFixed(3)
+        }
+        this.checkTransTspValue()
+      },
+      changeTransTspOrder(){
+        this.isSteemToTsp = !this.isSteemToTsp
+        this.transTspValue = ''
+      },
+      async transSteemToTsp(){
+        try{
+            this.isLoading = true
+            this.canTransTspFlag = false
+            //steem转帐
+            let addr = this.$store.state.addr
+            let from = this.$store.state.username
+            let to = process.env.VUE_APP_STEEM_TSP || 'nutbox.tsp'
+            let f = parseFloat(this.transTspValue) * 0.002
+            let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
+            let amount = parseFloat(this.transTspValue).toFixed(3)
+            let currency =  'STEEM'
+            let memo = addr+" +"+amount+' TSP'
+            let res = await this.steemTransferVest(from, to, amount, addr, tspfee)
+             if(res.success === true){
+                  //转帐成功才铸币
+                  // console.log(123, "转帐成功才铸币")
+                  // let instance2 = this.$store.state.tspInstance2
+                  // let value = this.web3.utils.toWei(amount, 'ether')
+                  // let value2 = this.dataToSun(amount)
+                  // await instance2.steemToTsp(from, addr, value2).send()
+                 await this.sleep()
+                 await this.getBalance()
+                 await this.getSteemStates()
+                 await this.getTspBalance()
+                 this.transTspValue = ''
+                 this.isLoading = false
+                 this.canTransTspFlag = true
+              }else{
+                  this.transTspValue = ''
+                  this.isLoading = false
+                  this.canTransFlag = true
+                  this.maskInfo = this.$t('message.error')+"\n"+res.message
+                  this.showMask = true
+              }
+          }
+          catch(e){
+            this.isLoading = false
+            this.canTransFlag = true
+            this.maskInfo = this.$t('message.error')+"\n"+e.message
+            this.showMask = true
+          }
+      },
+      async transTspToSteem(){
+        try{
+          this.isLoading = true
+          this.canTransTspFlag = false
+          // let from =  process.env.VUE_APP_STEEM
+          let from = this.$store.state.username
+          let to = process.env.VUE_APP_STEEM_GAS || "nutbox.gas"
+          let addr = this.$store.state.addr
+          let instance = this.$store.state.tspInstance
+          //销毁
+          let ss = parseFloat(this.transTspValue).toFixed(3)
+          // let value = this.web3.utils.toWei(ss, 'ether')
+          let value = this.dataToSun(ss)
+          //steem转帐gas费
+          let f = parseFloat(this.transTspValue) * 0.002
+          let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
+          let memo = addr+" -"+this.transTspValue+' TSP'
+          let res = await transferSteem(from,to,tspfee,memo)
+          if (res.success === true){
+            await instance.tspToSteem(to, value).send()
+            await  this.sleep()
+            await this.getBalance()
+            await this.getSteemStates()
+            await this.getTspBalance()
+            this.transTspValue = ''
+            this.isLoading = false
+            this.canTransTspFlag = true
+          }else{
+            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.showMask = true
+          }
+        }
+        catch(e){
+            this.isLoading = false
+            console.log(456723,e)
+            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.showMask = true
+        }
+      },
+      async transTsp(){
+        if (this.isSteemToTsp){
+          this.transSteemToTsp()
+        }else{
+          this.transTspToSteem()
+        }
+      }
+
     },
 
     components: {
@@ -519,12 +751,17 @@
             await that.getSteemInstance()
             await that.getSbdInstance()
             await that.getNutsInstance()
+            await that.getTspInstance()
             await that.getNutsPool()
-            await that.getBalance()
-            await that.getTsbdBalance()
-            await that.getSteemStates()
+
+            await that.getTspTronLink()
             await that.getSteemTronLink()
             await that.getSbdTronLink()
+
+            await that.getSteemStates()
+            await that.getBalance()
+            await that.getTsbdBalance()
+            await that.getTspBalance()
 
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
@@ -533,11 +770,13 @@
         } else{
           console.log(22333, "bridge, 啥也没干！")
           try{
-            await that.getBalance()
-            await that.getTsbdBalance()
-            await that.getSteemStates()
-            await that.getSteemTronLink()
             await that.getSbdTronLink()
+            await that.getTspTronLink()
+            await that.getSteemTronLink()
+            await that.getSteemStates()
+            await that.getBalance()
+            await that.getTspBalance()
+            await that.getTsbdBalance()
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
             that.showMask = true

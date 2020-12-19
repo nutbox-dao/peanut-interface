@@ -1,9 +1,17 @@
 <template>
 <div id="content">
-    <h1>{{ $t('message.delegatorList') }}</h1>
-    <div class="text">
+  <div class="checkbox">
+    <p :class="[delegateSpFlag ? 'titleSelected' : 'titleUnSelected']" @click="delegateSpFlag=true">{{ $t('message.delegatorList') }}</p>
+    <p :class="[delegateSpFlag ? 'titleUnSelected' : 'titleSelected']" @click="delegateSpFlag=false">{{ $t('message.tspDepositList') }}</p>
+  </div>
+    
+    <div class="text" v-show="delegateSpFlag">
       <b-table striped hover :items="items" :fields="fields"></b-table>
     </div>
+    <div class="text" v-show="!delegateSpFlag">
+      <b-table striped hover :items="tspItems" :fields="tspFields"></b-table>
+    </div>
+
     <!-- 错误提示弹窗 -->
     <transition name="fade">
       <div class="mask" v-if="showMask" @click="hideMask">
@@ -28,20 +36,23 @@
     data() {
       return {
         fields: ['id', 'steemId', 'tron', 'delegatedSP'],
-        // items: [
-        //   { isActive: true, id: 1, steemId: 'Dickerson', tron: 'Macdonald', delegatedSP: 20 },
-        // ],
+        tspFields: ['id', 'tron', 'depositedTsp'],
         showMask:false,
         maskInfo:"",
         vestsToSp: '',
-        lists: []
-
+        lists: [],
+        delegateSpFlag : true,
+        tspDepositList: [],
       }
     },
     computed:{
       items() {
         return this.lists
       },
+      tspItems(){
+        // return [{isActive: true, id: 1,  tron: 'Macdonald', depositedTsp: 20}]
+        return this.tspDepositList
+      }
     },
     methods: {
       async getSteemStates(){
@@ -66,6 +77,17 @@
           this.lists.push(t)
         }
       },
+      async getTspDepositList(){
+        let tspPool = this.$store.state.tspPoolInstance2
+        let tspDelegatorLength = (await tspPool.getDelegatorListLength().call())*1
+        for (i = 0; i < tspDelegatorLength; i++){
+          let addr = await tspPool.delegatorList(i).call()
+          let res = await tspPool.delegators(addr).call()
+          let amount = this.dataFromSun(res.tspAmount).toFixed(3)
+          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTsp: amount}
+          this.tspDepositList.push(t)
+        }
+      },
       hideMask(){
         this.showMask=false
       },
@@ -78,6 +100,7 @@
           await that.getSteemStates()
           // await that.sleep()
           await that.getDelegateList()
+          await that.getTspDepositList()
         }catch(e){
           that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
           that.showMask = true
@@ -92,6 +115,22 @@
 </script>
 
 <style scoped>
+.checkbox{
+  display: flex;
+  align-content: center;
+  justify-content: space-evenly;
+}
+.titleSelected{
+color: rgb(30, 30, 30) !important;
+font-weight: 500 !important;
+font-size: 1.5em;
+}
+
+.titleUnSelected{
+color: darkgray !important;
+font-weight: 400 !important;
+font-size: 1.5em;
+}
   h1{
     font-size: 2rem;
     text-align: center;

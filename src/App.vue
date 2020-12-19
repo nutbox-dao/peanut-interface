@@ -24,6 +24,7 @@
           <div class="loginfo">
             <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
             <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
+            <button class="right-item" @click="tspMine">{{ $t('message.tspMine') }}</button>
 
             <div class="drop">
                 <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
@@ -71,16 +72,26 @@
                   <b-dropdown-divider></b-dropdown-divider>
 
                   <b-dropdown-item-button>
-                    <a target="_blank" href="https://blog.nutbox.io">{{ $t('message.blog') }}</a>
-                  </b-dropdown-item-button>
-                  <b-dropdown-divider></b-dropdown-divider>
-
-                  <b-dropdown-item-button>
                     <a target="_blank" href="https://discord.gg/zPkMuGY">{{ $t("message.discord") }}</a>
                   </b-dropdown-item-button>
+                   <b-dropdown-divider></b-dropdown-divider>
+
+                  <b-dropdown-item-button>
+                    <a target="_blank" href="https://blog.nutbox.io">{{$t('message.blog')}}</a>
+                  </b-dropdown-item-button>
+                   <b-dropdown-divider v-if="$store.state.username"></b-dropdown-divider>
+
+                   <b-dropdown-item-button v-if="$store.state.username">
+                     <div @mouseover="showSteemNode=true" @mouseleave="showSteemNode=false">
+                        <a>{{ $t('message.changeSteemNode') }}</a>
+                        <div v-show="showSteemNode">
+                          <a :class="['steem-node-item',item == currentSteemNode ? 'selectedNode' : 'unSelectedNode' ]" v-for="(item) in steemUrls" @click="selectNode(item)" v-bind:key="item">{{ item }}</a>
+                        </div>
+                     </div>
+                  </b-dropdown-item-button>
+                   <b-dropdown-divider v-if="$store.state.username"></b-dropdown-divider>
 
               <div v-if="$store.state.username">
-                  <b-dropdown-divider></b-dropdown-divider>
                   <b-dropdown-item-button @click="logout" style="text-align:center">
                     {{ $t('message.logout') }}
                   </b-dropdown-item-button>
@@ -99,11 +110,15 @@
 </template>
 
 <script>
+  import {STEEM_API_URLS,STEEM_CONF_KEY} from './const.js'
   export default {
     name: 'App',
     data(){
       return {
-
+        showSteemNode:false,
+        steemUrls:STEEM_API_URLS,
+        steemNodeKey:STEEM_CONF_KEY,
+        currentSteemNode:window.localStorage.getItem(STEEM_CONF_KEY),
       }
     },
     methods: {
@@ -112,6 +127,9 @@
       },
       bridge(){
         this.$router.push({path: '/bridge'})
+      },
+      tspMine(){
+        this.$router.push({path: '/tspmine'})
       },
       mywallet(){
         this.$router.push({path: '/wallet'})
@@ -132,7 +150,15 @@
         let lang = 'en'
         localStorage.setItem(LOCALE_KEY, lang)
         this.$i18n.locale = 'en'
-      }
+      },
+      selectNode(node){
+        this.showSteemNode = false
+        this.steem.api.setOptions({ url: node })
+        this.currentSteemNode = node
+        window.localStorage.setItem(this.steemNodeKey, node)
+        this.$router.go(0)
+        console.log(node)
+      },
     },
     components: {
 
@@ -178,6 +204,20 @@
     height: 20px;
     margin-right: 5px;
     padding-right: 2px;
+  }
+
+  .steem-node-item{
+    display: block;
+    padding: 8px 0px;
+  }
+  .steem-node-item:hover{
+    color: blue !important;
+  }
+  .selectedNode{
+    color: blue !important;
+  }
+  .unSelectedNode{
+    color: gray;
   }
 
   .drop{
