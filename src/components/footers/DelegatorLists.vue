@@ -101,6 +101,7 @@
       async function main(){
         try{
           await that.getNutsPool()
+          await that.getTspPoolInstance()
           await that.getSteemStates()
           // await that.sleep()
           that.getDelegateList()
