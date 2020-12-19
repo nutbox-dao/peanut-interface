@@ -1,15 +1,14 @@
 <template>
   <div>
-  <div class="wallet">
+  <div class="tsp">
      <div>
        <!--代理挖矿-->
         <div class="delegate">
-            <p class="titleSelected">{{ $t('message.delegatemine') }}</p>
+            <p class="titleSelected">{{ $t('message.tspMine') }}</p>
             <div class="delegatetext round-box">
                 < {{ $t('message.yourdata') }} > <br>
-                {{ $t('message.steembalance') }}： {{ balanceOfSeem }}<br>
-                {{ $t('message.spbalance') }}： {{ balanceOfSp }} SP<br>
-                {{ $t('message.yourspdelegate') }}： {{ balanceOfDelegate }} SP<br>
+                {{ $t('message.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
+                {{ $t('message.yourTspAmount') }}： {{ minedTsp }} TSP<br>
                 {{ $t('message.pnutbalance') }}： {{ nutBalanceOf }} PNUT<br>
             </div>
 
@@ -19,55 +18,58 @@
                 {{ $t('message.sptotaldelegate') }}： {{ totalDepositedSP }} SP<br>
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
-                {{ $t('message.apy') }}： {{ apy }} %<br>
             </div>
             <hr>
             <!--<div >-->
-            <div v-if="balanceOfDelegate2 <= 0">
+            <div v-if="minedTsp <= 0">
                 <div class="round-box">
                   <div class="round-box-title-container">
                     <p class="box-title">
                       {{ $t('message.input') }}
                     </p>
-                    <!-- <p class="box-title">
-                      {{ $t('message.spbalance') }}：{{ balanceOfSp }}
-                    </p> -->
+                    <p class="box-title">
+                      {{ $t('message.balanceOfTsp') }}：{{ balanceOfTsp }}
+                    </p>
                   </div>
                   <div class="round-box-content-container">
                         <input
                         class="mb-2 mr-sm-2 mb-sm-0 user input"
                         :class="checkFlag ? 'isok': 'isfalse'"
-                        placeholder="0.0" v-model="delegatevalue"
-                        @keyup="checkDelegateValue" type="number" inputmode="decimal"
+                        placeholder="0.0" v-model="mineAmount"
+                        @keyup="checkMineAmount" type="number" inputmode="decimal"
                         pattern="^[0-9]*[.,]?[0-9]*$" spellcheck="false" value>
-                        <!-- <button id="maxBtn" @click="fillMaxDelegate">Max</button>-->
+                        <button id="maxBtn" @click="fillMaxAmount">Max</button>
                   </div>
                 </div>
 
               <div class="confirm-box" style="margin-bottom:10px">
-                <button class="confirm-btn" @click="delegate" :disabled="!checkDelegateFlag">
-                  {{ $t('message.confirmdelegate') }}
+                <button class="confirm-btn" @click="approve" :disabled="!checkApproveFlag">
+                  {{$t('message.approveNutbox')}}
+                </button>
+                <button class="confirm-btn" @click="mine" :disabled="!canMineFlag">
+                  {{ $t('message.confirmDeposit') }}
                 </button>
               </div>
 
                 <!--手续费-->
-                <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px">
-                    {{ $t('message.delegatecharge') }}： {{ fee }} STEEM
-                </p>
+                <!-- <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px">
+                    {{ $t('message.tspMinlingFee') }}： {{ this.mineFee }} TSP<br>
+                    {{ $t('message.tspIsCirculatingSP') }}
+                </p> -->
             </div>
 
             <!--已代理：-->
-            <div v-if="balanceOfDelegate2 > 0">
+            <div v-if="minedTsp > 0">
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
-                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))" >
-                  {{ $t('message.adddelegate') }}
+                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag" >
+                  {{ $t('message.addTspDeposit') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))">
-                  {{ $t('message.minusdelegate') }}
+                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag">
+                  {{ $t('message.minusTspDeposit') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag || !(fee<=parseFloat(balanceOfSeem))">
-                  {{ $t('message.canceldelegate') }}
+                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag">
+                  {{ $t('message.cancelTspDeposit') }}
                 </button>
               </div>
 
@@ -91,9 +93,10 @@
               </div>
 
                 <!--手续费-->
-                <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px">
-                    {{ $t('message.delegatecharge') }}： {{ fee }} STEEM
-                </p>
+                <!-- <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px">
+                    {{ $t('message.tspMinlingFee') }}： {{ this.mineFee }} TSP <br>
+                    {{ $t('message.tspIsCirculatingSP') }}
+                </p> -->
 
             </div>
         </div>
@@ -101,24 +104,26 @@
 
     <!-- 增加或减少代理弹窗 -->
     <transition name="fade">
-      <ChangeDelegateMask
-          :changeDegate = 'delegateOpt'
-          :balanceOfSP = 'balanceOfSp'
-          :balanceOfDelegate = 'balanceOfDelegate'
-          :balanceOfDelegate2 = 'balanceOfDelegate2'
-          :spToVests = 'spToVests'
+      <ChangeTSPDepositMask
+              :changeDegate = 'delegateOpt'
+              :balanceOfTSP = 'balanceOfTsp'
+              :balanceOfDelegate = 'minedTsp'
+              :balanceOfDelegate2 = 'minedTsp2'
+              :spToVests = 'spToVests'
+              :addr = 'addr'
 
-          v-if="showDelegateMask"
-          @hideMask="showDelegateMask=false"
+              v-if="showDelegateMask"
+              @hideMask="showDelegateMask=false"
       >
-      </ChangeDelegateMask>
+
+      </ChangeTSPDepositMask>
     </transition>
 
     <!--加载动画-->
     <transition name="fade">
       <SmallLoading v-if="isLoading"></SmallLoading>
     </transition>
-     <!-- 错误提示弹窗 -->
+<!-- 错误提示弹窗 -->
     <transition name="fade">
       <div class="mask" v-if="showMask" @click="hideMask">
         <div class="mask-box">
@@ -131,37 +136,53 @@
       </div>
     </transition>
   </div>
-  </div>
+   </div>
 </template>
 
 <script>
   import SmallLoading from './SmallLoading'
-  import ChangeDelegateMask from './ChangeDelegateMask'
+  import ChangeTSPDepositMask from './ChangeTSPDepositMask'
+  import {steemToVest, vestsToSteem} from '../utils/steemOperations.js'
+  import {tspPoolAddress} from '../utils/contractAddress.js'
+  
   export default {
-    name: "Index",
+    name: "TSPMine",
     data() {
       return {
-        balanceOfDelegate: '',
-        balanceOfDelegate2: '',
+        // balanceOfDelegate: '',
+        // balanceOfDelegate2: '',
         totalDepositedSP:'',
-        totalDepositedSP2:'',
         rewardsPerBlock:'',
         totalPendingPeanuts:'',
-        apy:'',
+        totalMiningTsp:'0',
+        addr:'',
+        tronlinkFlag:true,
 
         isLoading: true,
         loadingFlag: false,
 
-        balanceOfSeem: '',
-        balanceOfSp: '',
+        balanceOfTsp: '',
+        balanceOfTsp2: '',
+
+        minedTsp: '',
+        minedTsp2: '',
+
+        // mineFee: process.env.VUE_APP_TSP_DEPOSIT_FEE || 0.1,
+
+        timestamp: '',
+        startTime: '',
 
         checkFlag: true,
-        checkDelegateFlag: false,
-        delegatevalue: '',
-        spToVests: '',
+        checkApproveFlag: false,
+        canMineFlag: false,
+        mineAmount: '',
 
         nutBalanceOf: '',
         nutBalanceOf2: '',
+        nutStartTime:'',
+        miningRate: '',
+        difficulty:'',
+        nutSPR:'',
 
         showMask:false,
         maskInfo:"",
@@ -173,26 +194,26 @@
         fee: process.env.VUE_APP_DELEGATE_FEE,
 
         vestsToSp: 0,
-
+        spToVests: 0,
       }
     },
     methods: {
-      checkDelegateValue(){
-        let reg = /^\d+(\.\d+)?$/
-        let res = reg.test(this.delegatevalue)
-        let res1 = false
-        if(parseFloat(this.delegatevalue) >= 1){
-          res1 = true
-        }
-        //代理量应小于SP量
-        // let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
-        let res2 = true
-        // console.log(699, "res2", res2)
-        let res3 = this.fee <= parseFloat(this.balanceOfSeem)
-        this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
-        },
+      checkMineAmount(){
+          let reg = /^\d+(\.\d+)?$/
+          let res = reg.test(this.mineAmount)
+          let res1 = false
+          if(parseFloat(this.mineAmount) >= 1){
+            res1 = true
+          }
+          //代理量应小于TSP量
+          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp)
+          console.log(699, "res2", res2)
+          // let res3 = this.mineFee < parseFloat(this.balanceOfTsp)
+          this.checkFlag = this.checkApproveFlag = res && res1 && res2
+          this.canMineFlag = false
+      },
       async getOtherBalance(){  //nuts
-        let addr = this.$store.state.addr
+        let addr = this.addr
         let instance = this.$store.state.nutInstance2
         let a = await instance.balanceOf(addr).call()
 
@@ -200,73 +221,83 @@
         this.nutBalanceOf2 = this.dataFromSun(a)
 
         let poolinstance = this.$store.state.nutPoolInstance2
-        let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
-        let p = this.dataFromSun(f.amount) * this.vestsToSp
-        this.balanceOfDelegate =  this.formatData(p)
-        this.balanceOfDelegate2 = p
 
         let g = await poolinstance.getTotalDepositedSP().call()
-        let g2 = this.dataFromSun(g) * this.vestsToSp
+        console.log("ggg",g*1)
+        let g2 = await vestsToSteem(this.dataFromSun(g))
         this.totalDepositedSP = this.formatData(g2)
-        this.totalDepositedSP2 = g2
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = this.dataFromSun(i)
         this.totalPendingPeanuts = this.formatData(i2)
-
+        console.log('totalDepositedSP1111111',g2,this.totalDepositedSP,this.vestsToSp)
       },
-      async getSteemStates(){
-        let username = this.$store.state.username
-        let s = await this.steem.api.getAccountsAsync([username])
-        this.balanceOfSeem = s[0].balance
-        let a = await this.steem.api.getDynamicGlobalPropertiesAsync()
-        this.spToVests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_steem)
-        this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
-        let sp = parseFloat(s[0].vesting_shares) * this.vestsToSp
-        let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * this.vestsToSp
-        this.balanceOfSp = (sp - delegatedSp).toFixed(3)
-        },
-      fillMaxDelegate(){
-        this.delegatevalue = this.balanceOfSp - 5
-        if (parseFloat(this.delegatevalue) >= 1){
-          this.checkDelegateFlag = true
+      async getTspBalance(){
+        let poolInstance = this.$store.state.tspPoolInstance2
+        let addr = this.addr
+        console.log(98376,poolInstance)
+        let delegator = await poolInstance.delegators(addr).call()
+        let tsp = this.dataFromSun(delegator.tspAmount)
+        this.minedTsp = this.formatData(tsp)
+        this.minedTsp2 = tsp
+
+        let tspInstance2 = this.$store.state.tspInstance2
+        let tspBalance = await tspInstance2.balanceOf(addr).call()
+
+        this.balanceOfTsp2 = this.dataFromSun(tspBalance)
+        this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
+      },
+      fillMaxAmount(){
+        this.mineAmount = this.balanceOfTsp
+        this.checkMineAmount()
+      },
+      async approve(){
+        try{
+          this.loadingFlag = true
+          this.checkApproveFlag = false
+          let addr = this.addr
+          let tspPool = this.$store.state.tspPoolInstance
+          let b = parseFloat(this.mineAmount)
+          let value = this.dataToSun(b)
+          let tsp = this.$store.state.tspInstance
+          let tspPoolAddr = await tspPoolAddress()
+          let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
+          if (approved){
+            this.checkApproveFlag = false
+            this.canMineFlag = true
+          }else{
+            this.checkMineAmount()
+            alert("Approve failed")
+          }
+        }catch (e){
+          this.checkMineAmount()
+          alert(this.$t('message.error') + "\n" + e)
+        }finally{
+          this.isLoading = false
         }
       },
-      async delegate(){
+      async mine(){
         try {
           this.isLoading = true
-          this.checkDelegateFlag = false
-          let addr = this.$store.state.addr
-          //steem代理
-          let delegator = this.$store.state.username
-          let delegatee = process.env.VUE_APP_STEEM_MINE
-
-          let b = this.delegatevalue * this.spToVests
-          let amount = b.toFixed(6)
-          let res = await this.steemDelegation(delegator, delegatee, amount, addr)
-
-          if(res.success === true) {
-            //代理成功才挖矿
-            // let nutPool = this.$store.state.nutPoolInstance2
-            // let value = this.dataToSun(b)
-
-            // let value = this.tronWeb2.toSun(b.toFixed(6))
-            //   console.log(567, b.toFixed(6))
-            //   console.log(568, value)
-            // await nutPool.deposit(username, addr, value).send()
-            await this.sleep()
-            //直接刷新当前页面
-            this.$router.go(0)
-          }else{
-            this.delegatevalue = ''
-            this.isLoading = false
-            alert(this.$t('message.delegateerror') + "\n"+res.message)
-          }
+          this.checkApproveFlag = false
+          this.canMineFlag = false
+          let addr = this.addr
+          //开始挖矿
+          let tspPool = this.$store.state.tspPoolInstance
+          let b = parseFloat(this.mineAmount)
+          let value = this.dataToSun(b)
+          // commit deposit
+          await tspPool.deposit(value).send({feeLimit:20_000_000})
+          await this.sleep()
+          //直接刷新当前页面
+          this.$router.go(0)
         }
         catch(e){
           this.isLoading = false
+          this.checkApproveFlag = true
+          this.canMineFlag = false
           alert(this.$t('message.error') + "\n" + e)
         }
       },
@@ -274,10 +305,11 @@
         try {
           this.isLoading = true
           this.loadingFlag = false
-          let instance = this.$store.state.nutPoolInstance
+          let instance = this.$store.state.tspPoolInstance
           await instance.withdrawPeanuts().send({feeLimit:20_000_000})
-          await this.sleep()
+          await  this.sleep()
           await this.getOtherBalance()
+          await this.getTspPoolInstance()
           this.isLoading = false
           this.loadingFlag = true
         }
@@ -291,117 +323,87 @@
       },
 
       async getPendingPnut(){
-        let nutPool = this.$store.state.nutPoolInstance
-        let s = await nutPool.getPendingPeanuts().call()
+        let tspPool = this.$store.state.tspPoolInstance
+        console.log(235236,tspPool)
+        let s = await tspPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
-        // console.log(599, "pending pnut", this.pendingPnut)
-        },
-      async getSteemPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/steem',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
+        // this.pendingPnut = this.tronWeb2.fromSun(s)
+
+       console.log("getPendingPnut", this.pendingPnut)
+        let p = await tspPool.shareAcc().call()
+        console.log("shareAcc", p*1)
+
+        let p2 = await tspPool.totalDepositedTSP().call()
+        console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
         }
-      },
-      async getTronPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/tron',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getPnutPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.justswap.io/v2/allpairs',
-          headers: {
-            "accept": "application/json",
-          },
-          params: {
-            page_size : 2500,
-            page_num: 1
-          }
-        })
-        // console.log(111,res.data.data)
-        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
-        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
-        // console.log(114,price)
-        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
-        res = null
-        return price
-      },
-      async calPnutApy(){
-        let steemPrice = await this.getSteemPrice()
-        let tronPrice = await this.getTronPrice()
-        let pnutPrice = await this.getPnutPrice()
-        let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
-        this.apy = (apy * 100).toFixed(3)
-        localStorage.setItem('apy', this.apy)
-      },
     },
 
     components: {
       SmallLoading,
-      ChangeDelegateMask,
+      ChangeTSPDepositMask
       },
 
-    mounted() {
-      if(!this.$store.state.username){
-        this.$router.push({path: '/login'})
-      }
+    async mounted() {
       let that = this
-      let instance = this.$store.state.steemInstance2
+      let instance = this.$store.state.tspInstance2
       async function main(){
+        await that.sleep()
+        if (window.tronWeb) {
+          // console.log(22, "tronlink is ok! login")
+          that.addr = window.tronWeb.defaultAddress.base58
+        }else{
+             that.tronlinkFlag = false
+        }
+        that.isLoading = false
+        that.loadingFlag = true
+
+        //如果有一个没有获取到则再获取一次
+        if(!that.tronlinkFlag){
+          that.isLoading = true
+          await that.sleep()
+          //tronlink
+          if (window.tronWeb) {
+            console.log(522, "tronlink is ok! login")
+            that.addr = window.tronWeb.defaultAddress.base58
+          }else{
+            let link2 = 'TronLink: https://www.tronlink.org'
+            alert(that.$t('message.needtronlink')+"\n\n"+link2)
+          }
+        }
+        that.isLoading = false
+        that.loadingFlag = true
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          // console.log(888, "instance为空，是刷新页面")
+          console.log(888, "instance为空，是刷新页面")
           try{
-            await that.getSteemInstance()
-            await that.getSbdInstance()
+            // await that.getSteemInstance()
+            // await that.getSbdInstance()
             await that.getNutsInstance()
-            await that.getTspInstance()
-            await that.getNutsPool()
-            await that.getTspPoolInstance()
             await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
+            await that.getNutsPool()
+            await that.getNutPoolTronLink()
 
-            await that.getSteemStates()
+            await that.getTspInstance()
+            await that.getTspTronLink()
+            await that.getTspPoolInstance()
+            await that.getTspPoolTronLink()
+            await that.getTspBalance()
             await that.getOtherBalance()
-
             that.loadingFlag = true
-
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
         } else{
-          // console.log(22333, "啥也没干！")
+          console.log(22333, "啥也没干！")
           try{
-            await that.getSteemStates()
+            await that.getTspPoolInstance()
+            await that.getTspPoolTronLink()
             await that.getOtherBalance()
+            await that.getTspBalance()
             await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
+            await that.getNutPoolTronLink()
             that.loadingFlag = true
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
@@ -410,23 +412,16 @@
           }
         }
         that.isLoading = false
-        await that.calPnutApy()
       }
-      main()
+      await main()
 
-      //初始化年化收益率
-      if(localStorage.getItem("apy") == null){
-        this.apy = 52.786
-      }else{
-        this.apy = localStorage.getItem("apy")
-      }
-
-      //设置定时器以更新当前收益
-      let timer = setInterval(this.getPendingPnut, 3000)
-      // 通过$once来监听定时器，在beforeDestroy钩子时被清除。
+      //设置定时器以更新当前时间
+      let timer = setInterval(that.getPendingPnut, 3000)
+      //通过$once来监听定时器，在beforeDestroy钩子时被清除。
       this.$once('hook:beforeDestroy', () => {
         clearInterval(timer)
       })
+
     },
 
     }
@@ -434,7 +429,7 @@
 
 <style scoped>
 
-  .wallet{
+  .tsp{
     width: 45%;
     max-width: 520px;
     min-width: 400px;
@@ -511,8 +506,7 @@
     font-size: 1rem;
     line-height: 1.2rem;;
     box-sizing: border-box;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding-top: 14px;
     justify-content: space-between;
     -webkit-box-pack: justify;
     height: 100%;
@@ -541,7 +535,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0px;
-    /*appearance: textfield;*/
+    appearance: textfield;
 }
 #maxBtn{
   height: 100%;
@@ -593,6 +587,7 @@
     margin-bottom: 1rem;
     display: flex;
     justify-content: space-around;
+    
   }
 
   .confirm-btn{
@@ -618,6 +613,10 @@
     font-size: 16px;
     font-weight: 500;
     user-select: none;
+    margin-right: 10px;
+  }
+  .confirm-btn:last-child{
+    margin-right: 0px;
   }
 
 .confirm-btn:hover{
@@ -692,3 +691,4 @@
   }
 
 </style>
+

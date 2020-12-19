@@ -1,30 +1,38 @@
 <template>
   <div id="content">
-    <h1>合约地址</h1>
+    <h1>{{ $t('message.contractAddr') }}</h1>
 
     <div class="text">
    <p><strong>NutboxSteem</strong> <br>
-       TBUZYrDh7gzjd1PLnkMHWoAo55ctRzZzGN
+       {{this.tsteem}}
     </p>
 
       <p><strong>NutboxSbd</strong> <br>
-          TEPZJmYLJxJc8b5FueswwLWmUDhJGnih6Q
+          {{this.tsbd}}
       </p>
 
 
       <p><strong>NutboxPnut</strong> <br>
-        TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW
+        {{this.pnut}}
       </p>
 
       <p><strong>PnutPool</strong> <br>
-        TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E
+        {{ this.peanutsPool }}
       </p>
 
-      <p><strong>注意：</strong> <br>
-        假币骗局！请不要以代币的名字查询和交易代币，应以代币的合约地址为准！
+      <p><strong>NutboxTsp</strong><br>
+        {{this.tsp}}
       </p>
 
-      <p><strong>Tronscan查询：</strong> <br>
+      <p><strong>TspPool</strong><br>
+        {{this.tspPool}}
+      </p>
+
+      <p><strong>{{$t('message.attention')}}</strong> <br>
+      {{$t('message.attensionInfo')}}
+      </p>
+
+      <p><strong>Tronscan：</strong> <br>
 
         <a target="_blank" href="https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions">https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions</a>
       </p>
@@ -38,15 +46,31 @@
 </template>
 
 <script>
-
+  import {peanutsPoolAddress,tsbdAddress,tsteemAddress,peanutAddress,tspAddress,tspPoolAddress} from '../../utils/contractAddress.js'
   export default {
     name: "Contract",
     data() {
       return {
-
+        peanutsPool : '',
+        tsbd:'',
+        tsteem:'',
+        pnut:'',
+        tsp:'',
+        tspPool:'',
       }
     },
-
+    mounted() {
+      let that = this
+      async function main(){
+        that.peanutsPool = await peanutsPoolAddress()
+        that.tsbd = await tsbdAddress()
+        that.tsteem = await tsteemAddress()
+        that.pnut = await peanutAddress()
+        that.tsp = await tspAddress()
+        that.tspPool = await tspPoolAddress()
+      }
+      main()
+    },
 
   }
 </script>

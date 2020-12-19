@@ -21,6 +21,14 @@ export default new Vuex.Store({
     sbdInstance2: {},
     sbdJson: {},
 
+    tspInstance: {},
+    tspInstance2: {},
+    tspJson: {},
+
+    tspPoolInstance: {},
+    tspPoolInstance2: {},
+    tspPoolJson: {},
+
     nutInstance: {},
     nutInstance2: {},
     nutJson: {},
@@ -54,6 +62,27 @@ export default new Vuex.Store({
     saveSteemJson: function (state, steemJson){
       state.steemJson.abi = steemJson.abi
       state.steemJson.contract= steemJson.contract
+    },
+    saveTspJson: function (state, tspJson){
+      state.tspJson.abi = tspJson.abi
+      state.tspJson.contract = tspJson.contract
+    },
+    saveTspInstance: function (state,instance){
+      state.tspInstance = instance
+    },
+    saveTspInstance2: function (state, instance2){
+      state.tspInstance2 = instance2
+    },
+
+    saveTspPoolJson:function (state, tspPoolJson){
+      state.tspPoolJson.abi = tspPoolJson.abi
+      state.tspPoolJson.contract = tspPoolJson.contract
+    },
+    saveTspPoolInstance: function (state,instance){
+      state.tspPoolInstance = instance
+    },
+    saveTspPoolInstance2: function (state, instance2){
+      state.tspPoolInstance2 = instance2
     },
 
     saveSbdInstance: function (state, instance){
