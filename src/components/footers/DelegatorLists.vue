@@ -80,11 +80,15 @@
       async getTspDepositList(){
         let tspPool = this.$store.state.tspPoolInstance2
         let tspDelegatorLength = (await tspPool.getDelegatorListLength().call())*1
-        for (i = 0; i < tspDelegatorLength; i++){
-          let addr = await tspPool.delegatorList(i).call()
+        console.log(4716,"tsp list ", tspDelegatorLength)
+        for (let i = 0; i < tspDelegatorLength; i++){
+          let addr = await tspPool.delegatorsList(i).call()
+          console.log(876, addr);
           let res = await tspPool.delegators(addr).call()
-          let amount = this.dataFromSun(res.tspAmount).toFixed(3)
+          let amount = (this.dataFromSun(res.tspAmount) * 1.0).toFixed(3)
+          console.log(8673,amount)
           let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTsp: amount}
+          console.log(235,t)
           this.tspDepositList.push(t)
         }
       },
@@ -99,8 +103,8 @@
           await that.getNutsPool()
           await that.getSteemStates()
           // await that.sleep()
-          await that.getDelegateList()
-          await that.getTspDepositList()
+          that.getDelegateList()
+          that.getTspDepositList()
         }catch(e){
           that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
           that.showMask = true
