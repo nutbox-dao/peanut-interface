@@ -10,3 +10,5 @@ export const STEEM_API_URLS = [
 
   
 export const STEEM_CONF_KEY = 'steemNodeKey'
+
+export const LOCALE_KEY = 'localeLanguage'

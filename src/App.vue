@@ -36,6 +36,11 @@
                 <b-dropdown-item-button @click="setenlang">
                   {{ $t('message.en') }}
                 </b-dropdown-item-button>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item-button @click="setkrlang">
+                  {{ $t('message.kr') }}
+                </b-dropdown-item-button>
+
               </b-dropdown>
             </div>
 
@@ -110,7 +115,7 @@
 </template>
 
 <script>
-  import {STEEM_API_URLS,STEEM_CONF_KEY} from './const.js'
+  import {STEEM_API_URLS,STEEM_CONF_KEY,LOCALE_KEY} from './const.js'
   export default {
     name: 'App',
     data(){
@@ -140,16 +145,19 @@
         this.$router.push({path:'/login'})
       },
       setzhlang(){
-        let LOCALE_KEY = 'localeLanguage'
         let lang = 'zh'
         localStorage.setItem(LOCALE_KEY, lang)
         this.$i18n.locale = 'zh'
       },
       setenlang(){
-        let LOCALE_KEY = 'localeLanguage'
         let lang = 'en'
         localStorage.setItem(LOCALE_KEY, lang)
         this.$i18n.locale = 'en'
+      },
+      setkrlang(){
+        let lang = 'kr'
+        localStorage.setItem(LOCALE_KEY, lang)
+        this.$i18n.locale = 'kr'
       },
       selectNode(node){
         this.showSteemNode = false

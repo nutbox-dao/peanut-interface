@@ -22,7 +22,8 @@ const i18n = new VueI18n({
   locale:'en',
   messages: {
     'zh': require('./assets/lang/zh_CN'),
-    'en': require('./assets/lang/EN')
+    'en': require('./assets/lang/EN'),
+    'kr': require('./assets/lang/KR')
   },
     fallbackLocale: 'en'
 })
