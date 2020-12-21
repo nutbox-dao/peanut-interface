@@ -93,6 +93,7 @@ module.exports = {
         "language":"Language",
         "zh":"中文",
         "en":"English",
+        "kr":"",
         "":"",
     }
 }

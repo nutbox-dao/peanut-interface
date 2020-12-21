@@ -11,7 +11,6 @@ module.exports = {
         "delegatorList":"代理列表",
         "tspDepositList":"TSP储蓄列表",
 
-
         "miningpooldata":"矿池数据",
         "sptotaldelegate":"SP总代理量",
         "totalpnut":"PNUT总产量",
@@ -94,6 +93,7 @@ module.exports = {
         "language":"语言",
         "zh":"中文",
         "en":"English",
+        "kr":"",
         "":"",
     }
 }
