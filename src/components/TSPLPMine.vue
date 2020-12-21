@@ -1,11 +1,11 @@
 <template>
   <div>
-     <div class="delegate">
-       <!--TSP挖矿-->
+    <div class="delegate">
+       <!--TSP LP挖矿-->
             <div class="delegatetext round-box">
                 < {{ $t('message.yourdata') }} > <br>
-                {{ $t('tsp.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
-                {{ $t('tsp.yourTspAmount') }}： {{ minedTsp }} TSP<br>
+                {{ $t('tsp.tspLPBalance') }}: {{ balanceOfTspLP }} TSP-LP <br>
+                {{ $t('tsp.yourTSPLPAmount') }}： {{ minedTspLP }} TSP-LP<br>
                 {{ $t('message.pnutbalance') }}： {{ nutBalanceOf }} PNUT<br>
             </div>
 
@@ -82,12 +82,12 @@
                   {{ $t('message.withdraw') }}
                 </button>
               </div>
-            </div>
-      </div>
 
+            </div>
+    </div>
     <!-- 增加或减少TSP存放弹窗 -->
     <transition name="fade">
-      <ChangeTSPDepositMask
+      <ChangeTSPLPDepositMask
               :changeDegate = 'delegateOpt'
               :balanceOfTSP = 'balanceOfTsp'
               :balanceOfDelegate = 'minedTsp'
@@ -98,7 +98,7 @@
               @hideMask="showDelegateMask=false"
       >
 
-      </ChangeTSPDepositMask>
+      </ChangeTSPLPDepositMask>
     </transition>
 
     <!--加载动画-->
@@ -122,32 +122,28 @@
 
 <script>
   import SmallLoading from './SmallLoading'
-  import ChangeTSPDepositMask from './ChangeTSPDepositMask'
+  import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/steemOperations.js'
   import {tspPoolAddress} from '../utils/contractAddress.js'
   
   export default {
-    name: "TSPMine",
+    name: "TSPLPMine",
     data() {
       return {
-        LPFlag:false,
-        tspFlag:true,
-        
         totalDepositedSP:'',
         rewardsPerBlock:'',
         totalPendingPeanuts:'',
-        totalMiningTsp:'0',
         addr:'',
         tronlinkFlag:true,
 
         isLoading: true,
         loadingFlag: false,
 
-        balanceOfTsp: '',
-        balanceOfTsp2: '',
+        balanceOfTspLP: '',
+        balanceOfTspLP2: '',
 
-        minedTsp: '',
-        minedTsp2: '',
+        minedTspLP: '',
+        minedTsp2LP: '',
 
         timestamp: '',
         startTime: '',
@@ -186,7 +182,7 @@
           }
           //代理量应小于TSP量
           let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp)
-          console.log(699, "res2", res2, "balanceOftsp::",this.balanceOf2)
+          console.log(699, "res2", res2)
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
       },
@@ -318,7 +314,7 @@
 
     components: {
       SmallLoading,
-      ChangeTSPDepositMask
+      ChangeTSPLPDepositMask
       },
 
     async mounted() {

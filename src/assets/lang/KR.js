@@ -96,6 +96,17 @@ module.exports = {
         "approveNutbox":"Approve Nutbox",
 
         "tspLPMine":"Mining by TSP LP",
+        "tspLPBalance":"Balance of TSP-LP",
+        "yourTSPLPAmount":"TSP-LP for mining",
+        "LPData":"TSP liquid Pool Data",
+        "totalLP":"total TSP-LP",
+        "totalTSP":"total TSP",
+        "addTspLPDeposit":"Increase Deposit",
+        "minusTspLPDeposit":"Minus Deposit",
+        "cancelTspLPDeposit":"Cancel Deposit",
+        "confirmAddTspLPDeposit":"Confirm Increase Deposit",
+        "confirmMinusTspLPDeposit":"Confirm Minus Deposit",
+        "confirmCancelTspLPDeposit":"Confirm Cancel Deposit",
     }
 }
 

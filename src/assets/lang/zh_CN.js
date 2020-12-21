@@ -95,6 +95,17 @@ module.exports = {
         "notEnoughFee":"手续费不足",
         "approveNutbox":"授权Nutbox",
 
-        "tspLPMine":"TSP LP挖矿",
+        "tspLPMine":"TSP-LP挖矿",
+        "tspLPBalance":"TSP-LP 余额",
+        "yourTSPLPAmount":"存储TSP-LP",
+        "LPData":"TSP-LP流动池数据",
+        "totalLP":"TSP-LP总量",
+        "totalTSP":"TSP总量",
+        "addTspLPDeposit":"增加储蓄",
+        "minusTspLPDeposit":"减少储蓄",
+        "cancelTspLPDeposit":"取消储蓄",
+        "confirmAddTspLPDeposit":"确认增加储蓄",
+        "confirmMinusTspLPDeposit":"确认减少储蓄",
+        "confirmCancelTspLPDeposit":"确认取消储蓄",
     }
 }
