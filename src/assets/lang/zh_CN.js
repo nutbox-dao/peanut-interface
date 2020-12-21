@@ -71,6 +71,8 @@ module.exports = {
         "notEnoughFee":"手续费不足",
         "approveNutbox":"授权Nutbox",
 
+        "tspLPMine":"TSP LP挖矿",
+
         "whitePaper":"白皮书",
         "nps":"Nutbox提案系统",
         "userBook":"用户手册(测试网)",

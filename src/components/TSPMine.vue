@@ -2,9 +2,12 @@
   <div>
   <div class="tsp">
      <div>
-       <!--代理挖矿-->
-        <div class="delegate">
-            <p class="titleSelected">{{ $t('message.tspMine') }}</p>
+       <div class="changebox">
+          <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = true;LPFlag=false">{{ $t('message.tspMine') }}</p>
+          <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('message.tspLPMine') }}</p>
+        </div>
+       <!--TSP挖矿-->
+        <div class="delegate" v-show="tspFlag">
             <div class="delegatetext round-box">
                 < {{ $t('message.yourdata') }} > <br>
                 {{ $t('message.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
@@ -149,8 +152,9 @@
     name: "TSPMine",
     data() {
       return {
-        // balanceOfDelegate: '',
-        // balanceOfDelegate2: '',
+        LPFlag:false,
+        tspFlag:true,
+        
         totalDepositedSP:'',
         rewardsPerBlock:'',
         totalPendingPeanuts:'',
@@ -198,6 +202,12 @@
       }
     },
     methods: {
+      beforeTsp(){
+
+      },
+      beforeLP(){
+
+      },
       checkMineAmount(){
           let reg = /^\d+(\.\d+)?$/
           let res = reg.test(this.mineAmount)

@@ -70,6 +70,8 @@ module.exports = {
         "notEnoughFee":"Not Enough Fee",
         "approveNutbox":"Approve Nutbox",
 
+        "tspLPMine":"Mining by TSP LP",
+
         "whitePaper":"White Paper",
         "nps":"Nutbox Proposal System",
         "userBook":"User Handbook",
