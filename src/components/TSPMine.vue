@@ -3,15 +3,15 @@
   <div class="tsp">
      <div>
        <div class="changebox">
-          <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = true;LPFlag=false">{{ $t('message.tspMine') }}</p>
-          <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('message.tspLPMine') }}</p>
+          <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = true;LPFlag=false">{{ $t('tsp.tspMine') }}</p>
+          <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p>
         </div>
        <!--TSP挖矿-->
         <div class="delegate" v-show="tspFlag">
             <div class="delegatetext round-box">
                 < {{ $t('message.yourdata') }} > <br>
-                {{ $t('message.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
-                {{ $t('message.yourTspAmount') }}： {{ minedTsp }} TSP<br>
+                {{ $t('tsp.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
+                {{ $t('tsp.yourTspAmount') }}： {{ minedTsp }} TSP<br>
                 {{ $t('message.pnutbalance') }}： {{ nutBalanceOf }} PNUT<br>
             </div>
 
@@ -31,7 +31,7 @@
                       {{ $t('message.input') }}
                     </p>
                     <p class="box-title">
-                      {{ $t('message.balanceOfTsp') }}：{{ balanceOfTsp }}
+                      {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTsp }}
                     </p>
                   </div>
                   <div class="round-box-content-container">
@@ -47,10 +47,10 @@
 
               <div class="confirm-box" style="margin-bottom:10px">
                 <button class="confirm-btn" @click="approve" :disabled="!checkApproveFlag">
-                  {{$t('message.approveNutbox')}}
+                  {{$t('tsp.approveNutbox')}}
                 </button>
                 <button class="confirm-btn" @click="mine" :disabled="!canMineFlag">
-                  {{ $t('message.confirmDeposit') }}
+                  {{ $t('tsp.confirmDeposit') }}
                 </button>
               </div>
 
@@ -66,13 +66,13 @@
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
                 <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag" >
-                  {{ $t('message.addTspDeposit') }}
+                  {{ $t('tsp.addTspDeposit') }}
                 </button>
                 <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag">
-                  {{ $t('message.minusTspDeposit') }}
+                  {{ $t('tsp.minusTspDeposit') }}
                 </button>
                 <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag">
-                  {{ $t('message.cancelTspDeposit') }}
+                  {{ $t('tsp.cancelTspDeposit') }}
                 </button>
               </div>
 

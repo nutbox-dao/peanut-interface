@@ -4,11 +4,11 @@
       <!--增加代理-->
       <div class="changeBox" @click.stop="stop" v-if="changeDegate === 1">
           <div class="title" style="width:100%;text-align:center;font-weight:500;font-size:20px">
-              {{ $t('message.addTspDeposit') }}
+              {{ $t('tsp.addTspDeposit') }}
           </div>
           <div class="round-box">
             <div class="operate-balance" style="text-align:right;margin-bottom:12px;color:gray;font-size:14px;color:rgb(86, 90, 105)">
-                {{ $t('message.balanceOfTsp') }}：{{ balanceOfTSP }}
+                {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTSP }}
             </div>
             <div class="input-container">
                 <div class="round-box-content-container">
@@ -24,10 +24,10 @@
           </div>
           <div class="confirm-box">
               <button class="confirm-btn" @click="approve" :disabled="!checkApproveFlag">
-                  {{$t('message.approveNutbox')}}
+                  {{$t('tsp.approveNutbox')}}
                 </button>
               <button class="confirm-btn" :disabled="!canAddFlag"  @click="addDeposit">
-                  {{ $t('message.confirmAddTspDeposit') }}
+                  {{ $t('tsp.confirmAddTspDeposit') }}
               </button>
           </div>
           <!--手续费-->
@@ -45,11 +45,11 @@
       <!--减少代理-->
       <div class="changeBox" @click.stop="stop" v-else-if="changeDegate === 2">
           <div class="title" style="width:100%;text-align:center;font-weight:500;font-size:20px">
-              {{ $t('message.minusTspDeposit') }}
+              {{ $t('tsp.minusTspDeposit') }}
           </div>
           <div class="round-box">
               <div class="operate-balance" style="text-align:right;margin-bottom:12px;color:gray;font-size:14px;color:rgb(86, 90, 105)">
-                  {{ $t('message.yourTspAmount') }}：{{ balanceOfDelegate }}
+                  {{ $t('tsp.yourTspAmount') }}：{{ balanceOfDelegate }}
               </div>
               <div class="input-container">
                   <div class="round-box-content-container">
@@ -65,7 +65,7 @@
           </div>
           <div class="confirm-box">
               <button class="confirm-btn" :disabled="!canSubFlag"  @click="subDeposit">
-                  {{ $t('message.confirmMinusTspDeposit') }}
+                  {{ $t('tsp.confirmMinusTspDeposit') }}
               </button>
           </div>
           <!--手续费-->
@@ -85,7 +85,7 @@
       <div class="changeBox" @click.stop="stop" v-else>
           <div class="confirm-box">
               <button class="confirm-btn" :disabled="!canDelFlag"  @click="delDeposit">
-                  {{ $t('message.confirmCancelTspDeposit') }}
+                  {{ $t('tsp.confirmCancelTspDeposit') }}
               </button>
           </div>
           <!--手续费-->

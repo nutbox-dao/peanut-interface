@@ -24,7 +24,7 @@
           <div class="loginfo">
             <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
             <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
-            <button class="right-item" @click="tspMine">{{ $t('message.tspMine') }}</button>
+            <button class="right-item" @click="tspMine">{{ $t('tsp.tspMine') }}</button>
 
             <div class="drop">
                 <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
