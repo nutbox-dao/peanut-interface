@@ -9,7 +9,7 @@ import axios from 'axios'
 import steem from 'steem'
 import TronWeb from 'tronweb'
 import VueI18n from 'vue-i18n'
-import {STEEM_API_URLS, STEEM_CONF_KEY} from './const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY, TRON_NODE_API} from './const.js'
 
 
 Vue.use(BootstrapVue)
@@ -57,7 +57,7 @@ Vue.prototype.steem = steem
 console.log('steem node change to:',steemConf)
 
 //tron网络
-const TRON_NODE = "https://api.trongrid.io"
+const TRON_NODE = TRON_NODE_API
 const HttpProvider = TronWeb.providers.HttpProvider
 const fullNode = new HttpProvider(TRON_NODE)
 const solidityNode = new HttpProvider(TRON_NODE)

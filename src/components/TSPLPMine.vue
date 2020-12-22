@@ -89,7 +89,8 @@
     <transition name="fade">
       <ChangeTSPLPDepositMask
               :changeDegate = 'delegateOpt'
-              :balanceOfTSP = 'balanceOfTsp'
+              :balanceOfTSP = 'balanceOfTspLP'
+              :balanceOfTSP2 = 'balanceOfTspLP2'
               :balanceOfDelegate = 'minedTsp'
               :balanceOfDelegate2 = 'minedTsp2'
               :spToVests = 'spToVests'
@@ -303,12 +304,12 @@
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
 
-       console.log("getPendingPnut", this.pendingPnut)
+      //  console.log("getPendingPnut", this.pendingPnut)
         let p = await tspPool.shareAcc().call()
-        console.log("shareAcc", p*1)
+        // console.log("shareAcc", p*1)
 
         let p2 = await tspPool.totalDepositedTSP().call()
-        console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
+        // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
         }
     },
 

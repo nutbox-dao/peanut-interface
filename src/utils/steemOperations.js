@@ -34,6 +34,7 @@ export async function transfer(fromTron, toSteem, amount, symbol, memo) {
 }
 
 export async function transferSteem(from,to,amount,memo){
+  amount = parseFloat(amount).toFixed(3)
   const transOp = [
     'transfer',
     {

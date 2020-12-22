@@ -12,3 +12,5 @@ export const STEEM_API_URLS = [
 export const STEEM_CONF_KEY = 'steemNodeKey'
 
 export const LOCALE_KEY = 'localeLanguage'
+
+export const TRON_NODE_API = 'https://api.trongrid.io'

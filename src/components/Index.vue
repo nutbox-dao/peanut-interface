@@ -187,7 +187,7 @@
         //代理量应小于SP量
         // let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
         let res2 = true
-        // console.log(699, "res2", res2)
+        console.log(699, "res2", res2)
         let res3 = this.fee <= parseFloat(this.balanceOfSeem)
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },

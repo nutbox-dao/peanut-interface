@@ -15,6 +15,7 @@
                 {{ $t('message.sptotaldelegate') }}： {{ totalDepositedSP }} SP<br>
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
+                {{ $t('message.apy') }}： {{ apy }} %<br>
             </div>
             <hr>
             <!--<div >-->
@@ -90,6 +91,7 @@
       <ChangeTSPDepositMask
               :changeDegate = 'delegateOpt'
               :balanceOfTSP = 'balanceOfTsp'
+              :balanceOfTSP2 = 'balanceOfTsp2'
               :balanceOfDelegate = 'minedTsp'
               :balanceOfDelegate2 = 'minedTsp2'
               :spToVests = 'spToVests'
@@ -125,6 +127,7 @@
   import ChangeTSPDepositMask from './ChangeTSPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/steemOperations.js'
   import {tspPoolAddress} from '../utils/contractAddress.js'
+  import {isTransactionSuccess} from '../utils/chain/tron.js'
   
   export default {
     name: "TSPMine",
@@ -134,6 +137,7 @@
         tspFlag:true,
         
         totalDepositedSP:'',
+        totalDepositedSP2:'',
         rewardsPerBlock:'',
         totalPendingPeanuts:'',
         totalMiningTsp:'0',
@@ -174,6 +178,7 @@
 
         vestsToSp: 0,
         spToVests: 0,
+        apy: '',
       }
     },
     methods: {
@@ -185,8 +190,9 @@
             res1 = true
           }
           //代理量应小于TSP量
-          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp)
-          console.log(699, "res2", res2, "balanceOftsp::",this.balanceOf2)
+          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp2)
+          console.log(883,parseFloat(this.mineAmount))
+          console.log(699, "res2", res2, "balanceOftsp:",parseFloat(this.balanceOfTsp2))
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
       },
@@ -202,15 +208,15 @@
 
         let g = await poolinstance.getTotalDepositedSP().call()
         console.log("ggg",g*1)
-        let g2 = await vestsToSteem(this.dataFromSun(g))
-        this.totalDepositedSP = this.formatData(g2)
+        this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
+        this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = this.dataFromSun(i)
         this.totalPendingPeanuts = this.formatData(i2)
-        console.log('totalDepositedSP1111111',g2,this.totalDepositedSP,this.vestsToSp)
+        console.log('totalDepositedSP1111111',this.totalDepositedSP2,this.totalDepositedSP,this.vestsToSp)
       },
       async getTspBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
@@ -226,23 +232,24 @@
 
         this.balanceOfTsp2 = this.dataFromSun(tspBalance)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
+        console.log('format balanceOfTsp:',this.balanceOfTsp,this.balanceOfTsp2)
       },
       fillMaxAmount(){
-        this.mineAmount = this.balanceOfTsp
+        this.mineAmount = parseFloat(this.balanceOfTsp2).toFixed(3)
         this.checkMineAmount()
       },
       async approve(){
         try{
+          this.isLoading = true
           this.loadingFlag = true
           this.checkApproveFlag = false
-          let addr = this.addr
           let tspPool = this.$store.state.tspPoolInstance
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           let tsp = this.$store.state.tspInstance
           let tspPoolAddr = await tspPoolAddress()
           let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
-          if (approved){
+          if (approved && (await isTransactionSuccess(approved))){
             this.checkApproveFlag = false
             this.canMineFlag = true
           }else{
@@ -267,16 +274,22 @@
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           // commit deposit
-          await tspPool.deposit(value).send({feeLimit:20_000_000})
-          await this.sleep()
-          //直接刷新当前页面
-          this.$router.go(0)
+          let res = await tspPool.deposit(value).send({feeLimit:20_000_000})
+          if (res && isTransactionSuccess(res)){
+            //直接刷新当前页面
+            this.$router.go(0)
+          }else{
+            this.checkApproveFlag = true
+            this.canMineFlag = false
+            alert(this.$t('message.error') + "\n" + "Deposit fail")
+          }
         }
         catch(e){
-          this.isLoading = false
           this.checkApproveFlag = true
           this.canMineFlag = false
           alert(this.$t('message.error') + "\n" + e)
+        }finally{
+          this.isLoading = false
         }
       },
       async withdrawPeanuts(){
@@ -284,12 +297,16 @@
           this.isLoading = true
           this.loadingFlag = false
           let instance = this.$store.state.tspPoolInstance
-          await instance.withdrawPeanuts().send({feeLimit:20_000_000})
-          await  this.sleep()
-          await this.getOtherBalance()
-          await this.getTspPoolInstance()
-          this.isLoading = false
-          this.loadingFlag = true
+          let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
+          if (res && (await isTransactionSuccess(res))){
+            await this.getOtherBalance()
+            await this.getTspPoolInstance()
+            this.isLoading = false
+            this.loadingFlag = true
+          }else{
+            this.isLoading = false
+            alert(this.$t('message.error')+"\n" + "withdrawPeanuts fail")
+          }
         }
         catch(e){
           this.isLoading = false
@@ -302,18 +319,81 @@
 
       async getPendingPnut(){
         let tspPool = this.$store.state.tspPoolInstance
-        console.log(235236,tspPool)
         let s = await tspPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
 
-       console.log("getPendingPnut", this.pendingPnut)
+      //  console.log("getPendingPnut", this.pendingPnut)
         let p = await tspPool.shareAcc().call()
-        console.log("shareAcc", p*1)
+        // console.log("shareAcc", p*1)
 
         let p2 = await tspPool.totalDepositedTSP().call()
-        console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
+        // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
+        },
+              async getSteemPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/steem',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
         }
+      },
+      async getTronPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/tron',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
+        }
+      },
+      async getPnutPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.justswap.io/v2/allpairs',
+          headers: {
+            "accept": "application/json",
+          },
+          params: {
+            page_size : 2500,
+            page_num: 1
+          }
+        })
+        // console.log(111,res.data.data)
+        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
+        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
+        // console.log(114,price)
+        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
+        res = null
+        return price
+      },
+      async calPnutApy(){
+        let steemPrice = await this.getSteemPrice()
+        let tronPrice = await this.getTronPrice()
+        let pnutPrice = await this.getPnutPrice()
+        let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
+        this.apy = (apy * 100).toFixed(3)
+        console.log('apy :',steemPrice,tronPrice,pnutPrice,apy,this.rewardsPerBlock,this.totalDepositedSP2)
+        console.log("totalDepositedSP2：",this.totalDepositedSP2)
+        localStorage.setItem('apy', this.apy)
+      },
     },
 
     components: {
@@ -378,6 +458,8 @@
           try{
             await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
+            await that.getTspInstance()
+            await that.getTspTronLink()
             await that.getOtherBalance()
             await that.getTspBalance()
             await that.getNutTronLink()
@@ -389,6 +471,7 @@
             return
           }
         }
+        await that.calPnutApy()
         that.isLoading = false
       }
       await main()

@@ -109,6 +109,7 @@
         name: "ChangeTSPLPDepositMask",
         props: ['changeDegate',
                     'balanceOfTSP',
+                    'balanceOfTSP2',
                     'balanceOfDelegate',
                     'balanceOfDelegate2',
                     'spToVests',
@@ -135,6 +136,7 @@
         },
         methods:{
             checkAddValue(){
+                console.log("check")
                 let reg = /^\d+(\.\d+)?$/
                 let res = reg.test(this.addvalue)
                 let res1 = false
@@ -142,7 +144,8 @@
                     res1 = true
                 }
                 //增加量应小于TSP量
-                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSP)
+                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSP2)
+                console.log("res2:",res2," addvalue:",this.addvalue," balance:",this.balanceOfTSP)
                 this.checkApproveFlag = this.checkAddFlag = res && res1 && res2
                 this.canAddFlag = false
             },
@@ -159,7 +162,7 @@
             },
 
             fillMaxDelegate(){
-                this.addvalue = parseFloat(this.balanceOfTSP)
+                this.addvalue = parseFloat(this.balanceOfTSP2)
                 this.checkAddValue()
             },
             fillMaxSub(){

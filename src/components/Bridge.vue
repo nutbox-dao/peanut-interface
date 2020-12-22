@@ -400,6 +400,13 @@
           this.canTransFlag = false
           //steem转帐
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let from = this.$store.state.username
           // let to = process.env.VUE_APP_STEEM
           let to = process.env.VUE_APP_STEEM_DEX
@@ -530,6 +537,13 @@
           this.canTransSbdFlag = false
           //steem转帐
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let from = this.$store.state.username
           // let to = process.env.VUE_APP_STEEM
           let to = process.env.VUE_APP_STEEM_DEX
@@ -647,6 +661,13 @@
             this.canTransTspFlag = false
             //steem转帐
             let addr = this.$store.state.addr
+            let isAddr = this.tronWeb2.isAddress(addr)
+            if (!isAddr){
+              this.isLoadingAddr = false
+              this.maskInfo = "Can not get tron address,please refresh!"
+              this.showMask = true
+              return
+            }
             let from = this.$store.state.username
             let to = process.env.VUE_APP_STEEM_TSP || 'nutbox.tsp'
             let f = parseFloat(this.transTspValue) * 0.002
@@ -692,6 +713,13 @@
           let from = this.$store.state.username
           let to = process.env.VUE_APP_STEEM_GAS || "nutbox.gas"
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let instance = this.$store.state.tspInstance
           //销毁
           let ss = parseFloat(this.transTspValue).toFixed(3)
@@ -712,7 +740,7 @@
             this.isLoading = false
             this.canTransTspFlag = true
           }else{
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('message.error') + "\n" + "steem operate fail!"
             this.showMask = true
           }
         }

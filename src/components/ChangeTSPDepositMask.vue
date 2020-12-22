@@ -105,10 +105,12 @@
 <script>
     import SmallLoading from './SmallLoading'
     import {tspPoolAddress} from '../utils/contractAddress.js'
+    import {isTransactionSuccess} from '../utils/chain/tron.js'
     export default {
         name: "ChangeTSPDepositMask",
         props: ['changeDegate',
                     'balanceOfTSP',
+                    'balanceOfTSP2',
                     'balanceOfDelegate',
                     'balanceOfDelegate2',
                     'spToVests',
@@ -142,7 +144,7 @@
                     res1 = true
                 }
                 //增加量应小于TSP量
-                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSP)
+                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSP2)
                 this.checkApproveFlag = this.checkAddFlag = res && res1 && res2
                 this.canAddFlag = false
             },
@@ -159,11 +161,11 @@
             },
 
             fillMaxDelegate(){
-                this.addvalue = parseFloat(this.balanceOfTSP)
+                this.addvalue = parseFloat(this.balanceOfTSP2).toFixed(3)
                 this.checkAddValue()
             },
             fillMaxSub(){
-                this.subvalue = parseFloat(this.balanceOfDelegate2)
+                this.subvalue = parseFloat(this.balanceOfDelegate2).toFixed(3)
                 if (parseFloat(this.subvalue) >= 1){
                     this.checkSubFlag = this.canSubFlag = true
                 }
@@ -180,7 +182,10 @@
                     let tsp = this.$store.state.tspInstance
                     console.log(123, "value", value)
                     let approved = await tsp.approve(tspPoolAddr, value).send({feeLimit:20_000_000})
-                    if (approved){
+                    console.log("approved")
+                    // approved 为返回的交易hash值
+                    console.log("approved result:",approved)
+                    if (approved && (await isTransactionSuccess(approved))){
                         this.checkApproveFlag = false
                         this.canAddFlag = true
                     }else{
@@ -204,13 +209,16 @@
                     let value = this.dataToSun(a)
                     
                     let tspPool = this.$store.state.tspPoolInstance
-                    await tspPool.deposit(value).send({feeLimit:20_000_000})
-                    await this.sleep()
-                    //直接刷新当前页面
-                    this.$router.go(0)
+                    let res =await tspPool.deposit(value).send({feeLimit:20_000_000})
+                    if (res && (await isTransactionSuccess(res))){
+                        //直接刷新当前页面
+                        this.$router.go(0)
+                    }else{
+                        alert('Deposit fail!')
+                    }
                 }
                 catch(e){
-                    this.checkApproveFlag()
+                    this.checkAddValue()
                     alert("错误\n" + e)
                 }finally{
                     this.isLoading = false
@@ -226,15 +234,21 @@
 
                     let tspPool = this.$store.state.tspPoolInstance
                     let tsp = this.$store.state.tspInstance
-                    await tspPool.withdraw(value).send({feeLimit:20_000_000})
-                    await  this.sleep()
-                    //直接刷新当前页面
-                    this.$router.go(0)
+                    let res = await tspPool.withdraw(value).send({feeLimit:20_000_000})
+                    if (res && (await isTransactionSuccess(res))){
+                        //直接刷新当前页面
+                        this.$router.go(0)
+                    }else{
+                        alert("sub Deposit fail")
+                    }
                 }
                 catch(e){
                     this.isLoading = false
                     alert("错误\n" + e)
                     console.log(259445,e)
+                }
+                finally{
+                    this.isLoading = false
                 }
             },
             async delDeposit(){

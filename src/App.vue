@@ -36,6 +36,7 @@
                 <b-dropdown-item-button @click="setenlang">
                   {{ $t('message.en') }}
                 </b-dropdown-item-button>
+                
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-item-button @click="setkrlang">
                   {{ $t('message.kr') }}

@@ -3,14 +3,14 @@
      <div>
        <div class="changebox">
           <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = true;LPFlag=false">{{ $t('tsp.tspMine') }}</p>
-          <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p>
+          <!-- <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p> -->
         </div>
         
         <TSPMine v-show="tspFlag">
         </TSPMine>
 
-        <TSPLPMine v-show="LPFlag">
-        </TSPLPMine>
+        <!-- <TSPLPMine v-show="LPFlag">
+        </TSPLPMine> -->
 
     </div>
   </div>

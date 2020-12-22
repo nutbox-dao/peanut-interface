@@ -74,7 +74,7 @@ module.exports = {
         "language":"语言",
         "zh":"中文",
         "en":"English",
-        "kr":"",
+        "kr":"한국어",
         "":"",
     },
     tsp:{
