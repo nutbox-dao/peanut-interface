@@ -19,7 +19,7 @@
             </div>
             <hr>
             <!--<div >-->
-            <div v-if="minedTsp <= 0">
+            <div v-if="minedTsp2 <= 0">
                 <div class="round-box">
                   <div class="round-box-title-container">
                     <p class="box-title">
@@ -51,7 +51,7 @@
             </div>
 
             <!--已代理：-->
-            <div v-if="minedTsp > 0">
+            <div v-if="minedTsp2 > 0">
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
                 <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag" >
