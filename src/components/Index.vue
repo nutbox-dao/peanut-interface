@@ -374,7 +374,7 @@
       async function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          // console.log(888, "instance为空，是刷新页面")
+          console.log(888, "instance为空，是刷新页面")
           try{
             await that.getSteemInstance()
             await that.getSbdInstance()
@@ -396,9 +396,10 @@
             return
           }
         } else{
-          // console.log(22333, "啥也没干！")
+          console.log(22333, "啥也没干！")
           try{
             await that.getNutTronLink()
+            await that.getNutsPool()
             await  that.getNutPoolTronLink()
             await that.getSteemStates()
             await that.getOtherBalance()

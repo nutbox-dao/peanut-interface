@@ -471,7 +471,7 @@
             return
           }
         }
-        await that.calPnutApy()
+        that.calPnutApy()
         that.isLoading = false
       }
       await main()
