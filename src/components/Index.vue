@@ -398,10 +398,10 @@
         } else{
           // console.log(22333, "啥也没干！")
           try{
-            await that.getSteemStates()
-            await that.getOtherBalance()
             await that.getNutTronLink()
             await  that.getNutPoolTronLink()
+            await that.getSteemStates()
+            await that.getOtherBalance()
             that.loadingFlag = true
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
