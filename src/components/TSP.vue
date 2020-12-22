@@ -6,12 +6,21 @@
           <!-- <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p> -->
         </div>
         
-        <TSPMine v-show="tspFlag">
+        <TSPMine v-show="tspFlag" ref="tsp"
+        :totalDepositedSP = "totalDepositedSP"
+        :totalDepositedSP2 = 'totalDepositedSP2'
+        :rewardsPerBlock = 'rewardsPerBlock'
+        :addr = 'addr'
+        :nutBalanceOf = 'nutBalanceOf'
+        :nutBalanceOf2 = 'nutBalanceOf2'>
         </TSPMine>
 
-        <!-- <TSPLPMine v-show="LPFlag">
+        <!-- <TSPLPMine v-show="LPFlag" ref="tsplp">
         </TSPLPMine> -->
 
+        <transition name="fade">
+          <SmallLoading v-if="isLoading"></SmallLoading>
+        </transition>
     </div>
   </div>
 </template>
@@ -26,7 +35,13 @@ import TSPLPMine from './TSPLPMine.vue'
       return {
         LPFlag:false,
         tspFlag:true,
-        
+        isLoading:true,
+        nutBalanceOf:'',
+        nutBalanceOf2:'',
+        totalDepositedSP:'',
+        totalDepositedSP2:'',
+        rewardsPerBlock:0,
+        addr:'',
       }
     },
     components: {
@@ -34,7 +49,101 @@ import TSPLPMine from './TSPLPMine.vue'
       TSPLPMine
       },
     methods: {
+      // 获取子控件共用数据，通过属性传进去
+      async getOtherBalance(){  //nuts
+        let addr = this.addr
+        let instance = this.$store.state.nutInstance2
+        let a = await instance.balanceOf(addr).call()
 
+        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
+        this.nutBalanceOf2 = this.dataFromSun(a)
+
+        let poolinstance = this.$store.state.nutPoolInstance2
+
+        let g = await poolinstance.getTotalDepositedSP().call()
+        console.log("ggg",g*1)
+        this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
+        this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
+
+        let t = await poolinstance.getRewardsPerBlock().call()
+        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+      },
+    },
+    async mounted() {
+      let that = this
+      let instance = this.$store.state.tspInstance2
+      async function main(){
+        await that.sleep()
+        if (window.tronWeb) {
+          // console.log(22, "tronlink is ok! login")
+          that.addr = window.tronWeb.defaultAddress.base58
+        }else{
+             that.tronlinkFlag = false
+        }
+        that.isLoading = false
+        that.loadingFlag = true
+
+        //如果有一个没有获取到则再获取一次
+        if(!that.tronlinkFlag){
+          that.isLoading = true
+          await that.sleep()
+          //tronlink
+          if (window.tronWeb) {
+            console.log(522, "tronlink is ok! login")
+            that.addr = window.tronWeb.defaultAddress.base58
+          }else{
+            let link2 = 'TronLink: https://www.tronlink.org'
+            alert(that.$t('message.needtronlink')+"\n\n"+link2)
+          }
+        }
+        that.isLoading = false
+        that.loadingFlag = true
+
+
+        if(Object.keys(instance).length === 0){
+          //如果刷新页面, instance未定义
+          console.log(888, "instance为空，是刷新页面")
+          try{
+            // await that.getSteemInstance()
+            // await that.getSbdInstance()
+            await that.getNutsInstance()
+            await that.getNutTronLink()
+            await that.getNutsPool()
+            await that.getNutPoolTronLink()
+
+            await that.getTspInstance()
+            await that.getTspTronLink()
+            await that.getTspPoolInstance()
+            await that.getTspPoolTronLink()
+            await that.getOtherBalance()
+            that.loadingFlag = true
+          }catch(e){
+            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.showMask = true
+            return
+          }
+        } else{
+          console.log(22333, "啥也没干！")
+          try{
+            await that.getTspPoolInstance()
+            await that.getTspPoolTronLink()
+            await that.getTspInstance()
+            await that.getTspTronLink()
+            await that.getOtherBalance()
+            await that.getNutTronLink()
+            await that.getNutPoolTronLink()
+            that.loadingFlag = true
+          }catch(e){
+            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.showMask = true
+            return
+          }
+        }
+        that.isLoading = false
+      }
+      await main()
+      await this.$refs.tsp.update()
+      // this.$refs.tsplp.update()
     }
   }
 </script>

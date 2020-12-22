@@ -16,16 +16,21 @@
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
             </div>
+            <div class="delegatetext round-box">
+              < {{ $t('tsp.LPData') }} > <br>
+              {{ $t('tsp.totalLP') }}：{{ totalLP }} TSP-LP <br>
+              {{ $t('tsp.totalTSP') }}：{{ totalTSP }} TSP <br>
+            </div>
             <hr>
             <!--<div >-->
-            <div v-if="minedTsp <= 0">
+            <div v-if="minedTspLP2 <= 0">
                 <div class="round-box">
                   <div class="round-box-title-container">
                     <p class="box-title">
                       {{ $t('message.input') }}
                     </p>
                     <p class="box-title">
-                      {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTsp }}
+                      {{ $t('tsp.tspLPBalance') }}：{{ balanceOfTspLP }}
                     </p>
                   </div>
                   <div class="round-box-content-container">
@@ -50,17 +55,17 @@
             </div>
 
             <!--已代理：-->
-            <div v-if="minedTsp > 0">
+            <div v-if="minedTspLP2 > 0">
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
                 <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag" >
-                  {{ $t('tsp.addTspDeposit') }}
+                  {{ $t('tsp.addTspLPDeposit') }}
                 </button>
                 <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag">
-                  {{ $t('tsp.minusTspDeposit') }}
+                  {{ $t('tsp.minusTspLPDeposit') }}
                 </button>
                 <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag">
-                  {{ $t('tsp.cancelTspDeposit') }}
+                  {{ $t('tsp.cancelTspLPDeposit') }}
                 </button>
               </div>
 
@@ -89,10 +94,10 @@
     <transition name="fade">
       <ChangeTSPLPDepositMask
               :changeDegate = 'delegateOpt'
-              :balanceOfTSP = 'balanceOfTspLP'
-              :balanceOfTSP2 = 'balanceOfTspLP2'
-              :balanceOfDelegate = 'minedTsp'
-              :balanceOfDelegate2 = 'minedTsp2'
+              :balanceOfTSPLP = 'balanceOfTspLP'
+              :balanceOfTSPLP2 = 'balanceOfTspLP2'
+              :balanceOfDelegate = 'minedTspLP'
+              :balanceOfDelegate2 = 'minedTspLP2'
               :spToVests = 'spToVests'
               :addr = 'addr'
               v-if="showDelegateMask"
@@ -124,7 +129,7 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
-  import {steemToVest, vestsToSteem} from '../utils/steemOperations.js'
+  import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
   import {tspPoolAddress} from '../utils/contractAddress.js'
   
   export default {
@@ -137,6 +142,9 @@
         addr:'',
         tronlinkFlag:true,
 
+        totalLP:'',
+        totalTSP:'',
+
         isLoading: true,
         loadingFlag: false,
 
@@ -144,7 +152,7 @@
         balanceOfTspLP2: '',
 
         minedTspLP: '',
-        minedTsp2LP: '',
+        minedTspLP2: '',
 
         timestamp: '',
         startTime: '',
@@ -182,7 +190,7 @@
             res1 = true
           }
           //代理量应小于TSP量
-          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp)
+          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTSPLP)
           console.log(699, "res2", res2)
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
@@ -209,23 +217,23 @@
         this.totalPendingPeanuts = this.formatData(i2)
         console.log('totalDepositedSP1111111',g2,this.totalDepositedSP,this.vestsToSp)
       },
-      async getTspBalance(){
+      async getTspLPBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
         let addr = this.addr
         console.log(98376,poolInstance)
         let delegator = await poolInstance.delegators(addr).call()
         let tsp = this.dataFromSun(delegator.tspAmount)
-        this.minedTsp = this.formatData(tsp)
-        this.minedTsp2 = tsp
+        this.minedTspLP = this.formatData(tsp)
+        this.minedTspLP2 = tsp
 
         let tspInstance2 = this.$store.state.tspInstance2
         let tspBalance = await tspInstance2.balanceOf(addr).call()
 
-        this.balanceOfTsp2 = this.dataFromSun(tspBalance)
-        this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
+        this.balanceOfTSPLP2 = this.dataFromSun(tspBalance)
+        this.balanceOfTSPLP = this.formatData(this.balanceOfTSPLP2)
       },
       fillMaxAmount(){
-        this.mineAmount = this.balanceOfTsp
+        this.mineAmount = this.balanceOfTSPLP
         this.checkMineAmount()
       },
       async approve(){
@@ -299,7 +307,7 @@
 
       async getPendingPnut(){
         let tspPool = this.$store.state.tspPoolInstance
-        console.log(235236,tspPool)
+        // console.log(235236,tspPool)
         let s = await tspPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
@@ -347,6 +355,18 @@
         }
         that.isLoading = false
         that.loadingFlag = true
+        let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
+        console.log(addr)
+        let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
+                                                                                      'balanceOf(address)',
+                                                                                      {},
+                                                                                      [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
+                                                                                      'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        console.log('balance:',balance)
+        let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
+        console.log(235,result, balance['constant_result'][0])
+
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
           console.log(888, "instance为空，是刷新页面")
@@ -362,7 +382,7 @@
             await that.getTspTronLink()
             await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
-            await that.getTspBalance()
+            await that.getTspLPBalance()
             await that.getOtherBalance()
             that.loadingFlag = true
           }catch(e){
@@ -375,8 +395,10 @@
           try{
             await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
+            await that.getTspInstance()
+            await that.getTspTronLink()
             await that.getOtherBalance()
-            await that.getTspBalance()
+            await that.getTspLPBalance()
             await that.getNutTronLink()
             await that.getNutPoolTronLink()
             that.loadingFlag = true
@@ -386,6 +408,17 @@
             return
           }
         }
+                // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        // let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
+        // console.log(addr)
+        // let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
+        //                                                                               'balanceOf(address)',
+        //                                                                               {},
+        //                                                                               [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
+        //                                                                               'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        // console.log('balance:',balance)
+        // let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
+        // console.log(235,result, balance['constant_result'][0])
         that.isLoading = false
       }
       await main()

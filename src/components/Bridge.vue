@@ -261,7 +261,7 @@
 
 <script>
   import SmallLoading from './SmallLoading'
-  import {transferSteem} from '../utils/steemOperations.js'
+  import {transferSteem} from '../utils/chain/steemOperations.js'
   export default {
     name: "Bridge",
     data() {

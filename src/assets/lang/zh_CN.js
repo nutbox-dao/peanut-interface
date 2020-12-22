@@ -97,7 +97,7 @@ module.exports = {
 
         "tspLPMine":"TSP-LP挖矿",
         "tspLPBalance":"TSP-LP 余额",
-        "yourTSPLPAmount":"存储TSP-LP",
+        "yourTSPLPAmount":"储蓄的TSP-LP数量",
         "LPData":"TSP-LP流动池数据",
         "totalLP":"TSP-LP总量",
         "totalTSP":"TSP总量",

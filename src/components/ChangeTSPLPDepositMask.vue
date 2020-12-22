@@ -8,7 +8,7 @@
           </div>
           <div class="round-box">
             <div class="operate-balance" style="text-align:right;margin-bottom:12px;color:gray;font-size:14px;color:rgb(86, 90, 105)">
-                {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTSP }}
+                {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTSPLP }}
             </div>
             <div class="input-container">
                 <div class="round-box-content-container">
@@ -108,8 +108,8 @@
     export default {
         name: "ChangeTSPLPDepositMask",
         props: ['changeDegate',
-                    'balanceOfTSP',
-                    'balanceOfTSP2',
+                    'balanceOfTSPLP',
+                    'balanceOfTSPLP2',
                     'balanceOfDelegate',
                     'balanceOfDelegate2',
                     'spToVests',
@@ -144,8 +144,8 @@
                     res1 = true
                 }
                 //增加量应小于TSP量
-                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSP2)
-                console.log("res2:",res2," addvalue:",this.addvalue," balance:",this.balanceOfTSP)
+                let res2 = parseFloat(this.addvalue) <= parseFloat(this.balanceOfTSPLP2)
+                console.log("res2:",res2," addvalue:",this.addvalue," balance:",this.balanceOfTSPLP)
                 this.checkApproveFlag = this.checkAddFlag = res && res1 && res2
                 this.canAddFlag = false
             },
@@ -162,7 +162,7 @@
             },
 
             fillMaxDelegate(){
-                this.addvalue = parseFloat(this.balanceOfTSP2)
+                this.addvalue = parseFloat(this.balanceOfTSPLP2)
                 this.checkAddValue()
             },
             fillMaxSub(){

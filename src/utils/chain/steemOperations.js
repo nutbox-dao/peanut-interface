@@ -1,5 +1,5 @@
 import steem from "steem";
-import {STEEM_API_URLS, STEEM_CONF_KEY} from '../const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY} from '../../const.js'
 let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
 steem.api.setOptions({ url: steemConf })

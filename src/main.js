@@ -84,7 +84,7 @@ import {sleep} from "./utils/sleep"
 import {dataFromSun} from "./utils/dataFromSun"
 import {dataToSun} from "./utils/dataToSun"
 import {formatData} from "./utils/formatData"
-import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/steemOperations"
+import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/chain/steemOperations"
 // import {approve} from "./utils/approve"
 // import {getTsteemAllowance} from "./utils/getTsteemAllowance"
 
