@@ -133,6 +133,7 @@
     props:[
       'totalDepositedSP',
       'totalDepositedSP2',
+      'totalPendingPeanuts',
       'nutBalanceOf',
       'nutBalanceOf2',
       'rewardsPerBlock',
@@ -143,7 +144,6 @@
         LPFlag:false,
         tspFlag:true,
         totalMiningTsp:'',
-        totalPendingPeanuts:'',
         tronlinkFlag:true,
 
         isLoading: true,
@@ -194,15 +194,6 @@
           console.log(699, "res2", res2, "balanceOftsp:",parseFloat(this.balanceOfTsp2))
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
-      },
-      async getOtherBalance(){  //nuts
-        let poolinstance = this.$store.state.nutPoolInstance2
-        let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
-        this.totalPendingPeanuts = this.formatData(i2)
-        console.log('totalDepositedSP1111111',this.totalDepositedSP2,this.totalDepositedSP,this.vestsToSp)
-        console.log(22333,this.totalDepositedSP)
-        console.log(23333,this.vestsToSp)
       },
       async getTspBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
@@ -285,10 +276,7 @@
           let instance = this.$store.state.tspPoolInstance
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
-            await this.getOtherBalance()
-            await this.getTspPoolInstance()
-            this.isLoading = false
-            this.loadingFlag = true
+            this.$router.go(0)
           }else{
             this.isLoading = false
             alert(this.$t('message.error')+"\n" + "withdrawPeanuts fail")
@@ -386,7 +374,6 @@
         console.log('update-------')
         try{
           this.vestsToSp = await vestsToSteem(1)
-          await this.getOtherBalance()
           await this.getTspBalance()
           this.calPnutApy()
           //设置定时器以更新当前时间

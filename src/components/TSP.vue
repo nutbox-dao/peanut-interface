@@ -10,6 +10,7 @@
         :totalDepositedSP = "totalDepositedSP"
         :totalDepositedSP2 = 'totalDepositedSP2'
         :rewardsPerBlock = 'rewardsPerBlock'
+        :totalPendingPeanuts = 'totalPendingPeanuts'
         :addr = 'addr'
         :nutBalanceOf = 'nutBalanceOf'
         :nutBalanceOf2 = 'nutBalanceOf2'>
@@ -19,20 +20,17 @@
         :totalDepositedSP = "totalDepositedSP"
         :totalDepositedSP2 = 'totalDepositedSP2'
         :rewardsPerBlock = 'rewardsPerBlock'
+        :totalPendingPeanuts = 'totalPendingPeanuts'
         :addr = 'addr'
         :nutBalanceOf = 'nutBalanceOf'
         :nutBalanceOf2 = 'nutBalanceOf2'>
         </TSPLPMine>
 
-        <transition name="fade">
-          <SmallLoading v-if="isLoading"></SmallLoading>
-        </transition>
     </div>
   </div>
 </template>
 
 <script>
-import SmallLoading from './SmallLoading'
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
 import {vestsToSteem} from '../utils/chain/steemOperations.js'
@@ -43,19 +41,18 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
       return {
         LPFlag:false,
         tspFlag:true,
-        isLoading:true,
         nutBalanceOf:'',
         nutBalanceOf2:'',
         totalDepositedSP:'',
         totalDepositedSP2:'',
         rewardsPerBlock:0,
+        totalPendingPeanuts:'',
         addr:'',
       }
     },
     components: {
       TSPMine,
-      TSPLPMine,
-      SmallLoading
+      TSPLPMine
       },
     methods: {
       // 获取子控件共用数据，通过属性传进去
@@ -79,6 +76,9 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+        let i = await poolinstance.getTotalPendingPeanuts().call()
+        let i2 = this.dataFromSun(i)
+        this.totalPendingPeanuts = this.formatData(i2)
       },
     },
     async mounted() {
@@ -93,8 +93,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         }else{
              that.tronlinkFlag = false
         }
-        that.isLoading = false
-        that.loadingFlag = true
 
         //如果有一个没有获取到则再获取一次
         if(!that.tronlinkFlag){
@@ -109,9 +107,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             alert(that.$t('message.needtronlink')+"\n\n"+link2)
           }
         }
-        that.isLoading = false
-        that.loadingFlag = true
-
 
         if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0){
           //如果刷新页面, instance未定义
@@ -130,7 +125,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             await that.getTspPoolTronLink()
 
             await that.getOtherBalance()
-            that.loadingFlag = true
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
             that.showMask = true
@@ -145,14 +139,12 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             await that.getNutPoolTronLink()
 
             await that.getOtherBalance()
-            that.loadingFlag = true
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
         }
-        that.isLoading = false
       }
       await main()
       // 更新子组件,保证第一页面先加载完再加载LP页面

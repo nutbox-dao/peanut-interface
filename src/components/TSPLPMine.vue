@@ -137,6 +137,7 @@
     props:[
       'totalDepositedSP',
       'totalDepositedSP2',
+      'totalPendingPeanuts',
       'nutBalanceOf',
       'nutBalanceOf2',
       'rewardsPerBlock',
@@ -144,7 +145,6 @@
     ],
     data() {
       return {
-        totalPendingPeanuts:'',
         tronlinkFlag:true,
 
         totalLP:'',
@@ -197,28 +197,6 @@
           console.log(699, "res2", res2)
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
-      },
-      async getOtherBalance(){  //nuts
-        let addr = this.addr
-        let instance = this.$store.state.nutInstance2
-        let a = await instance.balanceOf(addr).call()
-
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
-
-        let poolinstance = this.$store.state.nutPoolInstance2
-
-        let g = await poolinstance.getTotalDepositedSP().call()
-        console.log("ggg",g*1)
-        let g2 = await vestsToSteem(this.dataFromSun(g))
-        this.totalDepositedSP = this.formatData(g2)
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
-        let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
-        this.totalPendingPeanuts = this.formatData(i2)
-        console.log('totalDepositedSP1111111',g2,this.totalDepositedSP,this.vestsToSp)
       },
       async getTspLPBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
