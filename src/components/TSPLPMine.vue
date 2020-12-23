@@ -98,7 +98,6 @@
               :balanceOfTSPLP2 = 'balanceOfTspLP2'
               :balanceOfDelegate = 'minedTspLP'
               :balanceOfDelegate2 = 'minedTspLP2'
-              :spToVests = 'spToVests'
               :addr = 'addr'
               v-if="showDelegateMask"
               @hideMask="showDelegateMask=false"
@@ -131,15 +130,21 @@
   import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
   import {tspPoolAddress} from '../utils/contractAddress.js'
+  import {isTransactionSuccess} from '../utils/chain/tron.js'
   
   export default {
     name: "TSPLPMine",
+    props:[
+      'totalDepositedSP',
+      'totalDepositedSP2',
+      'nutBalanceOf',
+      'nutBalanceOf2',
+      'rewardsPerBlock',
+      'addr'
+    ],
     data() {
       return {
-        totalDepositedSP:'',
-        rewardsPerBlock:'',
         totalPendingPeanuts:'',
-        addr:'',
         tronlinkFlag:true,
 
         totalLP:'',
@@ -162,8 +167,6 @@
         canMineFlag: false,
         mineAmount: '',
 
-        nutBalanceOf: '',
-        nutBalanceOf2: '',
         nutStartTime:'',
         miningRate: '',
         difficulty:'',
@@ -318,6 +321,16 @@
 
         let p2 = await tspPool.totalDepositedTSP().call()
         // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
+        },
+        async update(){
+          try {
+          }catch (e){
+
+          }finally{
+            this.isLoading = false
+            this.loadingFlag = true
+          }
+
         }
     },
 
@@ -327,108 +340,6 @@
       },
 
     async mounted() {
-      let that = this
-      let instance = this.$store.state.tspInstance2
-      async function main(){
-        await that.sleep()
-        if (window.tronWeb) {
-          // console.log(22, "tronlink is ok! login")
-          that.addr = window.tronWeb.defaultAddress.base58
-        }else{
-             that.tronlinkFlag = false
-        }
-        that.isLoading = false
-        that.loadingFlag = true
-
-        //如果有一个没有获取到则再获取一次
-        if(!that.tronlinkFlag){
-          that.isLoading = true
-          await that.sleep()
-          //tronlink
-          if (window.tronWeb) {
-            console.log(522, "tronlink is ok! login")
-            that.addr = window.tronWeb.defaultAddress.base58
-          }else{
-            let link2 = 'TronLink: https://www.tronlink.org'
-            alert(that.$t('message.needtronlink')+"\n\n"+link2)
-          }
-        }
-        that.isLoading = false
-        that.loadingFlag = true
-        let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
-        console.log(addr)
-        let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
-                                                                                      'balanceOf(address)',
-                                                                                      {},
-                                                                                      [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
-                                                                                      'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        console.log('balance:',balance)
-        let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
-        console.log(235,result, balance['constant_result'][0])
-
-        if(Object.keys(instance).length === 0){
-          //如果刷新页面, instance未定义
-          console.log(888, "instance为空，是刷新页面")
-          try{
-            // await that.getSteemInstance()
-            // await that.getSbdInstance()
-            await that.getNutsInstance()
-            await that.getNutTronLink()
-            await that.getNutsPool()
-            await that.getNutPoolTronLink()
-
-            await that.getTspInstance()
-            await that.getTspTronLink()
-            await that.getTspPoolInstance()
-            await that.getTspPoolTronLink()
-            await that.getTspLPBalance()
-            await that.getOtherBalance()
-            that.loadingFlag = true
-          }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
-        } else{
-          console.log(22333, "啥也没干！")
-          try{
-            await that.getTspPoolInstance()
-            await that.getTspPoolTronLink()
-            await that.getTspInstance()
-            await that.getTspTronLink()
-            await that.getOtherBalance()
-            await that.getTspLPBalance()
-            await that.getNutTronLink()
-            await that.getNutPoolTronLink()
-            that.loadingFlag = true
-          }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
-        }
-                // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        // let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
-        // console.log(addr)
-        // let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
-        //                                                                               'balanceOf(address)',
-        //                                                                               {},
-        //                                                                               [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
-        //                                                                               'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        // console.log('balance:',balance)
-        // let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
-        // console.log(235,result, balance['constant_result'][0])
-        that.isLoading = false
-      }
-      await main()
-
-      //设置定时器以更新当前时间
-      let timer = setInterval(that.getPendingPnut, 3000)
-      //通过$once来监听定时器，在beforeDestroy钩子时被清除。
-      this.$once('hook:beforeDestroy', () => {
-        clearInterval(timer)
-      })
 
     },
 

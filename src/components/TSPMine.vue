@@ -384,20 +384,24 @@
       // 父控件加载完数据后调用此方法更新数据
       async update(){
         console.log('update-------')
-        this.vestsToSp = await vestsToSteem(1)
-        await this.getOtherBalance()
-        await this.getTspBalance()
-        this.calPnutApy()
-
+        try{
+          this.vestsToSp = await vestsToSteem(1)
+          await this.getOtherBalance()
+          await this.getTspBalance()
+          this.calPnutApy()
           //设置定时器以更新当前时间
-        let timer = setInterval(this.getPendingPnut, 3000)
-        //通过$once来监听定时器，在beforeDestroy钩子时被清除。
-        this.$once('hook:beforeDestroy', () => {
-          clearInterval(timer)
-        })
-        
-        this.isLoading = false
-        this.loadingFlag = true
+          let timer = setInterval(this.getPendingPnut, 3000)
+          //通过$once来监听定时器，在beforeDestroy钩子时被清除。
+          this.$once('hook:beforeDestroy', () => {
+            clearInterval(timer)
+          })
+        }catch(e){
+          this.maskInfo = this.$t('message.tryrefreshpage') + "\n" + e;
+          this.showMask = true;
+        }finally{
+          this.isLoading = false
+          this.loadingFlag = true
+        }
       }
     },
 

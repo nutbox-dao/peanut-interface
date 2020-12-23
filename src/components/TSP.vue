@@ -3,7 +3,7 @@
      <div>
        <div class="changebox">
           <p :class="[tspFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = true;LPFlag=false">{{ $t('tsp.tspMine') }}</p>
-          <!-- <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p> -->
+          <p :class="[LPFlag ? 'titleSelected' : 'titleUnSelected']" @click="tspFlag = false;LPFlag=true">{{ $t('tsp.tspLPMine') }}</p>
         </div>
         
         <TSPMine v-show="tspFlag" ref="tsp"
@@ -15,8 +15,14 @@
         :nutBalanceOf2 = 'nutBalanceOf2'>
         </TSPMine>
 
-        <!-- <TSPLPMine v-show="LPFlag" ref="tsplp">
-        </TSPLPMine> -->
+        <TSPLPMine v-show="LPFlag" ref="tsplp"
+        :totalDepositedSP = "totalDepositedSP"
+        :totalDepositedSP2 = 'totalDepositedSP2'
+        :rewardsPerBlock = 'rewardsPerBlock'
+        :addr = 'addr'
+        :nutBalanceOf = 'nutBalanceOf'
+        :nutBalanceOf2 = 'nutBalanceOf2'>
+        </TSPLPMine>
 
         <transition name="fade">
           <SmallLoading v-if="isLoading"></SmallLoading>
@@ -149,10 +155,10 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         that.isLoading = false
       }
       await main()
-      // 更新子组件
+      // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()
-      // this.$refs.tsplp.update()
-                      // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+      this.$refs.tsplp.update()
+        // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
         // let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
         // console.log(addr)
         // let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
