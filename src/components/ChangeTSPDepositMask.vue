@@ -161,11 +161,11 @@
             },
 
             fillMaxDelegate(){
-                this.addvalue = parseFloat(this.balanceOfTSP2).toFixed(3)
+                this.addvalue = parseFloat(this.balanceOfTSP2)
                 this.checkAddValue()
             },
             fillMaxSub(){
-                this.subvalue = parseFloat(this.balanceOfDelegate2).toFixed(3)
+                this.subvalue = parseFloat(this.balanceOfDelegate2)
                 if (parseFloat(this.subvalue) >= 1){
                     this.checkSubFlag = this.canSubFlag = true
                 }

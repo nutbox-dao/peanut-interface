@@ -26,8 +26,10 @@
 </template>
 
 <script>
+import SmallLoading from './SmallLoading'
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
+import {vestsToSteem} from '../utils/chain/steemOperations.js'
   
   export default {
     name: "TSP",
@@ -46,7 +48,8 @@ import TSPLPMine from './TSPLPMine.vue'
     },
     components: {
       TSPMine,
-      TSPLPMine
+      TSPLPMine,
+      SmallLoading
       },
     methods: {
       // 获取子控件共用数据，通过属性传进去
@@ -62,8 +65,11 @@ import TSPLPMine from './TSPLPMine.vue'
 
         let g = await poolinstance.getTotalDepositedSP().call()
         console.log("ggg",g*1)
+        console.log("235",23)
         this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
+        console.log(5234,this.totalDepositedSP2)
         this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
+        console.log(5234,this.totalDepositedSP,this.totalDepositedSP2)
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
@@ -72,8 +78,9 @@ import TSPLPMine from './TSPLPMine.vue'
     async mounted() {
       let that = this
       let instance = this.$store.state.tspInstance2
+      let poolinstance = this.$store.state.tspPoolInstance2
       async function main(){
-        await that.sleep()
+        // await that.sleep()
         if (window.tronWeb) {
           // console.log(22, "tronlink is ok! login")
           that.addr = window.tronWeb.defaultAddress.base58
@@ -86,7 +93,7 @@ import TSPLPMine from './TSPLPMine.vue'
         //如果有一个没有获取到则再获取一次
         if(!that.tronlinkFlag){
           that.isLoading = true
-          await that.sleep()
+          await that.sleep(1)
           //tronlink
           if (window.tronWeb) {
             console.log(522, "tronlink is ok! login")
@@ -100,7 +107,7 @@ import TSPLPMine from './TSPLPMine.vue'
         that.loadingFlag = true
 
 
-        if(Object.keys(instance).length === 0){
+        if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0){
           //如果刷新页面, instance未定义
           console.log(888, "instance为空，是刷新页面")
           try{
@@ -115,6 +122,7 @@ import TSPLPMine from './TSPLPMine.vue'
             await that.getTspTronLink()
             await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
+
             await that.getOtherBalance()
             that.loadingFlag = true
           }catch(e){
@@ -125,13 +133,12 @@ import TSPLPMine from './TSPLPMine.vue'
         } else{
           console.log(22333, "啥也没干！")
           try{
-            await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
-            await that.getTspInstance()
             await that.getTspTronLink()
-            await that.getOtherBalance()
             await that.getNutTronLink()
             await that.getNutPoolTronLink()
+
+            await that.getOtherBalance()
             that.loadingFlag = true
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
@@ -142,6 +149,7 @@ import TSPLPMine from './TSPLPMine.vue'
         that.isLoading = false
       }
       await main()
+      // 更新子组件
       await this.$refs.tsp.update()
       // this.$refs.tsplp.update()
     }

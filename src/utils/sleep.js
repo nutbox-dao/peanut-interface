@@ -1,7 +1,7 @@
-const sleep = async function(){
+const sleep = async function(interval=1){
     return new Promise(resolve => {
         console.log(1, "start")
-        setTimeout(resolve, 6000)  //6秒
+        setTimeout(resolve, interval * 1000)  //6秒
         console.log(2, "end")
     })
 }

@@ -198,27 +198,13 @@
           this.canMineFlag = false
       },
       async getOtherBalance(){  //nuts
-        let addr = this.addr
-        let instance = this.$store.state.nutInstance2
-        console.log(addr, instance)
-        let a = await instance.balanceOf(addr).call()
-
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
-
         let poolinstance = this.$store.state.nutPoolInstance2
-
-        let g = await poolinstance.getTotalDepositedSP().call()
-        console.log("ggg",g*1)
-        this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
-        this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = this.dataFromSun(i)
         this.totalPendingPeanuts = this.formatData(i2)
         console.log('totalDepositedSP1111111',this.totalDepositedSP2,this.totalDepositedSP,this.vestsToSp)
+        console.log(22333,this.totalDepositedSP)
+        console.log(23333,this.vestsToSp)
       },
       async getTspBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
@@ -237,7 +223,7 @@
         console.log('format balanceOfTsp:',this.balanceOfTsp,this.balanceOfTsp2)
       },
       fillMaxAmount(){
-        this.mineAmount = parseFloat(this.balanceOfTsp2).toFixed(3)
+        this.mineAmount = parseFloat(this.balanceOfTsp2)
         this.checkMineAmount()
       },
       async approve(){
@@ -312,6 +298,7 @@
         }
         catch(e){
           this.isLoading = false
+          this.loadingFlag = true
           alert(this.$t('message.error')+"\n" + e)
         }
       },
@@ -325,7 +312,7 @@
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
 
-      //  console.log("getPendingPnut", this.pendingPnut)
+       console.log("getPendingPnut", this.pendingPnut)
         let p = await tspPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 
@@ -399,8 +386,20 @@
       // 父控件加载完数据后调用此方法更新数据
       async update(){
         console.log('update-------')
+        this.vestsToSp = await vestsToSteem(1)
         await this.getOtherBalance()
         await this.getTspBalance()
+        this.calPnutApy()
+
+          //设置定时器以更新当前时间
+        let timer = setInterval(this.getPendingPnut, 3000)
+        //通过$once来监听定时器，在beforeDestroy钩子时被清除。
+        this.$once('hook:beforeDestroy', () => {
+          clearInterval(timer)
+        })
+        
+        this.isLoading = false
+        this.loadingFlag = true
       }
     },
 
@@ -416,16 +415,6 @@
       }else{
         this.apy = localStorage.getItem("apy")
       }
-
-      this.calPnutApy()
-
-      //设置定时器以更新当前时间
-      let timer = setInterval(that.getPendingPnut, 3000)
-      //通过$once来监听定时器，在beforeDestroy钩子时被清除。
-      this.$once('hook:beforeDestroy', () => {
-        clearInterval(timer)
-      })
-
     },
 
     }

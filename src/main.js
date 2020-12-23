@@ -25,7 +25,8 @@ const i18n = new VueI18n({
     'en': require('./assets/lang/EN'),
     'kr': require('./assets/lang/KR')
   },
-    fallbackLocale: 'en'
+    fallbackLocale: 'en',
+    silentFallbackWarn: true
 })
 
 const setup = lang => {
