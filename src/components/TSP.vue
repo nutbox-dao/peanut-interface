@@ -152,6 +152,17 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
       // 更新子组件
       await this.$refs.tsp.update()
       // this.$refs.tsplp.update()
+                      // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        // let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
+        // console.log(addr)
+        // let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
+        //                                                                               'balanceOf(address)',
+        //                                                                               {},
+        //                                                                               [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
+        //                                                                               'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
+        // console.log('balance:',balance)
+        // let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
+        // console.log(235,result, balance['constant_result'][0])
     }
   }
 </script>

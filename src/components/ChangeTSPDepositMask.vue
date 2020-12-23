@@ -113,7 +113,6 @@
                     'balanceOfTSP2',
                     'balanceOfDelegate',
                     'balanceOfDelegate2',
-                    'spToVests',
                     'addr'
         ],
         data(){

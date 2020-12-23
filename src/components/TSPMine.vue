@@ -94,7 +94,6 @@
               :balanceOfTSP2 = 'balanceOfTsp2'
               :balanceOfDelegate = 'minedTsp'
               :balanceOfDelegate2 = 'minedTsp2'
-              :spToVests = 'spToVests'
               :addr = 'addr'
               v-if="showDelegateMask"
               @hideMask="showDelegateMask=false"
@@ -178,7 +177,6 @@
         pendingPnut2:'',
 
         vestsToSp: 0,
-        spToVests: 0,
         apy: '',
       }
     },
