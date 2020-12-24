@@ -28,6 +28,10 @@
         {{this.tspPool}}
       </p>
 
+      <p><strong>TspLPPool</strong><br>
+        {{this.tspLPPool}}
+      </p>
+
       <p><strong>{{$t('message.attention')}}</strong> <br>
       {{$t('message.attensionInfo')}}
       </p>
@@ -46,7 +50,7 @@
 </template>
 
 <script>
-  import {peanutsPoolAddress,tsbdAddress,tsteemAddress,peanutAddress,tspAddress,tspPoolAddress} from '../../utils/contractAddress.js'
+  import {peanutsPoolAddress,tsbdAddress,tsteemAddress,peanutAddress,tspAddress,tspPoolAddress,tspLPPoolAddress} from '../../utils/contractAddress.js'
   export default {
     name: "Contract",
     data() {
@@ -57,6 +61,7 @@
         pnut:'',
         tsp:'',
         tspPool:'',
+        tspLPPool:''
       }
     },
     mounted() {
@@ -68,6 +73,7 @@
         that.pnut = await peanutAddress()
         that.tsp = await tspAddress()
         that.tspPool = await tspPoolAddress()
+        that.tspLPPool = await tspLPPoolAddress()
       }
       main()
     },
