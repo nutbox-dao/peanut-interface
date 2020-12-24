@@ -1,5 +1,6 @@
 import axios from 'axios'
 import TronWeb from 'tronweb'
+import {TRON_NODE_API} from '../const.js'
 //tron网络
 const HttpProvider = TronWeb.providers.HttpProvider
 const TRON_NODE = "https://api.shasta.trongrid.io"
@@ -38,5 +39,9 @@ export async function tspAddress(){
 }
 export async function tspPoolAddress(){
     let res = await axios.get('/TspPooling.json')
+    return tronWeb2.address.fromHex(res.data.networks['*'].address)
+}
+export async function tspLPPoolAddress(){
+    let res = await axios.get('/TspLPPooling.json')
     return tronWeb2.address.fromHex(res.data.networks['*'].address)
 }

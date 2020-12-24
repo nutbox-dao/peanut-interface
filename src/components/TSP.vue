@@ -85,6 +85,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
       let that = this
       let instance = this.$store.state.tspInstance2
       let poolinstance = this.$store.state.tspPoolInstance2
+      let lpPoolInstance = this.$store.state.tspLPPoolInstance2
       async function main(){
         // await that.sleep()
         if (window.tronWeb) {
@@ -124,6 +125,9 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             await that.getTspPoolInstance()
             await that.getTspPoolTronLink()
 
+            await that.getTspLPPoolInstance()
+            await that.getTspLPPoolTronLink()
+
             await that.getOtherBalance()
           }catch(e){
             that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
@@ -137,6 +141,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             await that.getTspTronLink()
             await that.getNutTronLink()
             await that.getNutPoolTronLink()
+            await that.getTspLPPoolTronLink()
 
             await that.getOtherBalance()
           }catch(e){
