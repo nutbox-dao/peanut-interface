@@ -1,8 +1,9 @@
 import axios from 'axios'
 import TronWeb from 'tronweb'
+import {TRON_NODE_API} from './const.js'
 //tron网络
 const HttpProvider = TronWeb.providers.HttpProvider
-const TRON_NODE = "https://api.shasta.trongrid.io"
+const TRON_NODE = TRON_NODE_API
 // const fullNode = new HttpProvider("https://api.trongrid.io")
 const fullNode = new HttpProvider(TRON_NODE)
 const solidityNode = new HttpProvider(TRON_NODE)

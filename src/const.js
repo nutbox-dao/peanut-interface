@@ -13,6 +13,6 @@ export const STEEM_CONF_KEY = 'steemNodeKey'
 
 export const LOCALE_KEY = 'localeLanguage'
 
-export const TRON_NODE_API = 'https://api.trongrid.io'
+export const TRON_NODE_API = 'https://api.shasta.trongrid.io'
 
 export const TSP_LP_CONTRACT_ADDRESS = 'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'
