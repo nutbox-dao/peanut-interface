@@ -29,6 +29,10 @@ export default new Vuex.Store({
     tspPoolInstance2: {},
     tspPoolJson: {},
 
+    tspLPPoolInstance: {},
+    tspLPPoolInstance2: {},
+    tspLPPoolJson: {},
+
     nutInstance: {},
     nutInstance2: {},
     nutJson: {},
@@ -52,7 +56,7 @@ export default new Vuex.Store({
       Cookie.set("addr", userobj.addr, "30d")
     },
 
-
+// tsteem
     saveSteemInstance: function (state, instance){
       state.steemInstance = instance
     },
@@ -63,6 +67,7 @@ export default new Vuex.Store({
       state.steemJson.abi = steemJson.abi
       state.steemJson.contract= steemJson.contract
     },
+    // tsp
     saveTspJson: function (state, tspJson){
       state.tspJson.abi = tspJson.abi
       state.tspJson.contract = tspJson.contract
@@ -73,7 +78,7 @@ export default new Vuex.Store({
     saveTspInstance2: function (state, instance2){
       state.tspInstance2 = instance2
     },
-
+// tsppool
     saveTspPoolJson:function (state, tspPoolJson){
       state.tspPoolJson.abi = tspPoolJson.abi
       state.tspPoolJson.contract = tspPoolJson.contract
@@ -84,7 +89,18 @@ export default new Vuex.Store({
     saveTspPoolInstance2: function (state, instance2){
       state.tspPoolInstance2 = instance2
     },
-
+// tspLPpool
+    saveTspLPPoolJson:function (state, tspLPPoolJson){
+      state.tspLPPoolJson.abi = tspLPPoolJson.abi
+      state.tspLPPoolJson.contract = tspLPPoolJson.contract
+    },
+    saveTspLPPoolInstance: function (state,instance){
+      state.tspLPPoolInstance = instance
+    },
+    saveTspLPPoolInstance2: function (state, instance2){
+      state.tspLPPoolInstance2 = instance2
+    },
+// sbd
     saveSbdInstance: function (state, instance){
       state.sbdInstance = instance
     },
@@ -95,7 +111,7 @@ export default new Vuex.Store({
       state.sbdJson.abi = sbdJson.abi
       state.sbdJson.contract= sbdJson.contract
     },
-
+// pnuts
     saveNutInstance: function (state, instance){
       state.nutInstance = instance
     },
@@ -106,7 +122,7 @@ export default new Vuex.Store({
       state.nutJson.abi = nutJson.abi
       state.nutJson.contract = nutJson.contract
     },
-
+// nut pool
     saveNutPoolInstance: function (state, instance){
       state.nutPoolInstance = instance
     },

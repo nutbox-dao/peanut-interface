@@ -77,6 +77,8 @@ import {getTspInstance} from "./utils/getTspInstance"
 import {getTspTronLink} from "./utils/getTspTronLink"
 import {getTspPoolInstance} from "./utils/getTspPoolInstance"
 import {getTspPoolTronLink} from "./utils/getTspPoolTronLink"
+import {getTspLPPoolInstance} from "./utils/getTspLPPoolInstance"
+import {getTspLPPoolTronLink} from "./utils/getTspLPPoolTronLink"
 import {getNutTronLink} from "./utils/getNutTronLink"
 import {getNutsInstance} from "./utils/getNutsInstance"
 import {getNutsPool} from "./utils/getNutsPool"
@@ -99,6 +101,8 @@ Vue.prototype.getTspTronLink = getTspTronLink
 Vue.prototype.getTspInstance = getTspInstance
 Vue.prototype.getTspPoolInstance = getTspPoolInstance
 Vue.prototype.getTspPoolTronLink = getTspPoolTronLink
+Vue.prototype.getTspLPPoolInstance = getTspLPPoolInstance
+Vue.prototype.getTspLPPoolTronLink = getTspLPPoolTronLink
 Vue.prototype.getNutTronLink = getNutTronLink
 Vue.prototype.getNutsInstance = getNutsInstance
 Vue.prototype.getNutsPool = getNutsPool
