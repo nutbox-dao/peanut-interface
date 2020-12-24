@@ -34,7 +34,7 @@
 
       <p><strong>Tronscan：</strong> <br>
 
-        <a target="_blank" href="https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions">https://tronscan.org/#/contract/TB8naH6r4bJyDvmZotgaGDRbbd2Mw4Jg5E/transactions</a>
+        <a target="_blank" href="https://shasta.tronscan.org/#/contract/TDJjuVeGBtxWQPKFPuHsyD5p51scqYwiXf/code">https://shasta.tronscan.org</a>
       </p>
 
 
