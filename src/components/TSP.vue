@@ -25,7 +25,7 @@
         :addr = 'addr'
         :nutBalanceOf = 'nutBalanceOf'
         :nutBalanceOf2 = 'nutBalanceOf2'
-        :apy = ' apy'>
+        :apy = 'apy'>
         </TSPLPMine>
 
     </div>

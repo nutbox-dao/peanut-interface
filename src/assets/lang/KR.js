@@ -9,9 +9,9 @@ module.exports = {
         "spbalance":"스팀 파워(SP) 보유량",
         "yourspdelegate":"임대 중인 스팀 파워(SP)",
         "delegatorList":"임대자 목록",
-        "tspDepositList":"TSP Delegator List",
-        "tspLPDepositList":"TSP-LP Delegator List",
-        "insufficientEnerge":"Not enough energe",
+        "tspDepositList":"트론 기반 스팀 파워(TSP)  임대자 목록",
+        "tspLPDepositList":"트론 기반 스팀 파워(TSP) LP 토큰 임대자 목록",
+        "insufficientEnerge":"에너지가 충분하지 않습니다",
 
         "miningpooldata":"채굴 풀 현황",
         "sptotaldelegate":"총 임대 스팀 파워(SP)",
@@ -48,7 +48,7 @@ module.exports = {
 
         "input":"숫자를 입력하세요.",
         "error":"오류가 발생하였습니다.",
-        "accountChanged":"steem and tron address mismatch",
+        "accountChanged":"스팀과 트론 주소가 일치하지 않습니다.",
         "delegateerror":"오류가 발생하였습니다.",
         "tryrefreshpage":"오류가 발생하였습니다. 페이지를 새로 고침해주세요.",
         "steemloginerr":"스팀 키체인을 통한 로그인이 실패하였습니다.",
