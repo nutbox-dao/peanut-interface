@@ -13,7 +13,8 @@
         :totalPendingPeanuts = 'totalPendingPeanuts'
         :addr = 'addr'
         :nutBalanceOf = 'nutBalanceOf'
-        :nutBalanceOf2 = 'nutBalanceOf2'>
+        :nutBalanceOf2 = 'nutBalanceOf2'
+        :apy = 'apy'>
         </TSPMine>
 
         <TSPLPMine v-show="LPFlag" ref="tsplp"
@@ -23,7 +24,8 @@
         :totalPendingPeanuts = 'totalPendingPeanuts'
         :addr = 'addr'
         :nutBalanceOf = 'nutBalanceOf'
-        :nutBalanceOf2 = 'nutBalanceOf2'>
+        :nutBalanceOf2 = 'nutBalanceOf2'
+        :apy = ' apy'>
         </TSPLPMine>
 
     </div>
@@ -48,6 +50,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         rewardsPerBlock:0,
         totalPendingPeanuts:'',
         addr:'',
+        apy:''
       }
     },
     components: {
@@ -75,6 +78,68 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = this.dataFromSun(i)
         this.totalPendingPeanuts = this.formatData(i2)
+      },
+      async getSteemPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/steem',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
+        }
+      },
+      async getTronPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.coingecko.com/api/v3/coins/tron',
+          headers: {
+            "accept": "application/json",
+          }
+        })
+        // console.log(111,res.data.tickers)
+        let arr = res.data.tickers
+        for(let i = 0; i < arr.length; i++){
+          if(arr[i].target === "USDT"){
+            // console.log(112,arr[i].last)
+            return arr[i].last
+          }
+        }
+      },
+      async getPnutPrice(){
+        let res = await this.axios.request({
+          method:"get",
+          url:'https://api.justswap.io/v2/allpairs',
+          headers: {
+            "accept": "application/json",
+          },
+          params: {
+            page_size : 2500,
+            page_num: 1
+          }
+        })
+        // console.log(111,res.data.data)
+        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
+        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
+        // console.log(114,price)
+        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
+        res = null
+        return price
+      },
+      async calPnutApy(){
+        let steemPrice = await this.getSteemPrice()
+        let tronPrice = await this.getTronPrice()
+        let pnutPrice = await this.getPnutPrice()
+        let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
+        this.apy = (apy * 100).toFixed(3)
+        localStorage.setItem('apy', this.apy)
       },
     },
     async mounted() {
@@ -145,6 +210,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         }
       }
       await main()
+      await this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()
       this.$refs.tsplp.update()
