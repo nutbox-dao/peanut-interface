@@ -220,7 +220,6 @@
           this.isLoading = true
           this.loadingFlag = true
           this.checkApproveFlag = false
-          let tspPool = this.$store.state.tspPoolInstance
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           let tsp = this.$store.state.tspInstance
@@ -276,7 +275,7 @@
           let instance = this.$store.state.tspPoolInstance
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
-            this.$router.go(0)
+            await this.$parent.getOtherBalance()
           }else{
             this.isLoading = false
             alert(this.$t('message.error')+"\n" + "withdrawPeanuts fail")
@@ -286,6 +285,9 @@
           this.isLoading = false
           this.loadingFlag = true
           alert(this.$t('message.error')+"\n" + e)
+        }finally{
+          this.isLoading = false
+          this.loadingFlag = true
         }
       },
       hideMask(){
@@ -298,7 +300,7 @@
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
 
-       console.log("getPendingPnut", this.pendingPnut)
+      //  console.log("getPendingPnut", this.pendingPnut)
         let p = await tspPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 

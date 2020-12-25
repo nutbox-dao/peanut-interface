@@ -1,15 +1,19 @@
 <template>
 <div id="content">
   <div class="checkbox">
-    <p :class="[delegateSpFlag ? 'titleSelected' : 'titleUnSelected']" @click="delegateSpFlag=true">{{ $t('message.delegatorList') }}</p>
-    <p :class="[delegateSpFlag ? 'titleUnSelected' : 'titleSelected']" @click="delegateSpFlag=false">{{ $t('message.tspDepositList') }}</p>
+    <p :class="[delegateSpFlag==0 ? 'titleSelected' : 'titleUnSelected']" @click="delegateSpFlag=0">{{ $t('message.delegatorList') }}</p>
+    <p :class="[delegateSpFlag==1 ? 'titleSelected' : 'titleUnSelected']" @click="delegateSpFlag=1">{{ $t('message.tspDepositList') }}</p>
+    <p :class="[delegateSpFlag==2 ? 'titleSelected' : 'titleUnSelected']" @click="delegateSpFlag=2">{{ $t('message.tspLPDepositList') }}</p>
   </div>
     
-    <div class="text" v-show="delegateSpFlag">
+    <div class="text" v-show="delegateSpFlag==0">
       <b-table striped hover :items="items" :fields="fields"></b-table>
     </div>
-    <div class="text" v-show="!delegateSpFlag">
+    <div class="text" v-show="delegateSpFlag==1">
       <b-table striped hover :items="tspItems" :fields="tspFields"></b-table>
+    </div>
+    <div class="text" v-show="delegateSpFlag==2">
+      <b-table striped hover :items="tspLPItems" :fields="tspLPFields"></b-table>
     </div>
 
     <!-- 错误提示弹窗 -->
@@ -37,12 +41,14 @@
       return {
         fields: ['id', 'steemId', 'tron', 'delegatedSP'],
         tspFields: ['id', 'tron', 'depositedTsp'],
+        tspLPFields: ['id', 'tron', 'depositedTspLP'],
         showMask:false,
         maskInfo:"",
         vestsToSp: '',
         lists: [],
-        delegateSpFlag : true,
+        delegateSpFlag : 0,
         tspDepositList: [],
+        tspLPDepositList:[]
       }
     },
     computed:{
@@ -52,6 +58,9 @@
       tspItems(){
         // return [{isActive: true, id: 1,  tron: 'Macdonald', depositedTsp: 20}]
         return this.tspDepositList
+      },
+      tspLPItems(){
+        return this.tspLPDepositList
       }
     },
     methods: {
@@ -92,6 +101,17 @@
           this.tspDepositList.push(t)
         }
       },
+      async getTspLPDepositList(){
+        let tspLPPool = this.$store.state.tspLPPoolInstance2
+        let tspLPDelegatorLenth = (await tspLPPool.getDelegatorListLength().call())*1
+        for (let i = 0;i < tspLPDelegatorLenth; i++){
+          let addr = await tspLPPool.delegatorsList(i).call()
+          let res = await tspLPPool.delegators(addr).call()
+          let amount = (this.dataFromSun(res.tspLPAmount) * 1.0).toFixed(3)
+          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTspLP: amount}
+          this.tspLPDepositList.push(t)
+        }
+      },
       hideMask(){
         this.showMask=false
       },
@@ -103,9 +123,11 @@
           await that.getNutsPool()
           await that.getTspPoolInstance()
           await that.getSteemStates()
+          await that.getTspLPPoolInstance()
           // await that.sleep()
           that.getDelegateList()
           that.getTspDepositList()
+          that.getTspLPDepositList()
         }catch(e){
           that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
           that.showMask = true

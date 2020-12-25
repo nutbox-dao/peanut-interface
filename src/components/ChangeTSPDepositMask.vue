@@ -151,7 +151,7 @@
                 let reg = /^\d+(\.\d+)?$/
                 let res = reg.test(this.subvalue)
                 let res1 = false
-                if(parseFloat(this.subvalue) >= 1){
+                if(parseFloat(this.subvalue) >= 0.01){
                     res1 = true
                 }
                 //减少应小于代理SP量
@@ -165,9 +165,7 @@
             },
             fillMaxSub(){
                 this.subvalue = parseFloat(this.balanceOfDelegate2)
-                if (parseFloat(this.subvalue) >= 1){
-                    this.checkSubFlag = this.canSubFlag = true
-                }
+                this.checkSubValue()
             },
             async approve(){
                 try{

@@ -137,6 +137,7 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
+import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
   export default {
     name: "Index",
     data() {
@@ -224,6 +225,7 @@
         let a = await this.steem.api.getDynamicGlobalPropertiesAsync()
         this.spToVests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_steem)
         this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
+        console.log('sptovests:',this.spToVests,'veststosp:',this.vestsToSp)
         let sp = parseFloat(s[0].vesting_shares) * this.vestsToSp
         let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * this.vestsToSp
         this.balanceOfSp = (sp - delegatedSp).toFixed(3)
@@ -239,13 +241,24 @@
           this.isLoading = true
           this.checkDelegateFlag = false
           let addr = this.$store.state.addr
+
+          let nutPool = this.$store.state.nutPoolInstance
+          var res = await nutPool.delegators(addr).call()
+          // console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
+          let steemAcc = res.steemAccount
+
           //steem代理
           let delegator = this.$store.state.username
+
+          if (delegator && delegator.hasDeposited && steemAcc !== delegator){
+            alert(this.$t('message.delegateerror') + "\n" + this.$t('message.accountChanged'))
+            return
+          }
           let delegatee = process.env.VUE_APP_STEEM_MINE
 
           let b = this.delegatevalue * this.spToVests
           let amount = b.toFixed(6)
-          let res = await this.steemDelegation(delegator, delegatee, amount, addr)
+          res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
           if(res.success === true) {
             //代理成功才挖矿
@@ -275,11 +288,20 @@
           this.isLoading = true
           this.loadingFlag = false
           let instance = this.$store.state.nutPoolInstance
-          await instance.withdrawPeanuts().send({feeLimit:20_000_000})
-          await this.sleep()
-          await this.getOtherBalance()
-          this.isLoading = false
-          this.loadingFlag = true
+          let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
+          if (res && (await isTransactionSuccess(res))){
+            await this.getOtherBalance()
+            this.isLoading = false
+            this.loadingFlag = true
+          }else{
+            let ret = await getTransactionResult(res)
+            if (ret && ret[0] && ret[0].contractRet === "OUT OF ENERGE"){
+              alert(this.$t('message.error')+"\n" + this.$t('message.insufficientEnerge'))
+              return
+            }
+            alert(this.$t('message.error')+"\n" + "withdraw peanuts fail")
+          }
+          
         }
         catch(e){
           this.isLoading = false
