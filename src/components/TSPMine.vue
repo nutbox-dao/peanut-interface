@@ -190,15 +190,12 @@
           }
           //代理量应小于TSP量
           let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp2)
-          console.log(883,parseFloat(this.mineAmount))
-          console.log(699, "res2", res2, "balanceOftsp:",parseFloat(this.balanceOfTsp2))
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
       },
       async getTspBalance(){
         let poolInstance = this.$store.state.tspPoolInstance2
         let addr = this.addr
-        console.log(98376,poolInstance)
         let delegator = await poolInstance.delegators(addr).call()
         let tsp = this.dataFromSun(delegator.tspAmount)
         this.minedTsp = this.formatData(tsp)
@@ -209,7 +206,6 @@
 
         this.balanceOfTsp2 = this.dataFromSun(tspBalance)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
-        console.log('format balanceOfTsp:',this.balanceOfTsp,this.balanceOfTsp2)
       },
       fillMaxAmount(){
         this.mineAmount = parseFloat(this.balanceOfTsp2)
@@ -367,8 +363,6 @@
         let pnutPrice = await this.getPnutPrice()
         let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
         this.apy = (apy * 100).toFixed(3)
-        console.log('apy :',steemPrice,tronPrice,pnutPrice,apy,this.rewardsPerBlock,this.totalDepositedSP2)
-        console.log("totalDepositedSP2：",this.totalDepositedSP2)
         localStorage.setItem('apy', this.apy)
       },
       // 父控件加载完数据后调用此方法更新数据
@@ -378,6 +372,7 @@
           this.vestsToSp = await vestsToSteem(1)
           await this.getTspBalance()
           this.calPnutApy()
+          
           //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。

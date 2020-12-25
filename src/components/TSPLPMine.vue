@@ -191,7 +191,6 @@
           }
           //代理量应小于TSP量
           let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTSPLP2)
-          console.log(699, "res2", res2)
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
       },
@@ -202,7 +201,6 @@
         this.totalLP = intToAmount(totalTSPLP)
         // 获取池中TSP总量
         let tspAddr = await tspAddress()
-        console.log(235,tspAddr)
         let TspInSwapPool = await getBalanceOfToken(tspAddr,TSP_TRX_CONTRACT_ADDRESS)
         this.totalTSP = intToAmount(TspInSwapPool)
       },
@@ -239,7 +237,6 @@
           let tspLPPoolAddr = await tspLPPoolAddress()
           let tronLink = getTronLink()
           let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
-          console.log('address',tronLink.address.toHex(TSP_LP_TOKEN_ADDRESS),tronLink.address.toHex('TE4YUw6HMsPco5MTeaaWnbqhPrGnGNBcQG'))
           // 创建交易
           let approve = await tronLink.transactionBuilder
                         .triggerSmartContract(TSP_LP_TOKEN_ADDRESS, 
@@ -253,10 +250,8 @@
           }
           // 签名交易
           let signedTx = await tronLink.trx.sign(approve['transaction'])
-          console.log(529,signedTx)
           // 广播交易
           let broastTx = await tronLink.trx.sendRawTransaction(signedTx)
-          console.log(658238,broastTx)
           if (broastTx && broastTx['txid'] && (await isTransactionSuccess(broastTx['txid']))){
             this.checkApproveFlag = false
             this.canMineFlag = true
@@ -326,12 +321,12 @@
         // console.log(235236,tspPool)
         let s = await tspLPPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
-       console.log("getPendingPnut", this.pendingPnut)
+      //  console.log("getPendingPnut", this.pendingPnut)
         let p = await tspLPPool.shareAcc().call()
-        console.log("shareAcc", p*1)
+        // console.log("shareAcc", p*1)
 
         let p2 = await tspLPPool.totalDepositedTSPLP().call()
-        console.log("totalDepositedTSPLP", p2*1)  //totalDepositedSP
+        // console.log("totalDepositedTSPLP", p2*1)  //totalDepositedSP
       },
       async update(){
         try {
@@ -351,14 +346,6 @@
         }
       }
     },
-
-    // total tsp:22.2
-    // tsp: 1
-    // _vestsToTSP:             1,908,641,612
-    // TSPLPToVests:  85,974,847,387,301,412,540
-    //                85,974,847,387,301,412,540
-    // shareAcc :          1,230,264,016,438,442
-                        // 2,474,170,671,323,510
     components: {
       SmallLoading,
       ChangeTSPLPDepositMask
