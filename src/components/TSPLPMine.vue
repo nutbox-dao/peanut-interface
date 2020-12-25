@@ -15,6 +15,7 @@
                 {{ $t('message.sptotaldelegate') }}： {{ totalDepositedSP }} SP<br>
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
+                {{ $t('message.apy') }}： {{ apy }} %<br>
             </div>
             <!-- 交易对池数据 -->
             <!-- <div class="delegatetext round-box">
@@ -151,7 +152,8 @@
       'nutBalanceOf',
       'nutBalanceOf2',
       'rewardsPerBlock',
-      'addr'
+      'addr',
+      'apy'
     ],
     data() {
       return {

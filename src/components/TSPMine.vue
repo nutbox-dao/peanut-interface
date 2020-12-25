@@ -137,7 +137,8 @@
       'nutBalanceOf',
       'nutBalanceOf2',
       'rewardsPerBlock',
-      'addr'
+      'addr',
+      'apy'
     ],
     data() {
       return {
@@ -177,7 +178,6 @@
         pendingPnut2:'',
 
         vestsToSp: 0,
-        apy: '',
       }
     },
     methods: {
@@ -320,59 +320,14 @@
           }
         }
       },
-      async getTronPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/tron',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getPnutPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.justswap.io/v2/allpairs',
-          headers: {
-            "accept": "application/json",
-          },
-          params: {
-            page_size : 2500,
-            page_num: 1
-          }
-        })
-        // console.log(111,res.data.data)
-        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
-        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
-        // console.log(114,price)
-        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
-        res = null
-        return price
-      },
-      async calPnutApy(){
-        let steemPrice = await this.getSteemPrice()
-        let tronPrice = await this.getTronPrice()
-        let pnutPrice = await this.getPnutPrice()
-        let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
-        this.apy = (apy * 100).toFixed(3)
-        localStorage.setItem('apy', this.apy)
-      },
+      
       // 父控件加载完数据后调用此方法更新数据
       async update(){
         console.log('update-------')
         try{
           this.vestsToSp = await vestsToSteem(1)
           await this.getTspBalance()
-          this.calPnutApy()
-          
+
           //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。
