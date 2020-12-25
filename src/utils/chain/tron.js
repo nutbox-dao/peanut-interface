@@ -48,6 +48,11 @@ async function getContractAbi(symbol = "STEEM", force = false) {
   return null;
 }
 
+export const getTronLink = function (){
+  // console.log(2356000,window.tronWeb)
+  return window.tronWeb
+}
+
 export function getAddress(hex) {
   const tron = getTron();
   return tron.address.fromHex(hex);
@@ -84,10 +89,9 @@ export const toInt = function (number) {
 export const getTransaction = async function (trxId) {
   try {
     const tron = getTron();
-    console.log('getTron',tron)
     return await tron.trx.getTransaction(trxId);
   } catch (e) {
-    console.log("Fail to get transaction [%s]; error = [%s]", trxId, e);
+    // console.log("Fail to get transaction [%s]; error = [%s]", trxId, e);
     return null;
   }
 };
@@ -122,3 +126,26 @@ export const contractConfig = {
   feeLimit: 20 * 1000000, // 20 TRX (1TRX = 1,000,000SUN),
   // shouldPollResponse: true,
 };
+
+export const getBalanceOfToken = async function(token, user){
+  let tron = getTron()
+  let balance = await tron.transactionBuilder
+              .triggerConstantContract(token,
+                                                'balanceOf(address)',
+                                                {},
+                                                [{type:'address',value:user}],
+                                                user)
+  console.log("banlanceof",balance)                                              
+  return balance && balance['constant_result'] && balance['constant_result'][0] && tron.toDecimal('0x'+balance['constant_result'][0]);
+}
+export const getSupplyOfToken = async function(token){
+  let tron = getTron()
+  let supply = await tron.transactionBuilder
+                    .triggerConstantContract(token,
+                                              'totalSupply()',
+                                              {},
+                                              [],
+                                              token)
+  // console.log("total supply",tron.toDecimal('0x'+supply['constant_result'][0]))
+  return supply && supply['constant_result'] && supply['constant_result'][0] && tron.toDecimal('0x'+supply['constant_result'][0]);
+}

@@ -94,7 +94,7 @@
 
                 <div class="round-box-title-container">
                     <p class="box-title">
-                        {{ $t('message.balanceOfTsp') }}
+                        {{ $t('tsp.balanceOfTsp') }}
                     </p>
                     <p class="box-title">
                         {{ balanceOfTsp }}

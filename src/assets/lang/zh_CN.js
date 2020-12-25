@@ -10,6 +10,8 @@ module.exports = {
         "yourspdelegate":"您的SP代理量",
         "delegatorList":"代理列表",
         "tspDepositList":"TSP储蓄列表",
+        "tspLPDepositList":"TSP-LP储蓄列表",
+        "insufficientEnerge":"能量不足",
 
         "miningpooldata":"矿池数据",
         "sptotaldelegate":"SP总代理量",
@@ -46,6 +48,7 @@ module.exports = {
 
         "input":"输入",
         "error":"错误",
+        "accountChanged":"steem与tron账号不匹配，请确认钱包账号是否切换",
         "delegateerror":"代理错误！",
         "tryrefreshpage":"错误，请尝试刷新页面！",
         "steemloginerr":"Steem账户登录错误!",

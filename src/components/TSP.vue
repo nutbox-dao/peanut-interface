@@ -67,12 +67,8 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         let poolinstance = this.$store.state.nutPoolInstance2
 
         let g = await poolinstance.getTotalDepositedSP().call()
-        console.log("ggg",g*1)
-        console.log("235",23)
         this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
-        console.log(5234,this.totalDepositedSP2)
         this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
-        console.log(5234,this.totalDepositedSP,this.totalDepositedSP2)
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
@@ -108,13 +104,10 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             alert(that.$t('message.needtronlink')+"\n\n"+link2)
           }
         }
-
-        if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0){
+        if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0 || Object.keys(lpPoolInstance).length === 0){
           //如果刷新页面, instance未定义
           console.log(888, "instance为空，是刷新页面")
           try{
-            // await that.getSteemInstance()
-            // await that.getSbdInstance()
             await that.getNutsInstance()
             await that.getNutTronLink()
             await that.getNutsPool()
@@ -155,17 +148,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()
       this.$refs.tsplp.update()
-        // let addr = that.tronWeb2.address.toHex('TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        // let contractaddr = that.tronWeb2.address.toHex('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir')
-        // console.log(addr)
-        // let balance = await that.tronWeb2.transactionBuilder.triggerConfirmedConstantContract('TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir',
-        //                                                                               'balanceOf(address)',
-        //                                                                               {},
-        //                                                                               [{type:'address',value:'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'}],
-        //                                                                               'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT')
-        // console.log('balance:',balance)
-        // let result = that.tronWeb2.toDecimal('0x'+balance['constant_result'][0])
-        // console.log(235,result, balance['constant_result'][0])
     }
   }
 </script>

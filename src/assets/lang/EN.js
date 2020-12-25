@@ -10,6 +10,8 @@ module.exports = {
         "yourspdelegate":"Your Delegated SP",
         "delegatorList":"SP Delegator List",
         "tspDepositList":"TSP Delegator List",
+        "tspLPDepositList":"TSP-LP Delegator List",
+        "insufficientEnerge":"Not enough energe",
 
         "miningpooldata":"Mining Pool Data",
         "sptotaldelegate":"Total Delegated SP",
@@ -46,6 +48,7 @@ module.exports = {
 
         "input":"Input",
         "error":"Error!",
+        "accountChanged":"steem and tron address mismatch",
         "delegateerror":"Delegation Error！",
         "tryrefreshpage":"Error，please refresh page and try again！",
         "steemloginerr":"Steem login failed!",
