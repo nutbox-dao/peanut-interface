@@ -16,11 +16,12 @@
                 {{ $t('message.totalpnut') }}： {{ totalPendingPeanuts }} PNUT<br>
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
             </div>
-            <div class="delegatetext round-box">
+            <!-- 交易对池数据 -->
+            <!-- <div class="delegatetext round-box">
               < {{ $t('tsp.LPData') }} > <br>
               {{ $t('tsp.totalLP') }}：{{ totalLP | formatAmount }} TSP-LP <br>
               {{ $t('tsp.totalTSP') }}：{{ totalTSP | formatAmount }} TSP <br>
-            </div>
+            </div> -->
             <hr>
             <!--<div >-->
             <div v-if="minedTspLP2 <= 0">
