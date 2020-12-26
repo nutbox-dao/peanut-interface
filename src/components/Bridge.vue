@@ -340,7 +340,6 @@
       async getTspBalance(){// tsp
         let addr = this.$store.state.addr
         let instance = this.$store.state.tspInstance2
-        console.log(123456333,'getBalanceOf')
         let a = await instance.balanceOf(addr).call()
         this.balanceOfTsp2 = this.dataFromSun(a)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
@@ -774,7 +773,6 @@
       async  function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          console.log(888, "bridge, instance为空，是刷新页面")
           try{
             await that.getSteemInstance()
             await that.getSbdInstance()
@@ -796,7 +794,6 @@
             that.showMask = true
           }
         } else{
-          console.log(22333, "bridge, 啥也没干！")
           try{
             await that.getSbdTronLink()
             await that.getTspTronLink()

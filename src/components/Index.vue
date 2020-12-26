@@ -188,7 +188,6 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
         //代理量应小于SP量
         // let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
         let res2 = true
-        console.log(699, "res2", res2)
         let res3 = this.fee <= parseFloat(this.balanceOfSeem)
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
@@ -225,7 +224,6 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
         let a = await this.steem.api.getDynamicGlobalPropertiesAsync()
         this.spToVests = parseFloat(a.total_vesting_shares) / parseFloat(a.total_vesting_fund_steem)
         this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
-        console.log('sptovests:',this.spToVests,'veststosp:',this.vestsToSp)
         let sp = parseFloat(s[0].vesting_shares) * this.vestsToSp
         let delegatedSp = parseFloat(s[0].delegated_vesting_shares) * this.vestsToSp
         this.balanceOfSp = (sp - delegatedSp).toFixed(3)
@@ -396,7 +394,7 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
       async function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          console.log(888, "instance为空，是刷新页面")
+          // console.log(888, "instance为空，是刷新页面")
           try{
             await that.getSteemInstance()
             await that.getSbdInstance()
@@ -418,7 +416,7 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
             return
           }
         } else{
-          console.log(22333, "啥也没干！")
+          // console.log(22333, "啥也没干！")
           try{
             await that.getNutTronLink()
             await that.getNutsPool()

@@ -162,7 +162,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
           await that.sleep(1)
           //tronlink
           if (window.tronWeb) {
-            console.log(522, "tronlink is ok! login")
             that.addr = window.tronWeb.defaultAddress.base58
           }else{
             let link2 = 'TronLink: https://www.tronlink.org'
@@ -171,7 +170,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         }
         if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0 || Object.keys(lpPoolInstance).length === 0){
           //如果刷新页面, instance未定义
-          console.log(888, "instance为空，是刷新页面")
           try{
             await that.getNutsInstance()
             await that.getNutTronLink()
@@ -193,7 +191,6 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             return
           }
         } else{
-          console.log(22333, "啥也没干！")
           try{
             await that.getTspPoolTronLink()
             await that.getTspTronLink()

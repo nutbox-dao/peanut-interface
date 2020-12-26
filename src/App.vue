@@ -166,7 +166,6 @@
         this.currentSteemNode = node
         window.localStorage.setItem(this.steemNodeKey, node)
         this.$router.go(0)
-        console.log(node)
       },
     },
     components: {

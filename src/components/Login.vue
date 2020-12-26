@@ -132,17 +132,14 @@
           //keychain
           if(window.steem_keychain) {
             // Steem Keychain extension installed...
-            console.log(523, "steem-keychain", window.steem_keychain)
           } else {
             // Steem Keychain extension not installed...
-            console.log(444, "未安装steem-keychain！")
             let link = 'Chrome: https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm\n\n' +
                     'Firefox: https://addons.mozilla.org/en-US/firefox/addon/steem-keychain'
             alert(that.$t('message.needkeychain') +"\n\n"+link)
           }
           //tronlink
           if (window.tronWeb) {
-            console.log(522, "tronlink is ok! login")
             that.addr = window.tronWeb.defaultAddress.base58
           }else{
             let link2 = 'TronLink: https://www.tronlink.org'

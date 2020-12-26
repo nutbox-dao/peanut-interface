@@ -14,7 +14,6 @@ const tronWeb2 = new TronWeb(fullNode,solidityNode,eventServer)
 export async function peanutsPoolAddress(){
     let res = await axios.get('/PeanutsPoolV2.json')
     let PeanutsPool = tronWeb2.address.fromHex(res.data.networks['*'].address)
-    console.log('PeanutsPool',PeanutsPool)
     return PeanutsPool
 }
 

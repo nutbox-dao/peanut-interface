@@ -177,11 +177,8 @@
 
                     let tspPoolAddr = await tspPoolAddress()
                     let tsp = this.$store.state.tspInstance
-                    console.log(123, "value", value)
                     let approved = await tsp.approve(tspPoolAddr, value).send({feeLimit:20_000_000})
-                    console.log("approved")
                     // approved 为返回的交易hash值
-                    console.log("approved result:",approved)
                     if (approved && (await isTransactionSuccess(approved))){
                         this.checkApproveFlag = false
                         this.canAddFlag = true
@@ -242,7 +239,6 @@
                 catch(e){
                     this.isLoading = false
                     alert("错误\n" + e)
-                    console.log(259445,e)
                 }
                 finally{
                     this.isLoading = false

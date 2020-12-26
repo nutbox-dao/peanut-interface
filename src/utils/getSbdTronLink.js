@@ -1,6 +1,5 @@
 const getSbdTronLink = async function() {
   if (window.tronWeb) {
-    console.log(11, "tronlink is ok! sbd")
     let tronWeb = window.tronWeb
     let instance = tronWeb.contract(this.$store.state.sbdJson.abi, this.$store.state.sbdJson.contract)
     //将得到的数据存入vuex中

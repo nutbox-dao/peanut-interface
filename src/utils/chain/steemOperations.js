@@ -98,7 +98,6 @@ export async function steemDelegation(delegator, delegatee, amount, address) {
 
 export async function steemTransferVest(from, to, amount, address, fee){
   fee = parseFloat(fee).toFixed(3)
-  console.log(367,fee)
   const steemGas = process.env.VUE_APP_STEEM_GAS
   const feeOperation = [
     'transfer',

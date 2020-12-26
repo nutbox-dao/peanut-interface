@@ -1,6 +1,5 @@
 const getTspPoolTronLink = async function() {
   if (window.tronWeb) {
-    console.log(11, "tronlink is ok!")
     let tronWeb = window.tronWeb
     let instance = tronWeb.contract(this.$store.state.tspPoolJson.abi, this.$store.state.tspPoolJson.contract)
     //将得到的数据存入vuex中
