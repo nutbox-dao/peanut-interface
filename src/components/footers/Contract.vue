@@ -38,7 +38,11 @@
 
       <p><strong>Tronscan：</strong> <br>
 
+<<<<<<< HEAD
         <a target="_blank" href="https://shasta.tronscan.org/#/contract/TDJjuVeGBtxWQPKFPuHsyD5p51scqYwiXf/code">https://shasta.tronscan.org</a>
+=======
+        <a target="_blank" href="https://tronscan.org/">https://tronscan.org/</a>
+>>>>>>> 153c04a... fix typo
       </p>
 
 
