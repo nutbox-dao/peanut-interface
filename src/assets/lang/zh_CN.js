@@ -72,7 +72,7 @@ module.exports = {
 
         "contractAddr":"合约地址",
         "attention":"注意:",
-        "attensionInfo":"假币骗局！请不要以代币的名字查询j交易代币，应以代币的合约地址为准！",
+        "attensionInfo":"假币骗局！请不要以代币的名字查询交易代币，应以代币的合约地址为准！",
 
         "language":"语言",
         "zh":"中文",
