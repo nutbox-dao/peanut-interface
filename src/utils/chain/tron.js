@@ -135,7 +135,7 @@ export const getBalanceOfToken = async function(token, user){
                                                 {},
                                                 [{type:'address',value:user}],
                                                 user)
-  console.log("banlanceof",balance)                                              
+  // console.log("banlanceof",balance)                                              
   return balance && balance['constant_result'] && balance['constant_result'][0] && tron.toDecimal('0x'+balance['constant_result'][0]);
 }
 export const getSupplyOfToken = async function(token){

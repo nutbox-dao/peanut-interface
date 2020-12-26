@@ -255,7 +255,8 @@ export default {
                     this.$parent.minedTspLP = parseFloat(this.$parent.minedTspLP2).toFixed(3)
                     this.$parent.balanceOfTSPLP2 = parseFloat(this.$parent.balanceOfTSPLP2) + a
                     this.$parent.balanceOfTSPLP = parseFloat(this.$parent.balanceOfTSPLP2).toFixed(3)
-                    this.hideMask()
+                   await this.$parent.$parent.getOtherBalance()
+                   this.hideMask()
                 }else{
                     this.checkSubValue()
                     alert(this.$t('message.error') + "\n" + "Sub Deposit fail")
@@ -263,7 +264,7 @@ export default {
             }
             catch(e){
                 alert("错误\n" + e)
-                console.log(259445,e)
+                this.checkSubValue()
             }finally{
                 this.isLoading = false
             }
@@ -277,22 +278,17 @@ export default {
                 let value = this.dataToSun(a)
 
                 let tspPool = this.$store.state.tspLPPoolInstance
-                let withdrawTx = await tspPool.withdrawPeanuts().send({feeLimit:20_000_000})
-                if (withdrawTx && (await isTransactionSuccess(withdrawTx))){
-                    let delDepositTx = await tspPool.withdraw(value).send({feeLimit:20_000_000})
-                    if(delDepositTx && (await isTransactionSuccess(delDepositTx))){
-                        // 直接更新数字
-                        this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) - a
-                        this.$parent.minedTspLP = parseFloat(this.$parent.minedTspLP2).toFixed(3)
-                        this.$parent.balanceOfTSPLP2 = parseFloat(this.$parent.balanceOfTSPLP2) + a
-                        this.$parent.balanceOfTSPLP = parseFloat(this.$parent.balanceOfTSPLP2).toFixed(3)
-                        this.$parent.$parent.getOtherBalance()
-                        this.hideMask()
-                    }else{
-                        alert(this.$t('message.error')+"\n" + "Undeposit Fail")
-                    }
+                let delDepositTx = await tspPool.withdraw(value).send({feeLimit:20_000_000})
+                if(delDepositTx && (await isTransactionSuccess(delDepositTx))){
+                    // 直接更新数字
+                    this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) - a
+                    this.$parent.minedTspLP = parseFloat(this.$parent.minedTspLP2).toFixed(3)
+                    this.$parent.balanceOfTSPLP2 = parseFloat(this.$parent.balanceOfTSPLP2) + a
+                    this.$parent.balanceOfTSPLP = parseFloat(this.$parent.balanceOfTSPLP2).toFixed(3)
+                    this.$parent.$parent.getOtherBalance()
+                    this.hideMask()
                 }else{
-                    alert(this.$t('message.error')+"\n" + "withdraw peanuts Fail")
+                    alert(this.$t('message.error')+"\n" + "Undeposit Fail")
                 }
             }
             catch(e){

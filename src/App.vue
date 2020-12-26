@@ -5,7 +5,7 @@
           <img src="../static/images/logo.svg" class="d-inline-block align-top" alt="nutboxs">
       </b-navbar-brand>
 
-      <div class="logos" v-if="$store.state.username ">
+      <div class="logos" v-if="$store.state.username">
           <span style="margin-right: 1rem" @click="mywallet">
             <img class="account-icon" src="../static/images/nav-steem-icon.png" alt="steem">@{{ $store.state.username }}
           </span>
