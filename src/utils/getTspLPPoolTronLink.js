@@ -4,7 +4,6 @@ const getTspLPPoolTronLink = async function() {
     let tronWeb = window.tronWeb
     let instance = tronWeb.contract(this.$store.state.tspLPPoolJson.abi, this.$store.state.tspLPPoolJson.contract)
     //将得到的数据存入vuex中
-      console.log(1112,"tronlink tsp pool",this.$store.state.tspLPPoolJson.abi,this.$store.state.tspLPPoolJson.contract)
     this.$store.commit('saveTspLPPoolInstance', instance)
   } else {
     // 如果检测到没有注入tronWeb对象，则等待3s后重新检测

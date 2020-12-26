@@ -350,12 +350,6 @@
       },
 
     async mounted() {
-      //初始化年化收益率
-      if(localStorage.getItem("apy") == null){
-        this.apy = 52.786
-      }else{
-        this.apy = localStorage.getItem("apy")
-      }
     },
 
     }
