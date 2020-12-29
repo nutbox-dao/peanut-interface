@@ -5,7 +5,7 @@
           <img src="../static/images/logo.svg" class="d-inline-block align-top" alt="nutboxs">
       </b-navbar-brand>
 
-      <div class="logos" v-if="$store.state.username ">
+      <div class="logos" v-if="$store.state.username">
           <span style="margin-right: 1rem" @click="mywallet">
             <img class="account-icon" src="../static/images/nav-steem-icon.png" alt="steem">@{{ $store.state.username }}
           </span>
@@ -24,7 +24,7 @@
           <div class="loginfo">
             <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
             <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
-            <button class="right-item" @click="tspMine">{{ $t('message.tspMine') }}</button>
+            <button class="right-item" @click="tsp">{{ $t('tsp.tspMine') }}</button>
 
             <div class="drop">
                 <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
@@ -36,6 +36,12 @@
                 <b-dropdown-item-button @click="setenlang">
                   {{ $t('message.en') }}
                 </b-dropdown-item-button>
+                
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item-button @click="setkrlang">
+                  {{ $t('message.kr') }}
+                </b-dropdown-item-button>
+
               </b-dropdown>
             </div>
 
@@ -110,7 +116,7 @@
 </template>
 
 <script>
-  import {STEEM_API_URLS,STEEM_CONF_KEY} from './const.js'
+  import {STEEM_API_URLS,STEEM_CONF_KEY,LOCALE_KEY} from './const.js'
   export default {
     name: 'App',
     data(){
@@ -128,8 +134,8 @@
       bridge(){
         this.$router.push({path: '/bridge'})
       },
-      tspMine(){
-        this.$router.push({path: '/tspmine'})
+      tsp(){
+        this.$router.push({path: '/tsp'})
       },
       mywallet(){
         this.$router.push({path: '/wallet'})
@@ -140,16 +146,19 @@
         this.$router.push({path:'/login'})
       },
       setzhlang(){
-        let LOCALE_KEY = 'localeLanguage'
         let lang = 'zh'
         localStorage.setItem(LOCALE_KEY, lang)
         this.$i18n.locale = 'zh'
       },
       setenlang(){
-        let LOCALE_KEY = 'localeLanguage'
         let lang = 'en'
         localStorage.setItem(LOCALE_KEY, lang)
         this.$i18n.locale = 'en'
+      },
+      setkrlang(){
+        let lang = 'kr'
+        localStorage.setItem(LOCALE_KEY, lang)
+        this.$i18n.locale = 'kr'
       },
       selectNode(node){
         this.showSteemNode = false
@@ -157,7 +166,6 @@
         this.currentSteemNode = node
         window.localStorage.setItem(this.steemNodeKey, node)
         this.$router.go(0)
-        console.log(node)
       },
     },
     components: {

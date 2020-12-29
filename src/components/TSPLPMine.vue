@@ -1,11 +1,11 @@
 <template>
   <div>
-     <div class="delegate">
-       <!--TSP挖矿-->
+    <div class="delegate">
+       <!--TSP LP挖矿-->
             <div class="delegatetext round-box">
                 < {{ $t('message.yourdata') }} > <br>
-                {{ $t('tsp.balanceOfTsp') }}: {{ balanceOfTsp }} TSP <br>
-                {{ $t('tsp.yourTspAmount') }}： {{ minedTsp }} TSP<br>
+                {{ $t('tsp.tspLPBalance') }}: {{ balanceOfTSPLP }} TSP-LP <br>
+                {{ $t('tsp.yourTSPLPAmount') }}： {{ minedTspLP }} TSP-LP<br>
                 {{ $t('message.pnutbalance') }}： {{ nutBalanceOf }} PNUT<br>
             </div>
 
@@ -17,16 +17,22 @@
                 {{ $t('message.rewardperblock') }}： {{ rewardsPerBlock }} PNUT<br>
                 {{ $t('message.apy') }}： {{ apy }} %<br>
             </div>
+            <!-- 交易对池数据 -->
+            <!-- <div class="delegatetext round-box">
+              < {{ $t('tsp.LPData') }} > <br>
+              {{ $t('tsp.totalLP') }}：{{ totalLP | formatAmount }} TSP-LP <br>
+              {{ $t('tsp.totalTSP') }}：{{ totalTSP | formatAmount }} TSP <br>
+            </div> -->
             <hr>
             <!--<div >-->
-            <div v-if="minedTsp2 <= 0">
+            <div v-if="minedTspLP2 <= 0">
                 <div class="round-box">
                   <div class="round-box-title-container">
                     <p class="box-title">
                       {{ $t('message.input') }}
                     </p>
                     <p class="box-title">
-                      {{ $t('tsp.balanceOfTsp') }}：{{ balanceOfTsp }}
+                      {{ $t('tsp.tspLPBalance') }}：{{ balanceOfTSPLP }}
                     </p>
                   </div>
                   <div class="round-box-content-container">
@@ -51,17 +57,17 @@
             </div>
 
             <!--已代理：-->
-            <div v-if="minedTsp2 > 0">
+            <div v-if="minedTspLP2 > 0">
               <!-- 增加、减少、取消代理 -->
               <div class="confirm-box">
-                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag" >
-                  {{ $t('tsp.addTspDeposit') }}
+                <button class="confirm-btn" @click="delegateOpt=1,showDelegateMask=true" style="margin-right:30px" :disabled="isLoading" >
+                  {{ $t('tsp.addTspLPDeposit') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="!loadingFlag">
-                  {{ $t('tsp.minusTspDeposit') }}
+                <button class="confirm-btn" @click="delegateOpt=2,showDelegateMask=true" style="margin-right:30px" :disabled="isLoading">
+                  {{ $t('tsp.minusTspLPDeposit') }}
                 </button>
-                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="!loadingFlag">
-                  {{ $t('tsp.cancelTspDeposit') }}
+                <button class="confirm-btn" @click="delegateOpt=0,showDelegateMask=true" :disabled="isLoading">
+                  {{ $t('tsp.cancelTspLPDeposit') }}
                 </button>
               </div>
 
@@ -79,27 +85,27 @@
 
               <!-- 提现按钮 -->
               <div class="confirm-box">
-                <button class="confirm-btn" @click="withdrawPeanuts" :disabled="!loadingFlag">
+                <button class="confirm-btn" @click="withdrawPeanuts" :disabled="isLoading">
                   {{ $t('message.withdraw') }}
                 </button>
               </div>
-            </div>
-      </div>
 
+            </div>
+    </div>
     <!-- 增加或减少TSP存放弹窗 -->
     <transition name="fade">
-      <ChangeTSPDepositMask
+      <ChangeTSPLPDepositMask
               :changeDegate = 'delegateOpt'
-              :balanceOfTSP = 'balanceOfTsp'
-              :balanceOfTSP2 = 'balanceOfTsp2'
-              :balanceOfDelegate = 'minedTsp'
-              :balanceOfDelegate2 = 'minedTsp2'
+              :balanceOfTSPLP = 'balanceOfTSPLP'
+              :balanceOfTSPLP2 = 'balanceOfTSPLP2'
+              :balanceOfDelegate = 'minedTspLP'
+              :balanceOfDelegate2 = 'minedTspLP2'
               :addr = 'addr'
               v-if="showDelegateMask"
               @hideMask="showDelegateMask=false"
       >
 
-      </ChangeTSPDepositMask>
+      </ChangeTSPLPDepositMask>
     </transition>
 
     <!--加载动画-->
@@ -123,13 +129,23 @@
 
 <script>
   import SmallLoading from './SmallLoading'
-  import ChangeTSPDepositMask from './ChangeTSPDepositMask'
+  import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {tspPoolAddress} from '../utils/contractAddress.js'
-  import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
-  
+  import {tspAddress, tspLPPoolAddress} from '../utils/contractAddress.js'
+
+  import {getTransactionResult,
+  isTransactionSuccess,
+  isInsufficientEnerge,
+  getBalanceOfToken,
+  getSupplyOfToken,
+  amountToInt,
+  intToAmount,
+  getTronLink} from '../utils/chain/tron.js'
+
+  import {TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS} from '../const.js'
+
   export default {
-    name: "TSPMine",
+    name: "TSPLPMine",
     props:[
       'totalDepositedSP',
       'totalDepositedSP2',
@@ -142,32 +158,23 @@
     ],
     data() {
       return {
-        LPFlag:false,
-        tspFlag:true,
-        totalMiningTsp:'',
         tronlinkFlag:true,
 
+        totalLP:'',
+        totalTSP:'',
+
         isLoading: true,
-        loadingFlag: false,
 
-        balanceOfTsp: '',
-        balanceOfTsp2: '',
+        balanceOfTSPLP: '',
+        balanceOfTSPLP2: '',
 
-        minedTsp: '',
-        minedTsp2: '',
-
-        timestamp: '',
-        startTime: '',
+        minedTspLP: '',
+        minedTspLP2: '',
 
         checkFlag: true,
         checkApproveFlag: false,
         canMineFlag: false,
         mineAmount: '',
-
-        nutStartTime:'',
-        miningRate: '',
-        difficulty:'',
-        nutSPR:'',
 
         showMask:false,
         maskInfo:"",
@@ -176,8 +183,6 @@
 
         pendingPnut:'',
         pendingPnut2:'',
-
-        vestsToSp: 0,
       }
     },
     methods: {
@@ -189,43 +194,73 @@
             res1 = true
           }
           //代理量应小于TSP量
-          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTsp2)
+          let res2 = parseFloat(this.mineAmount) <= parseFloat(this.balanceOfTSPLP2)
           this.checkFlag = this.checkApproveFlag = res && res1 && res2
           this.canMineFlag = false
       },
-      async getTspBalance(){
-        let poolInstance = this.$store.state.tspPoolInstance2
+
+      async getTSPTRXPoolInfo(){
+        // 获取TSP_LP总量
+        let totalTSPLP = await getSupplyOfToken(TSP_LP_TOKEN_ADDRESS)
+        this.totalLP = intToAmount(totalTSPLP)
+        // 获取池中TSP总量
+        let tspAddr = await tspAddress()
+        let TspInSwapPool = await getBalanceOfToken(tspAddr,TSP_TRX_CONTRACT_ADDRESS)
+        this.totalTSP = intToAmount(TspInSwapPool)
+      },
+
+      async getTSPLPBalance(){
+        let poolInstance = this.$store.state.tspLPPoolInstance2
         let addr = this.addr
+        if (!poolInstance || !poolInstance.delegators){
+          await this.getTspLPPoolInstance()
+        }
         let delegator = await poolInstance.delegators(addr).call()
-        let tsp = this.dataFromSun(delegator.tspAmount)
-        this.minedTsp = this.formatData(tsp)
-        this.minedTsp2 = tsp
+        let tsplp = this.dataFromSun(delegator.tspLPAmount)
+        this.minedTspLP = this.formatData(tsplp)
+        this.minedTspLP2 = tsplp
 
-        let tspInstance2 = this.$store.state.tspInstance2
-        let tspBalance = await tspInstance2.balanceOf(addr).call()
+        let tspAddr = TSP_LP_TOKEN_ADDRESS
+        let tsplpBalance = await getBalanceOfToken(tspAddr, addr)
 
-        this.balanceOfTsp2 = this.dataFromSun(tspBalance)
-        this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
+        this.balanceOfTSPLP2 = this.dataFromSun(tsplpBalance)
+        this.balanceOfTSPLP = this.formatData(this.balanceOfTSPLP2)
       },
       fillMaxAmount(){
-        this.mineAmount = parseFloat(this.balanceOfTsp2)
+        this.mineAmount = this.balanceOfTSPLP2
         this.checkMineAmount()
       },
       async approve(){
         try{
           this.isLoading = true
-          this.loadingFlag = true
           this.checkApproveFlag = false
+          let addr = this.addr
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
-          let tsp = this.$store.state.tspInstance
-          let tspPoolAddr = await tspPoolAddress()
-          let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
-          if (approved && (await isTransactionSuccess(approved))){
+
+          let tspLPPoolAddr = await tspLPPoolAddress()
+          let tronLink = getTronLink()
+          let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
+          // 创建交易
+          let approve = await tronLink.transactionBuilder
+                        .triggerSmartContract(TSP_LP_TOKEN_ADDRESS, 
+                                              "approve(address,uint256)", 
+                                              {feeLimit:20_000_000}, 
+                                              params, addr)
+          if (!approve || approve["result"]["result"] !== true){
+            this.checkMineAmount()
+            alert("Approve fail")
+            return
+          }
+          // 签名交易
+          let signedTx = await tronLink.trx.sign(approve['transaction'])
+          // 广播交易
+          let broastTx = await tronLink.trx.sendRawTransaction(signedTx)
+          if (broastTx && broastTx['txid'] && (await isTransactionSuccess(broastTx['txid']))){
             this.checkApproveFlag = false
             this.canMineFlag = true
           }else{
-            if (await isInsufficientEnerge(approved)){
+            if (await isInsufficientEnerge(broastTx['txid'])){
               alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
             }else{
               alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
@@ -246,37 +281,37 @@
           this.canMineFlag = false
           let addr = this.addr
           //开始挖矿
-          let tspPool = this.$store.state.tspPoolInstance
+          let tspLPPool = this.$store.state.tspLPPoolInstance
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           // commit deposit
-          let res = await tspPool.deposit(value).send({feeLimit:20_000_000})
-          if (res && isTransactionSuccess(res)){
-            //直接刷新当前页面
-            this.$router.go(0)
+          let res = await tspLPPool.deposit(value).send({feeLimit:20_000_000})
+          if (res && (await isTransactionSuccess(res))){
+            //直接更新数字
+            this.minedTspLP2 = parseFloat(this.minedTspLP) + b
+            this.minedTspLP = parseFloat(this.minedTspLP2).toFixed(3)
+            this.balanceOfTSPLP2 = parseFloat(this.balanceOfTSPLP2) - b
+            this.balanceOfTSPLP = parseFloat(this.balanceOfTSPLP2).toFixed(3)
           }else{
             if (await isInsufficientEnerge(res)){
               alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
             }else{
               alert(this.$t('error.error')+"\n" + this.$t("error.depositFail"))
             }
-            this.checkApproveFlag = true
-            this.canMineFlag = false
+            this.checkMineAmount()
           }
         }
         catch(e){
-          this.checkApproveFlag = true
-          this.canMineFlag = false
+          this.checkMineAmount()
           alert(this.$t('error.error') + "\n" + e)
         }finally{
-          this.isLoading = false
+          this.isLoading = false  
         }
       },
       async withdrawPeanuts(){
         try {
           this.isLoading = true
-          this.loadingFlag = false
-          let instance = this.$store.state.tspPoolInstance
+          let instance = this.$store.state.tspLPPoolInstance
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
@@ -286,82 +321,54 @@
             }else{
               alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
             }
-            this.isLoading = false
           }
         }
         catch(e){
-          this.isLoading = false
-          this.loadingFlag = true
           alert(this.$t('error.error')+"\n" + e)
         }finally{
           this.isLoading = false
-          this.loadingFlag = true
         }
       },
       hideMask(){
         this.showMask=false
       },
-
       async getPendingPnut(){
-        let tspPool = this.$store.state.tspPoolInstance
-        let s = await tspPool.getPendingPeanuts().call()
+        let tspLPPool = this.$store.state.tspLPPoolInstance
+        // console.log(235236,tspPool)
+        let s = await tspLPPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
-        // this.pendingPnut = this.tronWeb2.fromSun(s)
-
       //  console.log("getPendingPnut", this.pendingPnut)
-        let p = await tspPool.shareAcc().call()
+        let p = await tspLPPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 
-        let p2 = await tspPool.totalDepositedTSP().call()
-        // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
-        },
-              async getSteemPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/steem',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
+        let p2 = await tspLPPool.totalDepositedTSPLP().call()
+        // console.log("totalDepositedTSPLP", p2*1)  //totalDepositedSP
       },
-      
-      // 父控件加载完数据后调用此方法更新数据
       async update(){
-        console.log('update-------')
-        try{
-          this.vestsToSp = await vestsToSteem(1)
-          await this.getTspBalance()
-
-          //设置定时器以更新当前时间
+        try {
+          await this.getTSPTRXPoolInfo()
+          await this.getTSPLPBalance()
+           //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。
           this.$once('hook:beforeDestroy', () => {
             clearInterval(timer)
           })
-        }catch(e){
+        }catch (e){
           this.maskInfo = this.$t('error.tryrefreshpage') + "\n" + e;
           this.showMask = true;
         }finally{
           this.isLoading = false
-          this.loadingFlag = true
         }
       }
     },
-
     components: {
       SmallLoading,
-      ChangeTSPDepositMask
+      ChangeTSPLPDepositMask
       },
 
     async mounted() {
+
     },
 
     }

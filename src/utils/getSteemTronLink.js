@@ -1,6 +1,5 @@
 const getSteemTronLink = async function() {
   if (window.tronWeb) {
-    console.log(11, "tronlink is ok! steem")
     let tronWeb = window.tronWeb
     let instance = tronWeb.contract(this.$store.state.steemJson.abi, this.$store.state.steemJson.contract)
     //将得到的数据存入vuex中

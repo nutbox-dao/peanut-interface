@@ -9,7 +9,7 @@ import axios from 'axios'
 import steem from 'steem'
 import TronWeb from 'tronweb'
 import VueI18n from 'vue-i18n'
-import {STEEM_API_URLS, STEEM_CONF_KEY} from './const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY, TRON_NODE_API} from './const.js'
 
 
 Vue.use(BootstrapVue)
@@ -22,9 +22,11 @@ const i18n = new VueI18n({
   locale:'en',
   messages: {
     'zh': require('./assets/lang/zh_CN'),
-    'en': require('./assets/lang/EN')
+    'en': require('./assets/lang/EN'),
+    'kr': require('./assets/lang/KR')
   },
-    fallbackLocale: 'en'
+    fallbackLocale: 'en',
+    silentFallbackWarn: true
 })
 
 const setup = lang => {
@@ -56,7 +58,7 @@ Vue.prototype.steem = steem
 console.log('steem node change to:',steemConf)
 
 //tron网络
-const TRON_NODE = "https://api.trongrid.io"
+const TRON_NODE = TRON_NODE_API
 const HttpProvider = TronWeb.providers.HttpProvider
 const fullNode = new HttpProvider(TRON_NODE)
 const solidityNode = new HttpProvider(TRON_NODE)
@@ -75,6 +77,8 @@ import {getTspInstance} from "./utils/getTspInstance"
 import {getTspTronLink} from "./utils/getTspTronLink"
 import {getTspPoolInstance} from "./utils/getTspPoolInstance"
 import {getTspPoolTronLink} from "./utils/getTspPoolTronLink"
+import {getTspLPPoolInstance} from "./utils/getTspLPPoolInstance"
+import {getTspLPPoolTronLink} from "./utils/getTspLPPoolTronLink"
 import {getNutTronLink} from "./utils/getNutTronLink"
 import {getNutsInstance} from "./utils/getNutsInstance"
 import {getNutsPool} from "./utils/getNutsPool"
@@ -83,7 +87,7 @@ import {sleep} from "./utils/sleep"
 import {dataFromSun} from "./utils/dataFromSun"
 import {dataToSun} from "./utils/dataToSun"
 import {formatData} from "./utils/formatData"
-import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/steemOperations"
+import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/chain/steemOperations"
 // import {approve} from "./utils/approve"
 // import {getTsteemAllowance} from "./utils/getTsteemAllowance"
 
@@ -97,6 +101,8 @@ Vue.prototype.getTspTronLink = getTspTronLink
 Vue.prototype.getTspInstance = getTspInstance
 Vue.prototype.getTspPoolInstance = getTspPoolInstance
 Vue.prototype.getTspPoolTronLink = getTspPoolTronLink
+Vue.prototype.getTspLPPoolInstance = getTspLPPoolInstance
+Vue.prototype.getTspLPPoolTronLink = getTspLPPoolTronLink
 Vue.prototype.getNutTronLink = getNutTronLink
 Vue.prototype.getNutsInstance = getNutsInstance
 Vue.prototype.getNutsPool = getNutsPool
@@ -118,8 +124,20 @@ Vue.prototype.steemWrap = steemWrap
 
 Vue.config.productionTip = false
 
-Vue.filter('formatAmount',function(amount){
-  return parseFloat(amount).toFixed(3)
+Vue.filter('formatAmount',function(value,digit=3){
+  const str =
+      digit != null && digit >= 0
+          ? Number(value)
+              .toFixed(digit)
+              .toString()
+          : value.toString()
+  let integer = str
+  let fraction = ''
+  if (str.includes('.')) {
+    integer = str.split('.')[0]
+    fraction = '.' + str.split('.')[1]
+  }
+  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + fraction
 })
 
 new Vue({

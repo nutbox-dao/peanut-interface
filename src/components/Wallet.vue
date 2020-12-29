@@ -94,7 +94,7 @@
 
                 <div class="round-box-title-container">
                     <p class="box-title">
-                        {{ $t('message.balanceOfTsp') }}
+                        {{ $t('tsp.balanceOfTsp') }}
                     </p>
                     <p class="box-title">
                         {{ balanceOfTsp }}
@@ -215,9 +215,7 @@
                 let addr = this.anyaddr
                 let instance = this.$store.state.steemInstance2
                 let s = await instance.owner().call()
-                console.log(168, s)
                 let a = this.tronWeb2.address.fromHex(s)
-                console.log(169, a)
             },
         },
         filters: {

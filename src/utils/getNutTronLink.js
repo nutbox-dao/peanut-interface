@@ -1,6 +1,5 @@
 const getNutTronLink = async function() {
   if (window.tronWeb) {
-    console.log(11, "tronlink is ok!")
     let tronWeb = window.tronWeb
     let instance = tronWeb.contract(this.$store.state.nutJson.abi, this.$store.state.nutJson.contract)
     //将得到的数据存入vuex中

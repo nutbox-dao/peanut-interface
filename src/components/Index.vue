@@ -137,6 +137,7 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
+import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
   export default {
     name: "Index",
     data() {
@@ -187,7 +188,6 @@
         //代理量应小于SP量
         // let res2 = parseFloat(this.delegatevalue) <= parseFloat(this.balanceOfSp) - 5
         let res2 = true
-        // console.log(699, "res2", res2)
         let res3 = this.fee <= parseFloat(this.balanceOfSeem)
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
@@ -239,13 +239,24 @@
           this.isLoading = true
           this.checkDelegateFlag = false
           let addr = this.$store.state.addr
+
+          let nutPool = this.$store.state.nutPoolInstance
+          var res = await nutPool.delegators(addr).call()
+          // console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
+          let steemAcc = res.steemAccount
+
           //steem代理
           let delegator = this.$store.state.username
+
+          if (delegator && delegator.hasDeposited && steemAcc !== delegator){
+            alert(this.$t('error.delegateerror') + "\n" + this.$t('error.accountChanged'))
+            return
+          }
           let delegatee = process.env.VUE_APP_STEEM_MINE
 
           let b = this.delegatevalue * this.spToVests
           let amount = b.toFixed(6)
-          let res = await this.steemDelegation(delegator, delegatee, amount, addr)
+          res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
           if(res.success === true) {
             //代理成功才挖矿
@@ -262,12 +273,12 @@
           }else{
             this.delegatevalue = ''
             this.isLoading = false
-            alert(this.$t('message.delegateerror') + "\n"+res.message)
+            alert(this.$t('error.delegateerror') + "\n"+res.message)
           }
         }
         catch(e){
           this.isLoading = false
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }
       },
       async withdrawPeanuts(){
@@ -275,15 +286,24 @@
           this.isLoading = true
           this.loadingFlag = false
           let instance = this.$store.state.nutPoolInstance
-          await instance.withdrawPeanuts().send({feeLimit:20_000_000})
-          await this.sleep()
-          await this.getOtherBalance()
-          this.isLoading = false
-          this.loadingFlag = true
+          let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
+          if (res && (await isTransactionSuccess(res))){
+            await this.getOtherBalance()
+            this.isLoading = false
+            this.loadingFlag = true
+          }else{
+            let ret = await getTransactionResult(res)
+            if (ret && ret[0] && ret[0].contractRet === "OUT OF ENERGE"){
+              alert(this.$t('error.error')+"\n" + this.$t('error.insufficientEnerge'))
+              return
+            }
+            alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
+          }
+          
         }
         catch(e){
           this.isLoading = false
-          alert(this.$t('message.error')+"\n" + e)
+          alert(this.$t('error.error')+"\n" + e)
         }
       },
       hideMask(){
@@ -391,20 +411,21 @@
             that.loadingFlag = true
 
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
         } else{
           // console.log(22333, "啥也没干！")
           try{
+            await that.getNutTronLink()
+            await that.getNutsPool()
+            await  that.getNutPoolTronLink()
             await that.getSteemStates()
             await that.getOtherBalance()
-            await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
             that.loadingFlag = true
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }

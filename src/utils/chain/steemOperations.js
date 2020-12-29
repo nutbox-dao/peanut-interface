@@ -1,5 +1,5 @@
 import steem from "steem";
-import {STEEM_API_URLS, STEEM_CONF_KEY} from '../const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY} from '../../const.js'
 let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
 steem.api.setOptions({ url: steemConf })
@@ -34,6 +34,7 @@ export async function transfer(fromTron, toSteem, amount, symbol, memo) {
 }
 
 export async function transferSteem(from,to,amount,memo){
+  amount = parseFloat(amount).toFixed(3)
   const transOp = [
     'transfer',
     {
@@ -97,7 +98,6 @@ export async function steemDelegation(delegator, delegatee, amount, address) {
 
 export async function steemTransferVest(from, to, amount, address, fee){
   fee = parseFloat(fee).toFixed(3)
-  console.log(367,fee)
   const steemGas = process.env.VUE_APP_STEEM_GAS
   const feeOperation = [
     'transfer',

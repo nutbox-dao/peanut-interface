@@ -261,7 +261,7 @@
 
 <script>
   import SmallLoading from './SmallLoading'
-  import {transferSteem} from '../utils/steemOperations.js'
+  import {transferSteem} from '../utils/chain/steemOperations.js'
   export default {
     name: "Bridge",
     data() {
@@ -340,7 +340,6 @@
       async getTspBalance(){// tsp
         let addr = this.$store.state.addr
         let instance = this.$store.state.tspInstance2
-        console.log(123456333,'getBalanceOf')
         let a = await instance.balanceOf(addr).call()
         this.balanceOfTsp2 = this.dataFromSun(a)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
@@ -400,6 +399,13 @@
           this.canTransFlag = false
           //steem转帐
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let from = this.$store.state.username
           // let to = process.env.VUE_APP_STEEM
           let to = process.env.VUE_APP_STEEM_DEX
@@ -426,14 +432,14 @@
                 this.transValue = ''
                 this.isLoading = false
                 this.canTransFlag = true
-                this.maskInfo = this.$t('message.error')+"\n"+res.message
+                this.maskInfo = this.$t('error.error')+"\n"+res.message
                 this.showMask = true
             }
         }
         catch(e){
           this.isLoading = false
           this.canTransFlag = true
-          this.maskInfo = this.$t('message.error')+"\n"+e.message
+          this.maskInfo = this.$t('error.error')+"\n"+e.message
           this.showMask = true
         }
         },
@@ -466,7 +472,7 @@
         }
         catch(e){
             this.isLoading = false
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
         }
         },
@@ -530,6 +536,13 @@
           this.canTransSbdFlag = false
           //steem转帐
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let from = this.$store.state.username
           // let to = process.env.VUE_APP_STEEM
           let to = process.env.VUE_APP_STEEM_DEX
@@ -555,14 +568,14 @@
             this.transSbdValue = ''
             this.isLoading = false
             this.canTransSbdFlag = true
-            this.maskInfo =  this.$t('message.error')+"\n"+res.message
+            this.maskInfo =  this.$t('error.error')+"\n"+res.message
             this.showMask = true
           }
 
         }
         catch(e){
           this.isLoading = false
-          this.maskInfo = this.$t('message.error')+"\n"+e;
+          this.maskInfo = this.$t('error.error')+"\n"+e;
           this.showMask = true
         }
       },
@@ -593,7 +606,7 @@
         }
         catch(e){
           this.isLoading = false
-          this.maskInfo = this.$t('message.error')+"\n"+e
+          this.maskInfo = this.$t('error.error')+"\n"+e
           this.showMask = true
         }
       },
@@ -647,6 +660,13 @@
             this.canTransTspFlag = false
             //steem转帐
             let addr = this.$store.state.addr
+            let isAddr = this.tronWeb2.isAddress(addr)
+            if (!isAddr){
+              this.isLoadingAddr = false
+              this.maskInfo = "Can not get tron address,please refresh!"
+              this.showMask = true
+              return
+            }
             let from = this.$store.state.username
             let to = process.env.VUE_APP_STEEM_TSP || 'nutbox.tsp'
             let f = parseFloat(this.transTspValue) * 0.002
@@ -673,14 +693,14 @@
                   this.transTspValue = ''
                   this.isLoading = false
                   this.canTransFlag = true
-                  this.maskInfo = this.$t('message.error')+"\n"+res.message
+                  this.maskInfo = this.$t('error.error')+"\n"+res.message
                   this.showMask = true
               }
           }
           catch(e){
             this.isLoading = false
             this.canTransFlag = true
-            this.maskInfo = this.$t('message.error')+"\n"+e.message
+            this.maskInfo = this.$t('error.error')+"\n"+e.message
             this.showMask = true
           }
       },
@@ -692,6 +712,13 @@
           let from = this.$store.state.username
           let to = process.env.VUE_APP_STEEM_GAS || "nutbox.gas"
           let addr = this.$store.state.addr
+          let isAddr = this.tronWeb2.isAddress(addr)
+          if (!isAddr){
+            this.isLoadingAddr = false
+            this.maskInfo = "Can not get tron address,please refresh!"
+            this.showMask = true
+            return
+          }
           let instance = this.$store.state.tspInstance
           //销毁
           let ss = parseFloat(this.transTspValue).toFixed(3)
@@ -712,14 +739,14 @@
             this.isLoading = false
             this.canTransTspFlag = true
           }else{
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('error.error') + "\n" + "steem operate fail!"
             this.showMask = true
           }
         }
         catch(e){
             this.isLoading = false
             console.log(456723,e)
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
         }
       },
@@ -746,7 +773,6 @@
       async  function main(){
         if(Object.keys(instance).length === 0){
           //如果刷新页面, instance未定义
-          console.log(888, "bridge, instance为空，是刷新页面")
           try{
             await that.getSteemInstance()
             await that.getSbdInstance()
@@ -764,11 +790,10 @@
             await that.getTspBalance()
 
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
           }
         } else{
-          console.log(22333, "bridge, 啥也没干！")
           try{
             await that.getSbdTronLink()
             await that.getTspTronLink()
@@ -778,7 +803,7 @@
             await that.getTspBalance()
             await that.getTsbdBalance()
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
           }
         }
