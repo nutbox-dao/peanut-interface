@@ -42,6 +42,6 @@ export async function tspPoolAddress(){
     return tronWeb2.address.fromHex(res.data.networks['*'].address)
 }
 export async function tspLPPoolAddress(){
-    let res = await axios.get('/TspLPPool.json')
+    let res = await axios.get('/TspLpPool.json')
     return tronWeb2.address.fromHex(res.data.networks['*'].address)
 }

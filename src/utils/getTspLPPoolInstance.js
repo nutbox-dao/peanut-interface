@@ -1,5 +1,5 @@
 const getTspLPPoolInstance = async function(){
-  let res = await this.axios.get('/TspLPPool.json')
+  let res = await this.axios.get('/TspLpPool.json')
   // console.log(66799, res.data)
   let contract = this.tronWeb2.address.fromHex(res.data.networks['*'].address)
   // console.log(588, 'tsp pool',res.data.networks['*'].address)
