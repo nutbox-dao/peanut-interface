@@ -28,7 +28,7 @@
         {{this.tspPool}}
       </p>
 
-      <p><strong>TspLPPool</strong><br>
+      <p><strong>TspLpPool</strong><br>
         {{this.tspLPPool}}
       </p>
 
