@@ -122,6 +122,13 @@ export const isTransactionSuccess = async function (trxId) {
   return ret && ret[0] && ret[0].contractRet === "SUCCESS";
 };
 
+export const isInsufficientEnerge = async function (trxId) {
+  const ret = await getTransactionResult(trxId);
+  console.log(ret)
+  console.log(ret[0].contractRet)
+  return ret && ret[0] && ret[0].contractRet === "OUT_OF_ENERGY"
+};
+
 export const contractConfig = {
   feeLimit: 20 * 1000000, // 20 TRX (1TRX = 1,000,000SUN),
   // shouldPollResponse: true,

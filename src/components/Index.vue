@@ -251,7 +251,7 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
           let delegator = this.$store.state.username
 
           if (delegator && delegator.hasDeposited && steemAcc !== delegator){
-            alert(this.$t('message.delegateerror') + "\n" + this.$t('message.accountChanged'))
+            alert(this.$t('error.delegateerror') + "\n" + this.$t('error.accountChanged'))
             return
           }
           let delegatee = process.env.VUE_APP_STEEM_MINE
@@ -275,12 +275,12 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
           }else{
             this.delegatevalue = ''
             this.isLoading = false
-            alert(this.$t('message.delegateerror') + "\n"+res.message)
+            alert(this.$t('error.delegateerror') + "\n"+res.message)
           }
         }
         catch(e){
           this.isLoading = false
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }
       },
       async withdrawPeanuts(){
@@ -296,16 +296,16 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
           }else{
             let ret = await getTransactionResult(res)
             if (ret && ret[0] && ret[0].contractRet === "OUT OF ENERGE"){
-              alert(this.$t('message.error')+"\n" + this.$t('message.insufficientEnerge'))
+              alert(this.$t('error.error')+"\n" + this.$t('error.insufficientEnerge'))
               return
             }
-            alert(this.$t('message.error')+"\n" + "withdraw peanuts fail")
+            alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
           }
           
         }
         catch(e){
           this.isLoading = false
-          alert(this.$t('message.error')+"\n" + e)
+          alert(this.$t('error.error')+"\n" + e)
         }
       },
       hideMask(){
@@ -413,7 +413,7 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
             that.loadingFlag = true
 
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
@@ -427,7 +427,7 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
             await that.getOtherBalance()
             that.loadingFlag = true
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }

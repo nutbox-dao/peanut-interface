@@ -97,6 +97,7 @@
 
     import {getTransactionResult,
             isTransactionSuccess,
+            isInsufficientEnerge,
             getBalanceOfToken,
             getSupplyOfToken,
             amountToInt,
@@ -197,12 +198,16 @@ export default {
                     this.checkApproveFlag = false
                     this.canAddFlag = true
                 }else{
+                    if (await isInsufficientEnerge(broastTx['txid'])){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
+                        }
                     this.checkAddValue()
-                    alert("Approve fail")
                 }
             }catch (e){
                 this.checkAddValue()
-                alert(this.$t('message.error') + "\n" + e)
+                alert(this.$t('error.error') + "\n" + e)
             }
             finally{
                 this.isLoading = false
@@ -228,13 +233,17 @@ export default {
                     this.$parent.balanceOfTSPLP = parseFloat(this.$parent.balanceOfTSPLP2).toFixed(3)
                     this.hideMask()
                 }else{
+                    if (await isInsufficientEnerge(res)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                        }
                     this.checkAddValue()
-                    alert(this.$t('message.error') + "\n" + "Deposit fail")
                 }
             }
             catch(e){
                 this.checkAddValue()
-                alert(this.$t('message.error') + "\n" + e)
+                alert(this.$t('error.error') + "\n" + e)
             }finally{
                 this.isLoading = false  
             }
@@ -258,8 +267,12 @@ export default {
                    await this.$parent.$parent.getOtherBalance()
                    this.hideMask()
                 }else{
+                    if (await isInsufficientEnerge(res)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                        }
                     this.checkSubValue()
-                    alert(this.$t('message.error') + "\n" + "Sub Deposit fail")
                 }
             }
             catch(e){
@@ -288,11 +301,15 @@ export default {
                     this.$parent.$parent.getOtherBalance()
                     this.hideMask()
                 }else{
-                    alert(this.$t('message.error')+"\n" + "Undeposit Fail")
+                    if (await isInsufficientEnerge(delDepositTx)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                        }
                 }
             }
             catch(e){
-                alert(this.$t('message.error')+"\n" + e)
+                alert(this.$t('error.error')+"\n" + e)
             }finally{
                 this.isLoading = false
                 this.canDelFlag = true

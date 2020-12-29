@@ -166,7 +166,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
             that.addr = window.tronWeb.defaultAddress.base58
           }else{
             let link2 = 'TronLink: https://www.tronlink.org'
-            alert(that.$t('message.needtronlink')+"\n\n"+link2)
+            alert(that.$t('error.needtronlink')+"\n\n"+link2)
           }
         }
         if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0 || Object.keys(lpPoolInstance).length === 0){
@@ -188,7 +188,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
 
             await that.getOtherBalance()
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
@@ -203,7 +203,7 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
 
             await that.getOtherBalance()
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
             return
           }
