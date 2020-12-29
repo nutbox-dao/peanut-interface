@@ -16,6 +16,6 @@ export const LOCALE_KEY = 'localeLanguage'
 export const TRON_NODE_API = 'https://api.trongrid.io'
 
 // TSP-TRX 交易对地址
-export const TSP_TRX_CONTRACT_ADDRESS = 'TNJQ12KujHQCJHMj2ZHLCesNtqBaHZMqTT'
+export const TSP_TRX_CONTRACT_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
 // TSP-LP token 地址 ： 用tsp代替
-export const TSP_LP_TOKEN_ADDRESS = 'TKJxPKffj7y6TmH1GvmFVPugEqxwcA2mtm'
+export const TSP_LP_TOKEN_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
