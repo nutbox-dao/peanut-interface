@@ -135,6 +135,7 @@
 
   import {getTransactionResult,
   isTransactionSuccess,
+  isInsufficientEnerge,
   getBalanceOfToken,
   getSupplyOfToken,
   amountToInt,
@@ -259,12 +260,16 @@
             this.checkApproveFlag = false
             this.canMineFlag = true
           }else{
+            if (await isInsufficientEnerge(broastTx['txid'])){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
+            }
             this.checkMineAmount()
-            alert(this.$t('message.error')+"\n" + "Approve fail")
           }
         }catch (e){
           this.checkMineAmount()
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }finally{
           this.isLoading = false
         }
@@ -288,13 +293,17 @@
             this.balanceOfTSPLP2 = parseFloat(this.balanceOfTSPLP2) - b
             this.balanceOfTSPLP = parseFloat(this.balanceOfTSPLP2).toFixed(3)
           }else{
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.depositFail"))
+            }
             this.checkMineAmount()
-            alert(this.$t('message.error')+"\n" + "Deposit fail")
           }
         }
         catch(e){
           this.checkMineAmount()
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }finally{
           this.isLoading = false  
         }
@@ -307,11 +316,15 @@
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
           }else{
-            alert(this.$t('message.error')+"\n" + "Withdraw Fail!")
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
+            }
           }
         }
         catch(e){
-          alert(this.$t('message.error')+"\n" + e)
+          alert(this.$t('error.error')+"\n" + e)
         }finally{
           this.isLoading = false
         }
@@ -342,7 +355,7 @@
             clearInterval(timer)
           })
         }catch (e){
-          this.maskInfo = this.$t('message.tryrefreshpage') + "\n" + e;
+          this.maskInfo = this.$t('error.tryrefreshpage') + "\n" + e;
           this.showMask = true;
         }finally{
           this.isLoading = false

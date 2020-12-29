@@ -124,7 +124,7 @@
           that.getTspDepositList()
           that.getTspLPDepositList()
         }catch(e){
-          that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+          that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
           that.showMask = true
         }
 

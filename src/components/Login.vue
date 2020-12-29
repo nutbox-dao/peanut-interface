@@ -90,13 +90,13 @@
               this.$router.push({path:'/'})
             } else {
               //  Verification failed
-              alert(this.$t('message.steemloginerr')+"\n"+response.message)
+              alert(this.$t('error.steemloginerr')+"\n"+response.message)
               this.loadingFlag = true
             }
           })
         }else{
           this.loadingFlag = true
-          alert(this.$t('message.needkeychainandtronlink'))
+          alert(this.$t('error.needkeychainandtronlink'))
         }
       },
     },
@@ -136,14 +136,14 @@
             // Steem Keychain extension not installed...
             let link = 'Chrome: https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm\n\n' +
                     'Firefox: https://addons.mozilla.org/en-US/firefox/addon/steem-keychain'
-            alert(that.$t('message.needkeychain') +"\n\n"+link)
+            alert(that.$t('error.needkeychain') +"\n\n"+link)
           }
           //tronlink
           if (window.tronWeb) {
             that.addr = window.tronWeb.defaultAddress.base58
           }else{
             let link2 = 'TronLink: https://www.tronlink.org'
-            alert(that.$t('message.needtronlink')+"\n\n"+link2)
+            alert(that.$t('error.needtronlink')+"\n\n"+link2)
           }
         }
         that.isLoading = false

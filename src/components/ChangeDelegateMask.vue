@@ -193,7 +193,7 @@
                     }else{
                         this.addvalue = ''
                         this.isLoading = false
-                        alert("代理错误！\n"+res.message)
+                        alert(this.$t("error.changeDelegateFail") + "\n"+res.message)
                     }
                 }
                 catch(e){
@@ -226,7 +226,7 @@
                     }else{
                         this.subvalue = ''
                         this.isLoading = false
-                        alert("代理错误！\n"+res.message)
+                        alert(alert(this.$t("error.changeDelegateFail") + "\n"+res.message)+"\n"+res.message)
                     }
                 }
                 catch(e){
@@ -259,12 +259,12 @@
                         this.$router.go(0)
                     }else{
                         this.isLoading = false
-                        alert(this.$t("message.delegateerror")+"\n"+res.message)
+                        alert(alert(this.$t("error.changeDelegateFail") + "\n"+res.message)+"\n"+res.message)
                     }
                 }
                 catch(e){
                     this.isLoading = false
-                    alert(this.$t('message.error')+"\n" + e)
+                    alert(this.$t('error.error')+"\n" + e)
                 }
             },
             async withdrawPeanuts(){
@@ -273,7 +273,7 @@
                     await instance.withdrawPeanuts().send()
                 }
                 catch(e){
-                    alert(this.$t('message.error')+"\n" + e)
+                    alert(this.$t('error.error')+"\n" + e)
                 }
             },
 

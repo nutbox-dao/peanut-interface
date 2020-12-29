@@ -126,7 +126,7 @@
   import ChangeTSPDepositMask from './ChangeTSPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
   import {tspPoolAddress} from '../utils/contractAddress.js'
-  import {isTransactionSuccess} from '../utils/chain/tron.js'
+  import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
   
   export default {
     name: "TSPMine",
@@ -225,12 +225,16 @@
             this.checkApproveFlag = false
             this.canMineFlag = true
           }else{
+            if (await isInsufficientEnerge(approved)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
+            }
             this.checkMineAmount()
-            alert("Approve failed")
           }
         }catch (e){
           this.checkMineAmount()
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }finally{
           this.isLoading = false
         }
@@ -251,15 +255,19 @@
             //直接刷新当前页面
             this.$router.go(0)
           }else{
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.depositFail"))
+            }
             this.checkApproveFlag = true
             this.canMineFlag = false
-            alert(this.$t('message.error') + "\n" + "Deposit fail")
           }
         }
         catch(e){
           this.checkApproveFlag = true
           this.canMineFlag = false
-          alert(this.$t('message.error') + "\n" + e)
+          alert(this.$t('error.error') + "\n" + e)
         }finally{
           this.isLoading = false
         }
@@ -273,14 +281,18 @@
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
           }else{
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
+            }
             this.isLoading = false
-            alert(this.$t('message.error')+"\n" + "withdrawPeanuts fail")
           }
         }
         catch(e){
           this.isLoading = false
           this.loadingFlag = true
-          alert(this.$t('message.error')+"\n" + e)
+          alert(this.$t('error.error')+"\n" + e)
         }finally{
           this.isLoading = false
           this.loadingFlag = true
@@ -335,7 +347,7 @@
             clearInterval(timer)
           })
         }catch(e){
-          this.maskInfo = this.$t('message.tryrefreshpage') + "\n" + e;
+          this.maskInfo = this.$t('error.tryrefreshpage') + "\n" + e;
           this.showMask = true;
         }finally{
           this.isLoading = false

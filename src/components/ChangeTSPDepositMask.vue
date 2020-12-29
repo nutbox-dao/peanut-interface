@@ -105,7 +105,7 @@
 <script>
     import SmallLoading from './SmallLoading'
     import {tspPoolAddress} from '../utils/contractAddress.js'
-    import {isTransactionSuccess} from '../utils/chain/tron.js'
+    import {isTransactionSuccess,isInsufficientEnerge} from '../utils/chain/tron.js'
     export default {
         name: "ChangeTSPDepositMask",
         props: ['changeDegate',
@@ -183,12 +183,16 @@
                         this.checkApproveFlag = false
                         this.canAddFlag = true
                     }else{
+                        if (await isInsufficientEnerge(approved)){
+                        alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                        alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
+                        }
                         this.checkAddValue()
-                        alert("Approve failed!")
                     }
                 }catch (e){
                     this.checkAddValue()
-                    alert(this.$t('message.error') + "\n" + e)
+                    alert(this.$t('error.error') + "\n" + e)
                 }
                 finally{
                     this.isLoading = false
@@ -208,7 +212,12 @@
                         //直接刷新当前页面
                         this.$router.go(0)
                     }else{
-                        alert('Deposit fail!')
+                        if (await isInsufficientEnerge(res)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                        }
+                        this.checkAddValue()
                     }
                 }
                 catch(e){
@@ -233,7 +242,12 @@
                         //直接刷新当前页面
                         this.$router.go(0)
                     }else{
-                        alert("sub Deposit fail")
+                        if (await isInsufficientEnerge(res)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                        }else{
+                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                        }
+                        this.checkSubValue()
                     }
                 }
                 catch(e){
@@ -261,7 +275,7 @@
                 }
                 catch(e){
                     this.isLoading = false
-                    alert(this.$t('message.error')+"\n" + e)
+                    alert(this.$t('error.error')+"\n" + e)
                 }
             },
 

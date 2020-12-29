@@ -432,14 +432,14 @@
                 this.transValue = ''
                 this.isLoading = false
                 this.canTransFlag = true
-                this.maskInfo = this.$t('message.error')+"\n"+res.message
+                this.maskInfo = this.$t('error.error')+"\n"+res.message
                 this.showMask = true
             }
         }
         catch(e){
           this.isLoading = false
           this.canTransFlag = true
-          this.maskInfo = this.$t('message.error')+"\n"+e.message
+          this.maskInfo = this.$t('error.error')+"\n"+e.message
           this.showMask = true
         }
         },
@@ -472,7 +472,7 @@
         }
         catch(e){
             this.isLoading = false
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
         }
         },
@@ -568,14 +568,14 @@
             this.transSbdValue = ''
             this.isLoading = false
             this.canTransSbdFlag = true
-            this.maskInfo =  this.$t('message.error')+"\n"+res.message
+            this.maskInfo =  this.$t('error.error')+"\n"+res.message
             this.showMask = true
           }
 
         }
         catch(e){
           this.isLoading = false
-          this.maskInfo = this.$t('message.error')+"\n"+e;
+          this.maskInfo = this.$t('error.error')+"\n"+e;
           this.showMask = true
         }
       },
@@ -606,7 +606,7 @@
         }
         catch(e){
           this.isLoading = false
-          this.maskInfo = this.$t('message.error')+"\n"+e
+          this.maskInfo = this.$t('error.error')+"\n"+e
           this.showMask = true
         }
       },
@@ -693,14 +693,14 @@
                   this.transTspValue = ''
                   this.isLoading = false
                   this.canTransFlag = true
-                  this.maskInfo = this.$t('message.error')+"\n"+res.message
+                  this.maskInfo = this.$t('error.error')+"\n"+res.message
                   this.showMask = true
               }
           }
           catch(e){
             this.isLoading = false
             this.canTransFlag = true
-            this.maskInfo = this.$t('message.error')+"\n"+e.message
+            this.maskInfo = this.$t('error.error')+"\n"+e.message
             this.showMask = true
           }
       },
@@ -739,14 +739,14 @@
             this.isLoading = false
             this.canTransTspFlag = true
           }else{
-            this.maskInfo = this.$t('message.error') + "\n" + "steem operate fail!"
+            this.maskInfo = this.$t('error.error') + "\n" + "steem operate fail!"
             this.showMask = true
           }
         }
         catch(e){
             this.isLoading = false
             console.log(456723,e)
-            this.maskInfo = this.$t('message.error') + "\n" + e
+            this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
         }
       },
@@ -790,7 +790,7 @@
             await that.getTspBalance()
 
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
           }
         } else{
@@ -803,7 +803,7 @@
             await that.getTspBalance()
             await that.getTsbdBalance()
           }catch(e){
-            that.maskInfo = that.$t('message.tryrefreshpage')+"\n"+e
+            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
           }
         }
