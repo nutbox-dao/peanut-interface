@@ -144,11 +144,9 @@ export default new Vuex.Store({
       state.username = null
       state.password = null
       state.active = null
-      state.addr = null
       Cookie.remove('username')
       Cookie.remove('password')
       Cookie.remove('active')
-      Cookie.remove('addr')
     }
   }
 })

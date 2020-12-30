@@ -178,7 +178,7 @@
       },
 
     },
-    async mounted() {
+    async beforeMount(){
       const addr = await getTronLinkAddr()
       if(addr === TRON_LINK_ADDR_NOT_FOUND.walletLocked){
         alert(this.$t('error.unlockWallet'))
@@ -193,6 +193,9 @@
         this.$store.commit('saveTronAddr',addr)
         this.$router.go(0)
       })
+    },
+    async mounted() {
+      
     },
 
   }
