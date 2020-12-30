@@ -206,8 +206,9 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
           }
         }
       }
+      this.apy = localStorage.getItem('apy')
       await main()
-      await this.calPnutApy()
+      this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()
       this.$refs.tsplp.update()

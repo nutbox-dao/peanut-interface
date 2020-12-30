@@ -107,7 +107,7 @@
     mounted() {
       let that = this
       async function main(){
-        await that.sleep()
+        // await that.sleep()
         //keychain
         if(window.steem_keychain) {
           // Steem Keychain extension installed...
@@ -128,7 +128,7 @@
         //如果有一个没有获取到则再获取一次
         if(!that.keychainFlag || !that.tronlinkFlag){
           that.isLoading = true
-          await that.sleep()
+          await that.sleep(2)
           //keychain
           if(window.steem_keychain) {
             // Steem Keychain extension installed...

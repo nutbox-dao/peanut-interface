@@ -315,27 +315,9 @@
         let p2 = await tspPool.totalDepositedTSP().call()
         // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
         },
-              async getSteemPrice(){
-        let res = await this.axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/steem',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
       
       // 父控件加载完数据后调用此方法更新数据
       async update(){
-        console.log('update-------')
         try{
           this.vestsToSp = await vestsToSteem(1)
           await this.getTspBalance()
