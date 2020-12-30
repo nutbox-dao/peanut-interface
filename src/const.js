@@ -17,5 +17,5 @@ export const TRON_NODE_API = 'https://api.trongrid.io'
 
 // TSP-TRX 交易对地址
 export const TSP_TRX_CONTRACT_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
-// TSP-LP token 地址 ： 用tsp代替
+// TSP-LP token 地址
 export const TSP_LP_TOKEN_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
