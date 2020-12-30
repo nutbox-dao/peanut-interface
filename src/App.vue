@@ -5,11 +5,11 @@
           <img src="../static/images/logo.svg" class="d-inline-block align-top" alt="nutboxs">
       </b-navbar-brand>
 
-      <div class="logos" v-if="$store.state.username">
-          <span style="margin-right: 1rem" @click="mywallet">
+      <div class="logos">
+          <span style="margin-right: 1rem" @click="mywallet" v-if="$store.state.username">
             <img class="account-icon" src="../static/images/nav-steem-icon.png" alt="steem">@{{ $store.state.username }}
           </span>
-          <span @click="mywallet">
+          <span @click="mywallet" v-if="$store.state.addr">
             <img class="account-icon" src="../static/images/nav-tron-icon.png" alt="tron">{{$store.state.addr | formatAddr}}
           </span>
 
@@ -116,7 +116,8 @@
 </template>
 
 <script>
-  import {STEEM_API_URLS,STEEM_CONF_KEY,LOCALE_KEY} from './const.js'
+  import {STEEM_API_URLS,STEEM_CONF_KEY,LOCALE_KEY, TRON_LINK_ADDR_NOT_FOUND} from './const.js'
+  import {whatchWallet,getTronLinkAddr} from './utils/chain/tron.js'
   export default {
     name: 'App',
     data(){
@@ -177,8 +178,22 @@
       },
 
     },
-    mounted() {
-      },
+    async mounted() {
+      const addr = await getTronLinkAddr()
+      if(addr === TRON_LINK_ADDR_NOT_FOUND.walletLocked){
+        alert(this.$t('error.unlockWallet'))
+        return
+      }else if(addr === TRON_LINK_ADDR_NOT_FOUND.noTronLink){
+        let link2 = 'TronLink: https://www.tronlink.org'
+        alert(this.$t('error.needtronlink')+"\n\n"+link2)
+        return
+      }
+      this.$store.commit('saveTronAddr',addr)
+      whatchWallet((addr) => {
+        this.$store.commit('saveTronAddr',addr)
+        this.$router.go(0)
+      })
+    },
 
   }
 </script>

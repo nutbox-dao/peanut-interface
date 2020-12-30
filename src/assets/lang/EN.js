@@ -86,6 +86,7 @@ module.exports = {
         "needkeychain":"Please install Steem Keychain",
         "needtronlink":"Please install TronLink",
         "insufficientEnerge":"Not enough energy",
+        "unlockWallet":"Please unlock tronlink",
     },
     tsp:{
         "tspMine":"Mining by TSP",

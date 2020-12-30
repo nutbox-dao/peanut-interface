@@ -86,6 +86,7 @@ module.exports = {
         "needkeychain":"스팀 키체인을 설치해주세요.",
         "needtronlink":"트론 링크를 설치해주세요.",
         "insufficientEnerge":"에너지가 충분하지 않습니다",
+        "unlockWallet":"Please unlock tronlink",
     },
     tsp:{
         "tspMine":"트론 기반 스팀 파워(TSP)를 통한 피넛 채굴",

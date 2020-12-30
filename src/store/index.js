@@ -56,6 +56,11 @@ export default new Vuex.Store({
       Cookie.set("addr", userobj.addr, "30d")
     },
 
+    saveTronAddr: function (state,addr){
+      state.addr = addr;
+      Cookie.set('addr',addr,"30d")
+    },
+
 // tsteem
     saveSteemInstance: function (state, instance){
       state.steemInstance = instance

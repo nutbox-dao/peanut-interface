@@ -1,6 +1,7 @@
 import axios from "axios";
 import Tron from "tronweb";
-import {TRON_NODE_API} from '../../const.js'
+import {TRON_NODE_API, TRON_LINK_ADDR_NOT_FOUND} from '../../const.js'
+import {sleep} from '../sleep.js'
 
 let tron_instances = {
   DEFAULT: null,
@@ -26,6 +27,30 @@ function initTron(symbol) {
 
 function getTron(symbol = "DEFAULT") {
   return initTron(symbol);
+}
+
+export async function getTronLinkAddr() {
+  let addr = null;
+  if (window.tronWeb) {
+    addr = window.tronWeb.defaultAddress.base58
+    if (addr){
+      return addr;
+    }
+  }
+  await sleep(2)
+  //tronlink
+  if (window.tronWeb) {
+    addr = window.tronWeb.defaultAddress.base58
+    if (addr){
+      return addr;
+    }else{
+      return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
+    }
+  }else{
+    let link2 = 'TronLink: https://www.tronlink.org'
+    // alert(this.$t('error.needtronlink')+"\n\n"+link2)
+    return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
+  }
 }
 
 let contracts = {};
@@ -145,6 +170,7 @@ export const getBalanceOfToken = async function(token, user){
   // console.log("banlanceof",balance)                                              
   return balance && balance['constant_result'] && balance['constant_result'][0] && tron.toDecimal('0x'+balance['constant_result'][0]);
 }
+
 export const getSupplyOfToken = async function(token){
   let tron = getTron()
   let supply = await tron.transactionBuilder
@@ -155,4 +181,28 @@ export const getSupplyOfToken = async function(token){
                                               token)
   // console.log("total supply",tron.toDecimal('0x'+supply['constant_result'][0]))
   return supply && supply['constant_result'] && supply['constant_result'][0] && tron.toDecimal('0x'+supply['constant_result'][0]);
+}
+
+// whatch the tronlink address every 5sec，if changed callback the new address
+export const whatchWallet = async function(callback){
+  try{
+    const addr = await getTronLinkAddr()
+    if (!addr) {
+      return;
+    }
+    const originalAddr = localStorage.getItem('tronLinkAddress')
+    if (addr && originalAddr && callback && addr != originalAddr){
+      callback(addr);
+    }
+    if (addr !== TRON_LINK_ADDR_NOT_FOUND.walletLocked && addr !== TRON_LINK_ADDR_NOT_FOUND.noTronLink){
+      localStorage.setItem('tronLinkAddress',addr)
+      return;
+    }
+  }catch(e){
+
+  }finally{
+    setTimeout(() => {
+      whatchWallet(callback);
+    }, 500)
+  }
 }

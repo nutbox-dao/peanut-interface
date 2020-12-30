@@ -45,9 +45,6 @@ const routes = [
     path: '/wallet',
     name: 'wallet',
     component: Wallet,
-    meta:{
-          requireAuth:true
-    }
   },
   {
     path: '/contract',

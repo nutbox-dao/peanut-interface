@@ -36,6 +36,8 @@
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
 import {vestsToSteem} from '../utils/chain/steemOperations.js'
+import {whatchWallet,getTronLinkAddr} from '../utils/chain/tron.js'
+import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
   
   export default {
     name: "TSP",
@@ -144,30 +146,10 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
     },
     async mounted() {
       let that = this
-      let instance = this.$store.state.tspInstance2
-      let poolinstance = this.$store.state.tspPoolInstance2
-      let lpPoolInstance = this.$store.state.tspLPPoolInstance2
       async function main(){
-        // await that.sleep()
-        if (window.tronWeb) {
-          // console.log(22, "tronlink is ok! login")
-          that.addr = window.tronWeb.defaultAddress.base58
-        }else{
-             that.tronlinkFlag = false
-        }
-
-        //如果有一个没有获取到则再获取一次
-        if(!that.tronlinkFlag){
-          that.isLoading = true
-          await that.sleep(1)
-          //tronlink
-          if (window.tronWeb) {
-            that.addr = window.tronWeb.defaultAddress.base58
-          }else{
-            let link2 = 'TronLink: https://www.tronlink.org'
-            alert(that.$t('error.needtronlink')+"\n\n"+link2)
-          }
-        }
+        let instance = that.$store.state.tspInstance2
+        let poolinstance = that.$store.state.tspPoolInstance2
+        let lpPoolInstance = that.$store.state.tspLPPoolInstance2
         if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0 || Object.keys(lpPoolInstance).length === 0){
           //如果刷新页面, instance未定义
           try{
@@ -207,11 +189,13 @@ import {vestsToSteem} from '../utils/chain/steemOperations.js'
         }
       }
       this.apy = localStorage.getItem('apy')
+      this.addr = this.$store.state.addr
       await main()
       this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()
       this.$refs.tsplp.update()
+
     }
   }
 </script>

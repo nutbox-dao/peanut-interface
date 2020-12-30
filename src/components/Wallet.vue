@@ -6,7 +6,7 @@
             </div>
 
              <!-- steem -->
-             <div class="round-box">
+             <div class="round-box" v-if="$store.state.username">
                     <div class="round-box-title-container">
                         <p class="box-title">
                             <img class="coin-icon" src="../../static/images/steem.svg" alt="steem">
@@ -50,7 +50,7 @@
                 </div>
 
             <!-- tron -->
-            <div class="round-box">
+            <div class="round-box" v-if="$store.state.addr">
                 <div class="round-box-title-container">
                     <p class="box-title">
                         <img class="coin-icon" src="../../static/images/nav-tron-icon.png" alt="tron">
@@ -232,37 +232,32 @@
             let that = this
             let instance = this.$store.state.steemInstance2
             async  function main(){
-                if(Object.keys(instance).length === 0){
-                    //如果刷新页面, instance未定义
-                    // console.log(888, "instance为空，是刷新页面")
-                    await that.getSteemInstance()
-                    await that.getSbdInstance()
-                    await that.getNutsInstance()
-                    await that.getNutsPool()
-
-                    await that.getSteemStates()
-                    await that.getBalance()
-                    await that.getTsbdBalance()
-                    await that.getOtherBalance()
-
-                    await that.getTspInstance()
-                    await that.getTspBalance()
-
-                    // await that.owner()
-                    that.isLoading = false
-                } else{
+                try {
+                    if(Object.keys(instance).length === 0){
+                        //如果刷新页面, instance未定义
+                        // console.log(888, "instance为空，是刷新页面")
+                        await that.getSteemInstance()
+                        await that.getSbdInstance()
+                        await that.getNutsInstance()
+                        await that.getNutsPool()
+                        await that.getTspInstance()
+                    }
                     // console.log(22333, "啥也没干！")
-                    await that.getSteemStates()
-                    await that.getBalance()
-                    await that.getTsbdBalance()
-                    await that.getOtherBalance()
-                    await that.getTspBalance()
-
-                    that.isLoading = false
+                    if (that.$store.state.username){
+                        await that.getSteemStates()
+                    }
+                    if(that.$store.state.addr){
+                        await that.getBalance()
+                        await that.getTsbdBalance()
+                        await that.getOtherBalance()
+                        await that.getTspBalance()
+                    }
+                }catch (e){
+                    alert(this.$t('error.error')+'\n' + e)
                 }
+                that.isLoading = false
             }
             main()
-
         },
 
     }

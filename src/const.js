@@ -19,3 +19,8 @@ export const TRON_NODE_API = 'https://api.trongrid.io'
 export const TSP_TRX_CONTRACT_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
 // TSP-LP token 地址
 export const TSP_LP_TOKEN_ADDRESS = 'TBpTbddofiBrE1AfhQbwU2BhsrBUM2Lnir'
+
+export const TRON_LINK_ADDR_NOT_FOUND = {
+  walletLocked:'walletLocked',
+  noTronLink:'noTronLink'
+}
