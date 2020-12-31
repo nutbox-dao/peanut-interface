@@ -95,7 +95,7 @@
     import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
     import {tspAddress, tspLPPoolAddress} from '../utils/contractAddress.js'
 
-    import {getTransactionResult,
+    import {
             isTransactionSuccess,
             isInsufficientEnerge,
             getBalanceOfToken,

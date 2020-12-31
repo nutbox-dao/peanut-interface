@@ -121,7 +121,7 @@ export const getTransaction = async function (trxId) {
   }
 };
 
-export const getTransactionResult = function (trxId) {
+const getTransactionResult = function (trxId) {
   return new Promise(async (resolve, reject) => {
     const read = async (retries = 20) => {
       const trx = await getTransaction(trxId);

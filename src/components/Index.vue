@@ -137,7 +137,7 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
-import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
+import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
   export default {
     name: "Index",
     data() {
@@ -259,14 +259,6 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
           res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
           if(res.success === true) {
-            //代理成功才挖矿
-            // let nutPool = this.$store.state.nutPoolInstance2
-            // let value = this.dataToSun(b)
-
-            // let value = this.tronWeb2.toSun(b.toFixed(6))
-            //   console.log(567, b.toFixed(6))
-            //   console.log(568, value)
-            // await nutPool.deposit(username, addr, value).send()
             await this.sleep()
             //直接刷新当前页面
             this.$router.go(0)
@@ -292,12 +284,11 @@ import { isTransactionSuccess, getTransactionResult} from '../utils/chain/tron'
             this.isLoading = false
             this.loadingFlag = true
           }else{
-            let ret = await getTransactionResult(res)
-            if (ret && ret[0] && ret[0].contractRet === "OUT OF ENERGE"){
-              alert(this.$t('error.error')+"\n" + this.$t('error.insufficientEnerge'))
-              return
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
             }
-            alert(this.$t('error.error')+"\n" + this.$t("error.withdrawFail"))
           }
           
         }
