@@ -51,7 +51,7 @@
                    <b-dropdown-item-button>
                     <a target="_blank" href="https://docs.nutbox.io/user_guide.html">{{ $t('message.userBook') }}</a>
                   </b-dropdown-item-button>
-                  <b-dropdown-item-button></b-dropdown-item-button>
+                  <b-dropdown-divider></b-dropdown-divider>
 
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://docs.nutbox.io">{{ $t('message.docs') }}</a>
