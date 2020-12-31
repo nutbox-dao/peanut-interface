@@ -48,9 +48,10 @@
               <div class="drop">
                   <b-dropdown id="dropdown-grouped" :text="this.$t('message.about')" variant="transparent" class="m-2">
 
-                   <!-- <b-dropdown-item-button @click="mywallet">
-                     <router-link to="/wallet">{{ $t('message.mywallet') }}</router-link>
-                  </b-dropdown-item-button> -->
+                   <b-dropdown-item-button>
+                    <a target="_blank" href="https://docs.nutbox.io/user_guide.html">{{ $t('message.userBook') }}</a>
+                  </b-dropdown-item-button>
+                  <b-dropdown-item-button></b-dropdown-item-button>
 
                   <b-dropdown-item-button>
                     <a target="_blank" href="https://docs.nutbox.io">{{ $t('message.docs') }}</a>
