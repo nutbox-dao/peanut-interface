@@ -411,7 +411,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
           try{
             await that.getNutTronLink()
             await that.getNutsPool()
-            await  that.getNutPoolTronLink()
+            await that.getNutPoolTronLink()
             await that.getSteemStates()
             await that.getOtherBalance()
             that.loadingFlag = true

@@ -25,7 +25,7 @@ function initTron(symbol) {
   }
 }
 
-function getTron(symbol = "DEFAULT") {
+export function getTron(symbol = "DEFAULT") {
   return initTron(symbol);
 }
 
@@ -75,7 +75,14 @@ async function getContractAbi(symbol = "STEEM", force = false) {
 
 export const getTronLink = function (){
   // console.log(2356000,window.tronWeb)
-  return window.tronWeb
+  let tronlink = window.tronWeb
+  for (let i=0;i<100;i++){
+    tronlink = window.tronWeb
+    if (tronlink){
+      return tronlink
+    }
+    sleep(0.1)
+  }
 }
 
 export function getAddress(hex) {

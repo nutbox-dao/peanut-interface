@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import {peanutsPoolAddress,tsbdAddress,tsteemAddress,peanutAddress,tspAddress,tspPoolAddress,tspLPPoolAddress} from '../../utils/contractAddress.js'
+  import {peanutsPoolAddress,tsbdAddress,tsteemAddress,peanutAddress,tspAddress,tspPoolAddress,tspLPPoolAddress,contractAddress} from '../../utils/contractAddress.js'
   export default {
     name: "Contract",
     data() {
@@ -67,13 +67,13 @@
     mounted() {
       let that = this
       async function main(){
-        that.peanutsPool = await peanutsPoolAddress()
-        that.tsbd = await tsbdAddress()
-        that.tsteem = await tsteemAddress()
-        that.pnut = await peanutAddress()
-        that.tsp = await tspAddress()
-        that.tspPool = await tspPoolAddress()
-        that.tspLPPool = await tspLPPoolAddress()
+        that.peanutsPool = (await that.getAbiAndContractAddress('PNUT_POOL')).address
+        that.tsbd = (await that.getAbiAndContractAddress("SBD")).address
+        that.tsteem = (await that.getAbiAndContractAddress("STEEM")).address
+        that.pnut = (await that.getAbiAndContractAddress("PNUT")).address
+        that.tsp = (await that.getAbiAndContractAddress("TSP")).address
+        that.tspPool = (await that.getAbiAndContractAddress("TSP_POOL")).address
+        that.tspLPPool = (await that.getAbiAndContractAddress("TSP_LP_POOL")).address
       }
       main()
     },

@@ -10,6 +10,11 @@ const solidityNode = new HttpProvider(TRON_NODE)
 const eventServer = new HttpProvider(TRON_NODE)
 const tronWeb2 = new TronWeb(fullNode,solidityNode,eventServer)
 
+import {getAbiAndContractAddress} from './chain/contract'
+
+export const contractAddress = async function(symbol){
+    return getAbiAndContractAddress(symbol)[1]
+}
 
 export async function peanutsPoolAddress(){
     let res = await axios.get('/PeanutsPoolV2.json')

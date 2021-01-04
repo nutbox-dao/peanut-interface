@@ -29,17 +29,17 @@ export default new Vuex.Store({
     tspPoolInstance2: {},
     tspPoolJson: {},
 
-    tspLPPoolInstance: {},
-    tspLPPoolInstance2: {},
-    tspLPPoolJson: {},
+    tspLpPoolInstance: {},
+    tspLpPoolInstance2: {},
+    tspLpPoolJson: {},
 
-    nutInstance: {},
-    nutInstance2: {},
-    nutJson: {},
+    pnutInstance: {},
+    pnutInstance2: {},
+    pnutJson: {},
 
-    nutPoolInstance: {},
-    nutPoolInstance2: {},
-    nutPoolJson: {},
+    pnutPoolInstance: {},
+    pnutPoolInstance2: {},
+    pnutPoolJson: {},
 
   },
   mutations: {
@@ -94,16 +94,16 @@ export default new Vuex.Store({
     saveTspPoolInstance2: function (state, instance2){
       state.tspPoolInstance2 = instance2
     },
-// tspLPpool
-    saveTspLPPoolJson:function (state, tspLPPoolJson){
-      state.tspLPPoolJson.abi = tspLPPoolJson.abi
-      state.tspLPPoolJson.contract = tspLPPoolJson.contract
+// tspLpPool
+    saveTspLpPoolJson:function (state, tspLpPoolJson){
+      state.tspLpPoolJson.abi = tspLpPoolJson.abi
+      state.tspLpPoolJson.contract = tspLpPoolJson.contract
     },
-    saveTspLPPoolInstance: function (state,instance){
-      state.tspLPPoolInstance = instance
+    saveTspLpPoolInstance: function (state,instance){
+      state.tspLpPoolInstance = instance
     },
-    saveTspLPPoolInstance2: function (state, instance2){
-      state.tspLPPoolInstance2 = instance2
+    saveTspLpPoolInstance2: function (state, instance2){
+      state.tspLPpoolInstance2 = instance2
     },
 // sbd
     saveSbdInstance: function (state, instance){
@@ -117,28 +117,27 @@ export default new Vuex.Store({
       state.sbdJson.contract= sbdJson.contract
     },
 // pnuts
-    saveNutInstance: function (state, instance){
-      state.nutInstance = instance
+    savePnutInstance: function (state, instance){
+      state.pnutInstance = instance
     },
-    saveNutInstance2: function (state, instance2){
-      state.nutInstance2 = instance2
+    savePnutInstance2: function (state, instance2){
+      state.pnutInstance2 = instance2
     },
-    saveNutJson: function (state, nutJson){
-      state.nutJson.abi = nutJson.abi
-      state.nutJson.contract = nutJson.contract
+    savePnutJson: function (state, pnutJson){
+      state.pnutJson.abi = pnutJson.abi
+      state.pnutJson.contract = pnutJson.contract
     },
-// nut pool
-    saveNutPoolInstance: function (state, instance){
-      state.nutPoolInstance = instance
+// pnut pool
+    savePnutPoolInstance: function (state, instance){
+      state.pnutPoolInstance = instance
     },
-    saveNutPoolInstance2: function (state, instance2){
-      state.nutPoolInstance2 = instance2
+    savePnutPoolInstance2: function (state, instance2){
+      state.pnutPoolInstance2 = instance2
     },
-    saveNutPoolJson: function (state, poolJson){
-      state.nutPoolJson.abi = poolJson.abi
-      state.nutPoolJson.contract= poolJson.contract
+    savePnutPoolJson: function (state, poolJson){
+      state.pnutPoolJson.abi = poolJson.abi
+      state.pnutPoolJson.contract= poolJson.contract
     },
-
 
     clearUser: function (state) {
       state.username = null
