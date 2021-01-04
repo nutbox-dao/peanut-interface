@@ -41,11 +41,14 @@ export const getAbiAndContractAddress = async function(symbol){
 export const getContract = async function(symbol){
     let instance = store.state[CONTRACT_STORE_NAME[symbol]+'Instance']
     if (instance){
+        console.log('has store',symbol,instance)
         return instance
     }
     const tronLink = getTronLink()
     const {abi,address} = getAbiAndContractAddress(symbol)
+    console.log('abi addr:',abi,address)
     instance = tronLink.contract(abi,address)
+    console.log('get instance',instance)
     store.commit('save' + firstToUpper(CONTRACT_STORE_NAME[symbol])+'Instance', instance)
     return instance
 }

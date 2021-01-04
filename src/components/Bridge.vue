@@ -715,7 +715,7 @@
           let isAddr = this.tronWeb2.isAddress(addr)
           if (!isAddr){
             this.isLoadingAddr = false
-            this.maskInfo = "Can not get tron address,please refresh!"
+            this.maskInfo = "Can not get tron address, please refresh!"
             this.showMask = true
             return
           }
@@ -731,7 +731,7 @@
           let res = await transferSteem(from,to,tspfee,memo)
           if (res.success === true){
             await instance.tspToSteem(to, value).send()
-            await  this.sleep()
+            await this.sleep()
             await this.getBalance()
             await this.getSteemStates()
             await this.getTspBalance()

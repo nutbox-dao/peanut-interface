@@ -126,6 +126,8 @@
 
 <script>
     import SmallLoading from './SmallLoading'
+    import {getContract} from '../utils/chain/contract.js'
+    import {getTronLinkAddr} from '../utils/chain/tron'
     export default {
         name: "Wallet",
         data() {
@@ -161,8 +163,10 @@
         },
         methods: {
             async getBalance(){ //tsteem
-                let addr = this.$store.state.addr
-                let instance = this.$store.state.steemInstance2
+                let addr = await getTronLinkAddr()
+                let instance = await getContract('STEEM')
+                let instance2 = this.$store.state.steemInstance2
+                console.log('steem instance',instance,instance2)
                 let c = await this.tronWeb2.trx.getBalance(addr)
                 this.balanceOfTron = this.formatData(this.dataFromSun(c))
                 let a = await instance.balanceOf(addr).call()
@@ -170,10 +174,10 @@
                 this.balanceOf2 = this.dataFromSun(a)
             },
             async getOtherBalance(){  //nuts
-                let addr = this.$store.state.addr
-                let instance = this.$store.state.nutInstance2
+                let addr = await getTronLinkAddr()
+                let instance = await getContract('PNUT')
 
-                let poolinstance = this.$store.state.nutPoolInstance2
+                let poolinstance = await getContract('PNUT_POOL')
                 let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
                 let p = this.dataFromSun(f.amount) * this.vestsToSp
                 this.balanceOfDelegate =  this.formatData(p)
@@ -185,8 +189,8 @@
                 // console.log(1232, "nutBalanceOf2", this.nutBalanceOf2)
             },
             async getTsbdBalance(){ //tsbd
-                let addr = this.$store.state.addr
-                let instance = this.$store.state.sbdInstance2
+                let addr = await getTronLinkAddr()
+                let instance = await getContract('SBD')
                 let a = await instance.balanceOf(addr).call()
                 this.balanceOfTsbd = this.formatData(this.dataFromSun(a))
                 this.balanceOfTsbd2 = this.dataFromSun(a)
@@ -205,8 +209,8 @@
                 this.balanceOfSp = (sp - delegatedSp).toFixed(3)
             },
              async getTspBalance(){// tsp
-                let addr = this.$store.state.addr
-                let instance = this.$store.state.tspInstance2
+                let addr = await getTronLinkAddr()
+                let instance = await getContract('TSP')
                 let a = await instance.balanceOf(addr).call()
                 this.balanceOfTsp = this.formatData(this.dataFromSun(a))
                 this.balanceOfTsp2 = this.dataFromSun(a)
@@ -233,25 +237,13 @@
             let instance = this.$store.state.steemInstance2
             async  function main(){
                 try {
-                    if(Object.keys(instance).length === 0){
-                        //如果刷新页面, instance未定义
-                        // console.log(888, "instance为空，是刷新页面")
-                        await that.getSteemInstance()
-                        await that.getSbdInstance()
-                        await that.getNutsInstance()
-                        await that.getNutsPool()
-                        await that.getTspInstance()
-                    }
-                    // console.log(22333, "啥也没干！")
                     if (that.$store.state.username){
-                        await that.getSteemStates()
+                        that.getSteemStates()
                     }
-                    if(that.$store.state.addr){
-                        await that.getBalance()
-                        await that.getTsbdBalance()
-                        await that.getOtherBalance()
-                        await that.getTspBalance()
-                    }
+                    that.getBalance()
+                    that.getTsbdBalance()
+                    that.getOtherBalance()
+                    that.getTspBalance()
                 }catch (e){
                     alert(this.$t('error.error')+'\n' + e)
                 }
