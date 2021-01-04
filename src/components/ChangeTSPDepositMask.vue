@@ -104,7 +104,7 @@
 
 <script>
     import SmallLoading from './SmallLoading'
-    import {tspPoolAddress} from '../utils/contractAddress.js'
+    import {getAbiAndContractAddress} from '../utils/chain/contract.js'
     import {isTransactionSuccess,isInsufficientEnerge} from '../utils/chain/tron.js'
     export default {
         name: "ChangeTSPDepositMask",
@@ -175,7 +175,7 @@
                     let a = parseFloat(this.addvalue)
                     let value = this.dataToSun(a)
 
-                    let tspPoolAddr = await tspPoolAddress()
+                    let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
                     let tsp = this.$store.state.tspInstance
                     let approved = await tsp.approve(tspPoolAddr, value).send({feeLimit:20_000_000})
                     // approved 为返回的交易hash值

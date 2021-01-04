@@ -131,7 +131,7 @@
   import SmallLoading from './SmallLoading'
   import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {tspAddress, tspLPPoolAddress} from '../utils/contractAddress.js'
+  import {getAbiAndContractAddress} from '../utils/chain/contract.js'
 
   import {
   isTransactionSuccess,
@@ -204,7 +204,7 @@
         let totalTSPLP = await getSupplyOfToken(TSP_LP_TOKEN_ADDRESS)
         this.totalLP = intToAmount(totalTSPLP)
         // 获取池中TSP总量
-        let tspAddr = await tspAddress()
+        let tspAddr = (await getAbiAndContractAddress('TSP')).address
         let TspInSwapPool = await getBalanceOfToken(tspAddr,TSP_TRX_CONTRACT_ADDRESS)
         this.totalTSP = intToAmount(TspInSwapPool)
       },
@@ -238,7 +238,7 @@
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
 
-          let tspLPPoolAddr = await tspLPPoolAddress()
+          let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL)')).address
           let tronLink = getTronLink()
           let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
           // 创建交易

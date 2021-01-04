@@ -125,7 +125,7 @@
   import SmallLoading from './SmallLoading'
   import ChangeTSPDepositMask from './ChangeTSPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {tspPoolAddress} from '../utils/contractAddress.js'
+  import {getAbiAndContractAddress} from '../utils/chain/contract.js'
   import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
   
   export default {
@@ -219,7 +219,7 @@
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           let tsp = this.$store.state.tspInstance
-          let tspPoolAddr = await tspPoolAddress()
+          let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
           let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
           if (approved && (await isTransactionSuccess(approved))){
             this.checkApproveFlag = false

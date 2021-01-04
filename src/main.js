@@ -88,7 +88,6 @@ import {dataFromSun} from "./utils/dataFromSun"
 import {dataToSun} from "./utils/dataToSun"
 import {formatData} from "./utils/formatData"
 import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/chain/steemOperations"
-import {getAbiAndContractAddress, getContract} from './utils/chain/contract.js'
 // import {approve} from "./utils/approve"
 // import {getTsteemAllowance} from "./utils/getTsteemAllowance"
 
@@ -108,8 +107,6 @@ Vue.prototype.getNutTronLink = getNutTronLink
 Vue.prototype.getNutsInstance = getNutsInstance
 Vue.prototype.getNutsPool = getNutsPool
 Vue.prototype.getNutPoolTronLink = getNutPoolTronLink
-Vue.prototype.getAbiAndContractAddress = getAbiAndContractAddress
-Vue.prototype.getContract = getContract
 Vue.prototype.axios = axios
 Vue.prototype.sleep  = sleep
 Vue.prototype.tronWeb2 = tronWeb2
@@ -121,8 +118,6 @@ Vue.prototype.steemTransferVest = steemTransferVest
 Vue.prototype.steemToVest = steemToVest
 Vue.prototype.vestsToSteem = vestsToSteem
 Vue.prototype.steemWrap = steemWrap
-// Vue.prototype.approve = approve
-// Vue.prototype.getTsteemAllowance = getTsteemAllowance
 
 
 Vue.config.productionTip = false

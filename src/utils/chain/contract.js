@@ -1,5 +1,7 @@
 import {getTronLink, getTron} from './tron.js'
 import {firstToUpper} from '../helper.js'
+import axios from 'axios'
+import store from '../../store'
 
 const CONTRACT_JSON_NAME_LIST = {
     PNUT        : "NutboxPeanuts.json",
@@ -22,29 +24,29 @@ const CONTRACT_STORE_NAME = {
 }
 
 export const getAbiAndContractAddress = async function(symbol){
-    const contract = this.$store.state[CONTRACT_STORE_NAME[symbol]+'Json']
+    const contract = store.state[CONTRACT_STORE_NAME[symbol]+'Json']
     let abi = contract && contract.abi
     let address = contract && contract.contract
     if (abi && address){
         return {abi,address}
     }
     const tronweb = getTron()
-    const res = await this.axios.get('/' + CONTRACT_JSON_NAME_LIST[symbol])
+    const res = await axios.get('/' + CONTRACT_JSON_NAME_LIST[symbol])
     abi = res.data.abi
     address = tronweb.address.fromHex(res.data.networks["*"].address)
-    this.$store.commit('save'+firstToUpper(CONTRACT_STORE_NAME[symbol])+'Json',{abi: abi, contract: address})
+    store.commit('save'+firstToUpper(CONTRACT_STORE_NAME[symbol])+'Json',{abi: abi, contract: address})
     return {abi,address}
 }
 
 export const getContract = async function(symbol){
-    let instance = this.$store.state[CONTRACT_STORE_NAME[symbol]+'Instance']
+    let instance = store.state[CONTRACT_STORE_NAME[symbol]+'Instance']
     if (instance){
         return instance
     }
     const tronLink = getTronLink()
     const {abi,address} = getAbiAndContractAddress(symbol)
     instance = tronLink.contract(abi,address)
-    this.$store.commit('save' + firstToUpper(CONTRACT_STORE_NAME[symbol])+'Instance', instance)
+    store.commit('save' + firstToUpper(CONTRACT_STORE_NAME[symbol])+'Instance', instance)
     return instance
 }
 

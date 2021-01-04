@@ -93,7 +93,7 @@
 <script>
     import SmallLoading from './SmallLoading'
     import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-    import {tspAddress, tspLPPoolAddress} from '../utils/contractAddress.js'
+    import {getAbiAndContractAddress} from '../utils/chain/contract.js'
 
     import {
             isTransactionSuccess,
@@ -175,7 +175,7 @@ export default {
                 let a = parseFloat(this.addvalue)
                 let value = this.dataToSun(a)
 
-                let tspLPPoolAddr = await tspLPPoolAddress()
+                let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
                 let tronLink = getTronLink()
                 let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
                 // 创建交易
@@ -193,7 +193,6 @@ export default {
                 let signedTx = await tronLink.trx.sign(approve['transaction'])
                 // 广播交易
                 let broastTx = await tronLink.trx.sendRawTransaction(signedTx)
-                console.log(658238,broastTx)
                 if (broastTx && broastTx['txid'] && (await isTransactionSuccess(broastTx['txid']))){
                     this.checkApproveFlag = false
                     this.canAddFlag = true
