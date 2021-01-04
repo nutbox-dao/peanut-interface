@@ -50,3 +50,14 @@ export const getContract = async function(symbol){
     return instance
 }
 
+export const getContractByDefaultAcc = async function(symbol) {
+    let instance = store.state[CONTRACT_STORE_NAME[symbol]+'Instance2']
+    if (Object.keys(instance).length !== 0){
+        return instance
+    }
+    const tronWeb = getTron()
+    const {abi,address} = await getAbiAndContractAddress(symbol)
+    instance = tronWeb.contract(abi,address)
+    store.commit('save' + firstToUpper(CONTRACT_STORE_NAME[symbol])+'Instance2', instance)
+    return instance
+}
