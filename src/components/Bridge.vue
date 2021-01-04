@@ -232,7 +232,7 @@
         </p>
         <p style="width:100%;text-align:center;font-size:14px;color:gray;margin:0;padding-top:8px" v-else>
           {{ $t('message.convertrate') }}： 1 TSP= 1 STEEM<br>
-          {{ $t('message.tsptosteemintro') }}
+          {{ $t('tsp.tsptosteemintro') }}
         </p>
 
 

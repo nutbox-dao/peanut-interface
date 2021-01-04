@@ -165,8 +165,7 @@
             async getBalance(){ //tsteem
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('STEEM')
-                let instance2 = this.$store.state.steemInstance2
-                console.log('steem instance',instance,instance2)
+                console.log('steem instance',instance)
                 let c = await this.tronWeb2.trx.getBalance(addr)
                 this.balanceOfTron = this.formatData(this.dataFromSun(c))
                 let a = await instance.balanceOf(addr).call()
@@ -238,7 +237,7 @@
             async  function main(){
                 try {
                     if (that.$store.state.username){
-                        that.getSteemStates()
+                        await that.getSteemStates()
                     }
                     that.getBalance()
                     that.getTsbdBalance()
