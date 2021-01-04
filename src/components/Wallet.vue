@@ -165,7 +165,6 @@
             async getBalance(){ //tsteem
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('STEEM')
-                console.log('steem instance',instance)
                 let c = await this.tronWeb2.trx.getBalance(addr)
                 this.balanceOfTron = this.formatData(this.dataFromSun(c))
                 let a = await instance.balanceOf(addr).call()
@@ -175,13 +174,11 @@
             async getOtherBalance(){  //nuts
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('PNUT')
-
                 let poolinstance = await getContract('PNUT_POOL')
                 let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
                 let p = this.dataFromSun(f.amount) * this.vestsToSp
                 this.balanceOfDelegate =  this.formatData(p)
                 this.balanceOfDelegate2 = this.dataFromSun(f.amount)
-
                 let a = await instance.balanceOf(addr).call()
                 this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
                 this.nutBalanceOf2 = this.dataFromSun(a)

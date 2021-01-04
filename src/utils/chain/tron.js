@@ -31,76 +31,34 @@ export function getTron(symbol = "DEFAULT") {
 
 export async function getTronLinkAddr() {
   let addr = null;
-  if (window.tronWeb) {
-    addr = window.tronWeb.defaultAddress.base58
-    if (addr){
-      return addr;
-    }
+  let tronLink = await getTronLink()
+  if (!tronLink){
+    console.log('no tron link')
+    return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
   }
-  await sleep(2)
-  //tronlink
-  if (window.tronWeb) {
-    addr = window.tronWeb.defaultAddress.base58
-    if (addr){
-      return addr;
-    }else{
-      return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
-    }
+  addr = tronLink.defaultAddress.base58
+  if (addr){
+    return addr;
   }else{
-    let link2 = 'TronLink: https://www.tronlink.org'
-    // alert(this.$t('error.needtronlink')+"\n\n"+link2)
     return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
   }
 }
 
-let contracts = {};
-
-async function getContractAbi(symbol = "STEEM", force = false) {
-  symbol = symbol.toUpperCase();
-  const contract_file = LOCAL_CONTRACT_FILE[symbol];
-  if (fs.existsSync(contract_file) && !force) {
-    const data = fs.readFileSync(contract_file);
-    if (data) {
-      return JSON.parse(data);
-    }
-  } else {
-    const contract_url = CONTRACT_URLS[symbol];
-    let { data } = await axios.get(contract_url);
-    // save local cache to reduce network request
-    fs.writeFileSync(contract_file, JSON.stringify(data, null, 2));
-    return data;
-  }
-  return null;
-}
-
-export const getTronLink = function (){
-  // console.log(2356000,window.tronWeb)
+export const getTronLink = async function(){
   let tronlink = window.tronWeb
-  for (let i=0;i<100;i++){
+  for (let i=0;i<50;i++){
     tronlink = window.tronWeb
     if (tronlink){
       return tronlink
     }
-    sleep(0.1)
+    await sleep(0.1)
   }
+  return null;
 }
 
 export function getAddress(hex) {
   const tron = getTron();
   return tron.address.fromHex(hex);
-}
-
-export async function getContract(symbol = "STEEM", force = false) {
-  symbol = symbol.toUpperCase();
-  if (!contracts[symbol] || force) {
-    const json = await getContractAbi(symbol, force);
-    if (json) {
-      const tron = getTron(symbol);
-      const address = getAddress(json.networks["*"].address);
-      contracts[symbol] = tron.contract(json.abi, address);
-    }
-  }
-  return contracts[symbol];
 }
 
 export const amountToInt = function (amount) {

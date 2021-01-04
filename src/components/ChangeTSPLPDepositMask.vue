@@ -176,7 +176,7 @@ export default {
                 let value = this.dataToSun(a)
 
                 let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
-                let tronLink = getTronLink()
+                let tronLink = await getTronLink()
                 let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
                 // 创建交易
                 let approve = await tronLink.transactionBuilder

@@ -43,7 +43,7 @@ export const getContract = async function(symbol){
     if (Object.keys(instance).length !== 0){
         return instance
     }
-    const tronLink = getTronLink()
+    const tronLink = await getTronLink()
     const {abi,address} = await getAbiAndContractAddress(symbol)
     instance = tronLink.contract(abi,address)
     store.commit('save' + firstToUpper(CONTRACT_STORE_NAME[symbol])+'Instance', instance)
