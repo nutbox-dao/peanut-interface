@@ -230,7 +230,6 @@
 
         mounted() {
             let that = this
-            let instance = this.$store.state.steemInstance2
             async  function main(){
                 try {
                     if (that.$store.state.username){

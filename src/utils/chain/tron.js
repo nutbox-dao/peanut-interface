@@ -3,15 +3,6 @@ import Tron from "tronweb";
 import {TRON_NODE_API, TRON_LINK_ADDR_NOT_FOUND} from '../../const.js'
 import {sleep} from '../sleep.js'
 
-let tron_instances = {
-  DEFAULT: null,
-  STEEM: null,
-  SBD: null,
-  PEANUT: null,
-  SP: null,
-  TSP_POOL: null,
-};
-
 function initTron(symbol) {
   const HttpProvider = Tron.providers.HttpProvider;
   const fullNode = new HttpProvider(TRON_NODE_API);
@@ -33,27 +24,30 @@ export async function getTronLinkAddr() {
   let addr = null;
   let tronLink = await getTronLink()
   if (!tronLink){
-    console.log('no tron link')
+    // console.log('no tron link')
     return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
   }
   addr = tronLink.defaultAddress.base58
+  // console.log('address',addr)
   if (addr){
     return addr;
   }else{
-    return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
+    return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
   }
 }
 
 export const getTronLink = async function(){
-  let tronlink = window.tronWeb
-  for (let i=0;i<50;i++){
-    tronlink = window.tronWeb
+  var tronlink = window.tronWeb
+  for (let i=0;i<10;i++){
     if (tronlink){
+      // console.log('get tron link success')
       return tronlink
     }
-    await sleep(0.1)
+    tronlink = window.tronWeb
+    // console.log('not get tron link',window.tronWeb)
+    await sleep(0.5)
   }
-  return null;
+  return window.tronWeb;
 }
 
 export function getAddress(hex) {

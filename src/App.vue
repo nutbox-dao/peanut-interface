@@ -180,23 +180,27 @@
 
     },
     async beforeMount(){
-      const addr = await getTronLinkAddr()
-      if(addr === TRON_LINK_ADDR_NOT_FOUND.walletLocked){
-        alert(this.$t('error.unlockWallet'))
-        return
-      }else if(addr === TRON_LINK_ADDR_NOT_FOUND.noTronLink){
-        let link2 = 'TronLink: https://www.tronlink.org'
-        alert(this.$t('error.needtronlink')+"\n\n"+link2)
-        return
+      let that = this
+      async function main(){
+        const addr = await getTronLinkAddr()
+        if(addr === TRON_LINK_ADDR_NOT_FOUND.walletLocked){
+          alert(that.$t('error.unlockWallet'))
+          return
+        }else if(addr === TRON_LINK_ADDR_NOT_FOUND.noTronLink){
+          let link2 = 'TronLink: https://www.tronlink.org'
+          alert(that.$t('error.needtronlink')+"\n\n"+link2)
+          return
+        }
+        that.$store.commit('saveTronAddr',addr)
+        whatchWallet((addr) => {
+          that.$store.commit('saveTronAddr',addr)
+          that.$router.go(0)
+        })
       }
-      this.$store.commit('saveTronAddr',addr)
-      whatchWallet((addr) => {
-        this.$store.commit('saveTronAddr',addr)
-        this.$router.go(0)
-      })
+      main()
     },
     async mounted() {
-      
+
     },
 
   }
