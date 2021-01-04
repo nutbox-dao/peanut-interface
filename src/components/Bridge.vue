@@ -262,6 +262,8 @@
 <script>
   import SmallLoading from './SmallLoading'
   import {transferSteem} from '../utils/chain/steemOperations.js'
+  import {getTronLinkAddr, isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
+  import {getContract} from '../utils/chain/contract'
   export default {
     name: "Bridge",
     data() {
@@ -303,7 +305,7 @@
         transTspValue: '',
         checkTspFlag: true,
         canTransTspFlag:false,
-
+        addr:'',
       }
     },
     methods: {
@@ -323,24 +325,21 @@
         this.tspFlag = true
       },
       async getBalance(){ //tsteem
-        let addr = this.$store.state.addr
-        let instance = this.$store.state.steemInstance2
+        let instance = await getContract("STEEM")
         // console.log(1235, 'steeeminstance', instance)
-        let a = await instance.balanceOf(addr).call()
+        let a = await instance.balanceOf(this.addr).call()
         this.balanceOf = this.formatData(this.dataFromSun(a))  //tsteem
         this.balanceOf2 = this.dataFromSun(a)
       },
       async getTsbdBalance(){ //tsbd
-        let addr = this.$store.state.addr
-        let instance = this.$store.state.sbdInstance2
-        let a = await instance.balanceOf(addr).call()
+        let instance = await getContract("SBD")
+        let a = await instance.balanceOf(this.addr).call()
         this.balanceOfTsbd = this.formatData(this.dataFromSun(a))
         this.balanceOfTsbd2 = this.dataFromSun(a)
       },
       async getTspBalance(){// tsp
-        let addr = this.$store.state.addr
-        let instance = this.$store.state.tspInstance2
-        let a = await instance.balanceOf(addr).call()
+        let instance = await getContract("TSP")
+        let a = await instance.balanceOf(this.addr).call()
         this.balanceOfTsp2 = this.dataFromSun(a)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
       },
@@ -398,8 +397,7 @@
           this.isLoading = true
           this.canTransFlag = false
           //steem转帐
-          let addr = this.$store.state.addr
-          let isAddr = this.tronWeb2.isAddress(addr)
+          let isAddr = this.tronWeb2.isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address,please refresh!"
@@ -411,18 +409,11 @@
           let to = process.env.VUE_APP_STEEM_DEX
           let amount = parseFloat(this.transValue).toFixed(3)
           let currency =  'STEEM'
-          let memo = addr+" +"+amount+' TSTEEM'
-           let res = await this.steemTransfer(from, to, amount, memo, currency, addr, 0.1)
+          let memo = this.addr+" +"+amount+' TSTEEM'
+           let res = await this.steemTransfer(from, to, amount, memo, currency, this.addr, 0.1)
 
            if(res.success === true){
-                //转帐成功才铸币
-                // console.log(123, "转帐成功才铸币")
-                // let instance2 = this.$store.state.steemInstance2
-                // let value = this.web3.utils.toWei(amount, 'ether')
-                // let value2 = this.dataToSun(amount)
-                // await instance2.steemToTsteem(from, addr, value2).send()
-
-               await  this.sleep()
+               await this.sleep()
                await this.getBalance()
                await this.getSteemStates()
                this.transValue = ''
@@ -447,35 +438,34 @@
         try{
           this.isLoading = true
           this.canTransFlag = false
-          // let from =  process.env.VUE_APP_STEEM
           let to = this.$store.state.username
-          let addr = this.$store.state.addr
-          let instance = this.$store.state.steemInstance
+          let instance = await getContract("STEEM")
           //销毁
           let ss = parseFloat(this.transValue).toFixed(3)
-          // let value = this.web3.utils.toWei(ss, 'ether')
           let value = this.dataToSun(ss)
-          await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
-
-          //steem转帐
-          // let amount = ss+' STEEM'
-          // // let amount = "100.200 STEEM"
-          // let active = process.env.VUE_APP_STEEMWIF
-          // let memo = addr+" -"+ss+' TSTEEM'
-          // await  this.steem.broadcast.transferAsync(active, from, to, amount, memo)
-          await  this.sleep()
-          await this.getBalance()
-          await this.getSteemStates()
-          this.transValue = ''
-          this.isLoading = false
-          this.canTransFlag = true
+          let res = await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
+          if(res && (await isTransactionSuccess(res))){
+            await  this.sleep()
+            await this.getBalance()
+            await this.getSteemStates()
+            this.transValue = ''
+            this.canTransFlag = true
+          }else{
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + 'transfer fail')
+            }
+          }
         }
         catch(e){
-            this.isLoading = false
             this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
+        }finally{
+          this.isLoading = false
+          this.transValue = ''
         }
-        },
+      },
       async trans(){
         if (this.isSteemToTSteem){
           this.steemToTSteem()
@@ -535,8 +525,7 @@
           this.isLoading = true
           this.canTransSbdFlag = false
           //steem转帐
-          let addr = this.$store.state.addr
-          let isAddr = this.tronWeb2.isAddress(addr)
+          let isAddr = this.tronWeb2.isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address,please refresh!"
@@ -548,17 +537,9 @@
           let to = process.env.VUE_APP_STEEM_DEX
           let amount = parseFloat(this.transSbdValue).toFixed(3)
           let currency =  'SBD'
-          let memo = addr+" +"+amount+' TSBD'
-          let res = await this.sbdTransfer(from, to, amount, memo, currency, addr)
-
+          let memo = this.addr+" +"+amount+' TSBD'
+          let res = await this.sbdTransfer(from, to, amount, memo, currency, this.addr)
           if(res.success === true){
-            //转帐成功才铸币
-            // console.log(123, "转帐成功才铸币")
-            // let instance2 = this.$store.state.sbdInstance2
-            // let value = this.dataToSun(amount)
-            // await instance2.sbdToTsbd(from, addr, value).send()
-
-            await this.sleep()
             await this.getTsbdBalance()
             await this.getSteemStates()
             this.transSbdValue = ''
@@ -571,7 +552,6 @@
             this.maskInfo =  this.$t('error.error')+"\n"+res.message
             this.showMask = true
           }
-
         }
         catch(e){
           this.isLoading = false
@@ -583,31 +563,29 @@
         try{
           this.isLoading = true
           this.canTransSbdFlag = false
-          // let addr = this.$store.state.addr
           let to = this.$store.state.username
-          let instance = this.$store.state.sbdInstance
+          let instance = await getContract('SBD')
           //销毁
           let ss = parseFloat(this.transSbdValue).toFixed(3)
           let value = this.dataToSun(ss)
-          await instance.tsbdToSbd(to, value).send({feeLimit:20_000_000})
-
-          //sbd转帐
-          // let amount = ss+' SBD'
-          // // let amount = "100.200 SBD"
-          // let active = process.env.VUE_APP_STEEMWIF
-          // let memo = addr+" -"+ss+' TSBD'
-          // await  this.steem.broadcast.transferAsync(active, from, to, amount, memo)
-          await this.sleep()
-          await this.getTsbdBalance()
-          await this.getSteemStates()
-          this.transSbdValue = ''
-          this.isLoading = false
-          this.canTransSbdFlag = true
+          let res = await instance.tsbdToSbd(to, value).send({feeLimit:20_000_000})
+          if(res && (await isTransactionSuccess(res))){
+            await this.getTsbdBalance()
+            await this.getSteemStates()
+          }else{
+            if (await isInsufficientEnerge(res)){
+              alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+            }else{
+              alert(this.$t('error.error')+"\n" + "transfer fail")
+            }
+          }
         }
         catch(e){
-          this.isLoading = false
           this.maskInfo = this.$t('error.error')+"\n"+e
           this.showMask = true
+        }finally{
+          this.isLoading = false
+          this.transSbdValue = ''
         }
       },
       async transSbd(){
@@ -659,8 +637,7 @@
             this.isLoading = true
             this.canTransTspFlag = false
             //steem转帐
-            let addr = this.$store.state.addr
-            let isAddr = this.tronWeb2.isAddress(addr)
+            let isAddr = this.tronWeb2.isAddress(this.addr)
             if (!isAddr){
               this.isLoadingAddr = false
               this.maskInfo = "Can not get tron address,please refresh!"
@@ -673,16 +650,10 @@
             let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
             let amount = parseFloat(this.transTspValue).toFixed(3)
             let currency =  'STEEM'
-            let memo = addr+" +"+amount+' TSP'
-            let res = await this.steemTransferVest(from, to, amount, addr, tspfee)
+            let memo = this.addr+" +"+amount+' TSP'
+            let res = await this.steemTransferVest(from, to, amount, this.addr, tspfee)
              if(res.success === true){
-                  //转帐成功才铸币
-                  // console.log(123, "转帐成功才铸币")
-                  // let instance2 = this.$store.state.tspInstance2
-                  // let value = this.web3.utils.toWei(amount, 'ether')
-                  // let value2 = this.dataToSun(amount)
-                  // await instance2.steemToTsp(from, addr, value2).send()
-                 await this.sleep()
+                 await this.sleep(3)
                  await this.getBalance()
                  await this.getSteemStates()
                  await this.getTspBalance()
@@ -711,15 +682,14 @@
           // let from =  process.env.VUE_APP_STEEM
           let from = this.$store.state.username
           let to = process.env.VUE_APP_STEEM_GAS || "nutbox.gas"
-          let addr = this.$store.state.addr
-          let isAddr = this.tronWeb2.isAddress(addr)
+          let isAddr = this.tronWeb2.isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address, please refresh!"
             this.showMask = true
             return
           }
-          let instance = this.$store.state.tspInstance
+          let instance = await getContract('TSP')
           //销毁
           let ss = parseFloat(this.transTspValue).toFixed(3)
           // let value = this.web3.utils.toWei(ss, 'ether')
@@ -727,27 +697,32 @@
           //steem转帐gas费
           let f = parseFloat(this.transTspValue) * 0.002
           let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee
-          let memo = addr+" -"+this.transTspValue+' TSP'
+          let memo = this.addr+" -"+this.transTspValue+' TSP'
           let res = await transferSteem(from,to,tspfee,memo)
           if (res.success === true){
-            await instance.tspToSteem(to, value).send()
-            await this.sleep()
-            await this.getBalance()
-            await this.getSteemStates()
-            await this.getTspBalance()
-            this.transTspValue = ''
-            this.isLoading = false
-            this.canTransTspFlag = true
+            let res = await instance.tspToSteem(to, value).send()
+            if (res && (await isTransactionSuccess(res))){
+              await this.getBalance()
+              await this.getSteemStates()
+              await this.getTspBalance()
+            }else{
+              if (await isInsufficientEnerge(res)){
+                alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+              }else{
+                alert(this.$t('error.error')+"\n" + "transfer fail")
+              }
+            }
           }else{
             this.maskInfo = this.$t('error.error') + "\n" + "steem operate fail!"
             this.showMask = true
           }
         }
         catch(e){
-            this.isLoading = false
-            console.log(456723,e)
             this.maskInfo = this.$t('error.error') + "\n" + e
             this.showMask = true
+        }finally{
+          this.transTspValue = ''
+          this.isLoading = false
         }
       },
       async transTsp(){
@@ -769,44 +744,18 @@
         this.$router.push({path: '/login'})
       }
       let that = this
-      let instance = this.$store.state.steemInstance2
       async  function main(){
-        if(Object.keys(instance).length === 0){
+          that.addr = await getTronLinkAddr()
           //如果刷新页面, instance未定义
           try{
-            await that.getSteemInstance()
-            await that.getSbdInstance()
-            await that.getNutsInstance()
-            await that.getTspInstance()
-            await that.getNutsPool()
-
-            await that.getTspTronLink()
-            await that.getSteemTronLink()
-            await that.getSbdTronLink()
-
             await that.getSteemStates()
-            await that.getBalance()
-            await that.getTsbdBalance()
-            await that.getTspBalance()
-
+            that.getBalance()
+            that.getTsbdBalance()
+            that.getTspBalance()
           }catch(e){
             that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
             that.showMask = true
           }
-        } else{
-          try{
-            await that.getSbdTronLink()
-            await that.getTspTronLink()
-            await that.getSteemTronLink()
-            await that.getSteemStates()
-            await that.getBalance()
-            await that.getTspBalance()
-            await that.getTsbdBalance()
-          }catch(e){
-            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
-            that.showMask = true
-          }
-        }
         that.isLoading = false
       }
       main()

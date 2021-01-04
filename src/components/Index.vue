@@ -213,6 +213,7 @@ import {getContract} from '../utils/chain/contract'
 
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = this.dataFromSun(i)
         this.totalPendingPeanuts = this.formatData(i2)
@@ -306,7 +307,8 @@ import {getContract} from '../utils/chain/contract'
         let s = await nutPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // console.log(599, "pending pnut", this.pendingPnut)
-        },
+      },
+
       async getSteemPrice(){
         let res = await this.axios.request({
           method:"get",
