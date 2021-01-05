@@ -36,8 +36,10 @@
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
 import {vestsToSteem} from '../utils/chain/steemOperations.js'
-import {whatchWallet,getTronLinkAddr} from '../utils/chain/tron.js'
+import {whatchWallet,getTronLinkAddr, intToAmount} from '../utils/chain/tron.js'
+import {getContract} from '../utils/chain/contract'
 import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
+import axios from 'axios'
   
   export default {
     name: "TSP",
@@ -62,27 +64,36 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
     methods: {
       // 获取子控件共用数据，通过属性传进去
       async getOtherBalance(){  //nuts
-        let addr = this.addr
-        let instance = this.$store.state.nutInstance2
-        let a = await instance.balanceOf(addr).call()
-
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
-
-        let poolinstance = this.$store.state.nutPoolInstance2
-
+        this.getBalanceOfPnut()
+        this.getTotalDepositedSP()
+        this.getTotalPendingPnut()
+        this.getRewardsPerBlock()
+      },
+      async getBalanceOfPnut(){
+        let instance = await getContract('PNUT')
+        let a = await instance.balanceOf(this.addr).call()
+        this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
+        this.nutBalanceOf2 = intToAmount(a)
+      },
+      async getTotalDepositedSP(){
+        let poolinstance = await getContract('PNUT_POOL')
         let g = await poolinstance.getTotalDepositedSP().call()
-        this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
+        this.totalDepositedSP2 = await vestsToSteem(intToAmount(g))
         this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+      },
+      async getTotalPendingPnut(){
+        let poolinstance = await getContract('PNUT_POOL')
         let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
+        let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
       },
+      async getRewardsPerBlock(){
+        let poolinstance = await getContract('PNUT_POOL')
+        let t = await poolinstance.getRewardsPerBlock().call()
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
+      },
       async getSteemPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/steem',
           headers: {
@@ -99,7 +110,7 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
         }
       },
       async getTronPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/tron',
           headers: {
@@ -116,7 +127,7 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
         }
       },
       async getPnutPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.justswap.io/v2/allpairs',
           headers: {
@@ -147,50 +158,18 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
     async mounted() {
       let that = this
       async function main(){
-        let instance = that.$store.state.tspInstance2
-        let poolinstance = that.$store.state.tspPoolInstance2
-        let lpPoolInstance = that.$store.state.tspLPPoolInstance2
-        if(Object.keys(instance).length === 0 || Object.keys(poolinstance).length === 0 || Object.keys(lpPoolInstance).length === 0){
-          //如果刷新页面, instance未定义
-          try{
-            await that.getNutsInstance()
-            await that.getNutTronLink()
-            await that.getNutsPool()
-            await that.getNutPoolTronLink()
-
-            await that.getTspInstance()
-            await that.getTspTronLink()
-            await that.getTspPoolInstance()
-            await that.getTspPoolTronLink()
-
-            await that.getTspLPPoolInstance()
-            await that.getTspLPPoolTronLink()
-
-            await that.getOtherBalance()
-          }catch(e){
-            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
-        } else{
-          try{
-            await that.getTspPoolTronLink()
-            await that.getTspTronLink()
-            await that.getNutTronLink()
-            await that.getNutPoolTronLink()
-            await that.getTspLPPoolTronLink()
-
-            await that.getOtherBalance()
-          }catch(e){
-            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
+        //如果刷新页面, instance未定义
+        try{
+          that.getOtherBalance()
+        }catch(e){
+          that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
+          that.showMask = true
+          return
         }
       }
       this.apy = localStorage.getItem('apy')
-      this.addr = this.$store.state.addr
-      await main()
+      this.addr = await getTronLinkAddr()
+      main()
       this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()

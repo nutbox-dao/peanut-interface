@@ -5,11 +5,9 @@ import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-import axios from 'axios'
 import steem from 'steem'
-import TronWeb from 'tronweb'
 import VueI18n from 'vue-i18n'
-import {STEEM_API_URLS, STEEM_CONF_KEY, TRON_NODE_API} from './const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY} from './const.js'
 
 
 Vue.use(BootstrapVue)
@@ -49,7 +47,6 @@ const setup = lang => {
 
 setup()
 
-
 // 从缓存获取用户选择的节点
 let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
@@ -57,69 +54,17 @@ steem.api.setOptions({ url: steemConf })
 Vue.prototype.steem = steem
 console.log('steem node change to:',steemConf)
 
-//tron网络
-const TRON_NODE = TRON_NODE_API
-const HttpProvider = TronWeb.providers.HttpProvider
-const fullNode = new HttpProvider(TRON_NODE)
-const solidityNode = new HttpProvider(TRON_NODE)
-const eventServer = new HttpProvider(TRON_NODE)
-const privateKey = process.env.VUE_APP_KEY
-const tronWeb2 = new TronWeb(fullNode,solidityNode,eventServer,privateKey)
-// console.log(16112,  tronWeb2)
-
-// import {timeFormat} from "./utils/timeFormat"
-// import {formatSeconds} from "./utils/formatSeconds"
-import {getSteemInstance} from "./utils/getSteemInstance"
-import {getSteemTronLink} from "./utils/getSteemTronLink"
-import {getSbdInstance} from "./utils/getSbdInstance"
-import {getSbdTronLink} from "./utils/getSbdTronLink"
-import {getTspInstance} from "./utils/getTspInstance"
-import {getTspTronLink} from "./utils/getTspTronLink"
-import {getTspPoolInstance} from "./utils/getTspPoolInstance"
-import {getTspPoolTronLink} from "./utils/getTspPoolTronLink"
-import {getTspLPPoolInstance} from "./utils/getTspLPPoolInstance"
-import {getTspLPPoolTronLink} from "./utils/getTspLPPoolTronLink"
-import {getNutTronLink} from "./utils/getNutTronLink"
-import {getNutsInstance} from "./utils/getNutsInstance"
-import {getNutsPool} from "./utils/getNutsPool"
-import {getNutPoolTronLink} from "./utils/getNutPoolTronLink"
 import {sleep} from "./utils/sleep"
-import {dataFromSun} from "./utils/dataFromSun"
-import {dataToSun} from "./utils/dataToSun"
 import {formatData} from "./utils/formatData"
 import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/chain/steemOperations"
-// import {approve} from "./utils/approve"
-// import {getTsteemAllowance} from "./utils/getTsteemAllowance"
 
-// Vue.prototype.timeFormat = timeFormat
-// Vue.prototype.formatSeconds = formatSeconds
-Vue.prototype.getSteemInstance = getSteemInstance
-Vue.prototype.getSteemTronLink = getSteemTronLink
-Vue.prototype.getSbdInstance = getSbdInstance
-Vue.prototype.getSbdTronLink = getSbdTronLink
-Vue.prototype.getTspTronLink = getTspTronLink
-Vue.prototype.getTspInstance = getTspInstance
-Vue.prototype.getTspPoolInstance = getTspPoolInstance
-Vue.prototype.getTspPoolTronLink = getTspPoolTronLink
-Vue.prototype.getTspLPPoolInstance = getTspLPPoolInstance
-Vue.prototype.getTspLPPoolTronLink = getTspLPPoolTronLink
-Vue.prototype.getNutTronLink = getNutTronLink
-Vue.prototype.getNutsInstance = getNutsInstance
-Vue.prototype.getNutsPool = getNutsPool
-Vue.prototype.getNutPoolTronLink = getNutPoolTronLink
-Vue.prototype.axios = axios
 Vue.prototype.sleep  = sleep
-Vue.prototype.tronWeb2 = tronWeb2
-Vue.prototype.dataFromSun = dataFromSun
-Vue.prototype.dataToSun = dataToSun
 Vue.prototype.formatData = formatData
 Vue.prototype.steemDelegation = steemDelegation
 Vue.prototype.steemTransferVest = steemTransferVest
 Vue.prototype.steemToVest = steemToVest
 Vue.prototype.vestsToSteem = vestsToSteem
 Vue.prototype.steemWrap = steemWrap
-// Vue.prototype.approve = approve
-// Vue.prototype.getTsteemAllowance = getTsteemAllowance
 
 
 Vue.config.productionTip = false

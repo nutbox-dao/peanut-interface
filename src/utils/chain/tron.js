@@ -3,15 +3,6 @@ import Tron from "tronweb";
 import {TRON_NODE_API, TRON_LINK_ADDR_NOT_FOUND} from '../../const.js'
 import {sleep} from '../sleep.js'
 
-let tron_instances = {
-  DEFAULT: null,
-  STEEM: null,
-  SBD: null,
-  PEANUT: null,
-  SP: null,
-  TSP_POOL: null,
-};
-
 function initTron(symbol) {
   const HttpProvider = Tron.providers.HttpProvider;
   const fullNode = new HttpProvider(TRON_NODE_API);
@@ -25,57 +16,38 @@ function initTron(symbol) {
   }
 }
 
-function getTron(symbol = "DEFAULT") {
+export function getTron(symbol = "DEFAULT") {
   return initTron(symbol);
 }
 
 export async function getTronLinkAddr() {
   let addr = null;
-  if (window.tronWeb) {
-    addr = window.tronWeb.defaultAddress.base58
-    if (addr){
-      return addr;
-    }
-  }
-  await sleep(2)
-  //tronlink
-  if (window.tronWeb) {
-    addr = window.tronWeb.defaultAddress.base58
-    if (addr){
-      return addr;
-    }else{
-      return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
-    }
-  }else{
-    let link2 = 'TronLink: https://www.tronlink.org'
-    // alert(this.$t('error.needtronlink')+"\n\n"+link2)
+  let tronLink = await getTronLink()
+  if (!tronLink){
+    // console.log('no tron link')
     return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
   }
-}
-
-let contracts = {};
-
-async function getContractAbi(symbol = "STEEM", force = false) {
-  symbol = symbol.toUpperCase();
-  const contract_file = LOCAL_CONTRACT_FILE[symbol];
-  if (fs.existsSync(contract_file) && !force) {
-    const data = fs.readFileSync(contract_file);
-    if (data) {
-      return JSON.parse(data);
-    }
-  } else {
-    const contract_url = CONTRACT_URLS[symbol];
-    let { data } = await axios.get(contract_url);
-    // save local cache to reduce network request
-    fs.writeFileSync(contract_file, JSON.stringify(data, null, 2));
-    return data;
+  addr = tronLink.defaultAddress.base58
+  // console.log('address',addr)
+  if (addr){
+    return addr;
+  }else{
+    return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
   }
-  return null;
 }
 
-export const getTronLink = function (){
-  // console.log(2356000,window.tronWeb)
-  return window.tronWeb
+export const getTronLink = async function(){
+  var tronlink = window.tronWeb
+  for (let i=0;i<10;i++){
+    if (tronlink){
+      // console.log('get tron link success')
+      return tronlink
+    }
+    tronlink = window.tronWeb
+    // console.log('not get tron link',window.tronWeb)
+    await sleep(0.5)
+  }
+  return window.tronWeb;
 }
 
 export function getAddress(hex) {
@@ -83,17 +55,12 @@ export function getAddress(hex) {
   return tron.address.fromHex(hex);
 }
 
-export async function getContract(symbol = "STEEM", force = false) {
-  symbol = symbol.toUpperCase();
-  if (!contracts[symbol] || force) {
-    const json = await getContractAbi(symbol, force);
-    if (json) {
-      const tron = getTron(symbol);
-      const address = getAddress(json.networks["*"].address);
-      contracts[symbol] = tron.contract(json.abi, address);
-    }
+export const isAddress = async function(addr){
+  if(!addr){
+    return false
   }
-  return contracts[symbol];
+  let tronweb = getTron()
+  return tronweb.isAddress(addr)
 }
 
 export const amountToInt = function (amount) {
@@ -148,9 +115,7 @@ export const isTransactionSuccess = async function (trxId) {
 };
 
 export const isInsufficientEnerge = async function (trxId) {
-  const ret = await getTransactionResult(trxId);
-  console.log(ret)
-  console.log(ret[0].contractRet)
+  const ret = trxId && (await getTransactionResult(trxId));
   return ret && ret[0] && ret[0].contractRet === "OUT_OF_ENERGY"
 };
 

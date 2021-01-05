@@ -107,6 +107,7 @@
           :balanceOfDelegate = 'balanceOfDelegate'
           :balanceOfDelegate2 = 'balanceOfDelegate2'
           :spToVests = 'spToVests'
+          :addr = 'addr'
 
           v-if="showDelegateMask"
           @hideMask="showDelegateMask=false"
@@ -137,7 +138,9 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
-import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
+  import { isTransactionSuccess, isInsufficientEnerge, getTronLinkAddr, intToAmount} from '../utils/chain/tron'
+  import {getContract} from '../utils/chain/contract'
+  import axios from 'axios'
   export default {
     name: "Index",
     data() {
@@ -174,6 +177,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         fee: process.env.VUE_APP_DELEGATE_FEE,
 
         vestsToSp: 0,
+        addr:'',
 
       }
     },
@@ -192,30 +196,42 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
       async getOtherBalance(){  //nuts
-        let addr = this.$store.state.addr
-        let instance = this.$store.state.nutInstance2
-        let a = await instance.balanceOf(addr).call()
-
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
-
-        let poolinstance = this.$store.state.nutPoolInstance2
-        let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
-        let p = this.dataFromSun(f.amount) * this.vestsToSp
+        this.getBalanceOfPnut()
+        this.getDelegatedSp()
+        this.getTotalDepositedSp()
+        this.getTotalPendingPnuts()
+        this.getRewardsPerBlock()
+      },
+      async getBalanceOfPnut(){
+        let instance = await getContract('PNUT')
+        let a = await instance.balanceOf(this.addr).call()
+        this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
+        this.nutBalanceOf2 = intToAmount(a)
+      },
+      async getDelegatedSp(){
+        let poolinstance = await getContract('PNUT_POOL')
+        let f = await poolinstance.delegators(this.addr).call()  //balanceOfDelegate
+        let p = intToAmount(f.amount) * this.vestsToSp
         this.balanceOfDelegate =  this.formatData(p)
         this.balanceOfDelegate2 = p
-
+      },
+      async getTotalDepositedSp(){
+        let poolinstance = await getContract('PNUT_POOL')
         let g = await poolinstance.getTotalDepositedSP().call()
-        let g2 = this.dataFromSun(g) * this.vestsToSp
+        let g2 = intToAmount(g) * this.vestsToSp
         this.totalDepositedSP = this.formatData(g2)
         this.totalDepositedSP2 = g2
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+      },
+      async getTotalPendingPnuts(){
+        let poolinstance = await getContract('PNUT_POOL')
         let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
+        let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
-
+      },
+      async getRewardsPerBlock(){
+        let poolinstance = await getContract('PNUT_POOL')
+        let t = await poolinstance.getRewardsPerBlock().call()
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
       },
       async getSteemStates(){
         let username = this.$store.state.username
@@ -238,11 +254,9 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         try {
           this.isLoading = true
           this.checkDelegateFlag = false
-          let addr = this.$store.state.addr
 
-          let nutPool = this.$store.state.nutPoolInstance
-          var res = await nutPool.delegators(addr).call()
-          // console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
+          let nutPool = await getContract('PNUT_POOL')
+          var res = await nutPool.delegators(this.addr).call()
           let steemAcc = res.steemAccount
 
           //steem代理
@@ -256,7 +270,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
 
           let b = this.delegatevalue * this.spToVests
           let amount = b.toFixed(6)
-          res = await this.steemDelegation(delegator, delegatee, amount, addr)
+          res = await this.steemDelegation(delegator, delegatee, amount, this.addr)
 
           if(res.success === true) {
             await this.sleep()
@@ -277,7 +291,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         try {
           this.isLoading = true
           this.loadingFlag = false
-          let instance = this.$store.state.nutPoolInstance
+          let instance = await getContract('PNUT_POOL')
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
             await this.getOtherBalance()
@@ -302,13 +316,14 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
       },
 
       async getPendingPnut(){
-        let nutPool = this.$store.state.nutPoolInstance
+        let nutPool = await getContract('PNUT_POOL')
         let s = await nutPool.getPendingPeanuts().call()
-        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
+        this.pendingPnut = intToAmount(s)
         // console.log(599, "pending pnut", this.pendingPnut)
-        },
+      },
+
       async getSteemPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/steem',
           headers: {
@@ -325,7 +340,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         }
       },
       async getTronPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/tron',
           headers: {
@@ -342,7 +357,7 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         }
       },
       async getPnutPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.justswap.io/v2/allpairs',
           headers: {
@@ -381,45 +396,18 @@ import { isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
         this.$router.push({path: '/login'})
       }
       let that = this
-      let instance = this.$store.state.steemInstance2
       async function main(){
-        if(Object.keys(instance).length === 0){
-          //如果刷新页面, instance未定义
-          // console.log(888, "instance为空，是刷新页面")
-          try{
-            await that.getSteemInstance()
-            await that.getSbdInstance()
-            await that.getNutsInstance()
-            await that.getTspInstance()
-            await that.getNutsPool()
-            await that.getTspPoolInstance()
-            await that.getNutTronLink()
-            await  that.getNutPoolTronLink()
+        try{
+          await that.getSteemStates()
+          that.addr = await getTronLinkAddr()
+          await that.getOtherBalance()
 
-            await that.getSteemStates()
-            await that.getOtherBalance()
+          that.loadingFlag = true
 
-            that.loadingFlag = true
-
-          }catch(e){
-            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
-        } else{
-          // console.log(22333, "啥也没干！")
-          try{
-            await that.getNutTronLink()
-            await that.getNutsPool()
-            await  that.getNutPoolTronLink()
-            await that.getSteemStates()
-            await that.getOtherBalance()
-            that.loadingFlag = true
-          }catch(e){
-            that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
-            that.showMask = true
-            return
-          }
+        }catch(e){
+          that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
+          that.showMask = true
+          return
         }
         that.isLoading = false
         await that.calPnutApy()

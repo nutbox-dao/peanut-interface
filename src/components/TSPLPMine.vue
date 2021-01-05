@@ -131,7 +131,7 @@
   import SmallLoading from './SmallLoading'
   import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {tspAddress, tspLPPoolAddress} from '../utils/contractAddress.js'
+  import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
 
   import {
   isTransactionSuccess,
@@ -204,26 +204,26 @@
         let totalTSPLP = await getSupplyOfToken(TSP_LP_TOKEN_ADDRESS)
         this.totalLP = intToAmount(totalTSPLP)
         // 获取池中TSP总量
-        let tspAddr = await tspAddress()
+        let tspAddr = (await getAbiAndContractAddress('TSP')).address
         let TspInSwapPool = await getBalanceOfToken(tspAddr,TSP_TRX_CONTRACT_ADDRESS)
         this.totalTSP = intToAmount(TspInSwapPool)
       },
 
       async getTSPLPBalance(){
-        let poolInstance = this.$store.state.tspLPPoolInstance2
+        let poolInstance = await getContract('TSP_LP_POOL')
         let addr = this.addr
         if (!poolInstance || !poolInstance.delegators){
           await this.getTspLPPoolInstance()
         }
         let delegator = await poolInstance.delegators(addr).call()
-        let tsplp = this.dataFromSun(delegator.tspLPAmount)
+        let tsplp = intToAmount(delegator.tspLPAmount)
         this.minedTspLP = this.formatData(tsplp)
         this.minedTspLP2 = tsplp
 
         let tspAddr = TSP_LP_TOKEN_ADDRESS
         let tsplpBalance = await getBalanceOfToken(tspAddr, addr)
 
-        this.balanceOfTSPLP2 = this.dataFromSun(tsplpBalance)
+        this.balanceOfTSPLP2 = intToAmount(tsplpBalance)
         this.balanceOfTSPLP = this.formatData(this.balanceOfTSPLP2)
       },
       fillMaxAmount(){
@@ -236,10 +236,9 @@
           this.checkApproveFlag = false
           let addr = this.addr
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
-
-          let tspLPPoolAddr = await tspLPPoolAddress()
-          let tronLink = getTronLink()
+          let value = amountToInt(b)
+          let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
+          let tronLink = await getTronLink()
           let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
           // 创建交易
           let approve = await tronLink.transactionBuilder
@@ -281,9 +280,9 @@
           this.canMineFlag = false
           let addr = this.addr
           //开始挖矿
-          let tspLPPool = this.$store.state.tspLPPoolInstance
+          let tspLPPool = await getContract('TSP_LP_POOL')
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
+          let value = amountToInt(b)
           // commit deposit
           let res = await tspLPPool.deposit(value).send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
@@ -311,7 +310,7 @@
       async withdrawPeanuts(){
         try {
           this.isLoading = true
-          let instance = this.$store.state.tspLPPoolInstance
+          let instance = await getContract('TSP_LP_POOL')
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
@@ -333,21 +332,21 @@
         this.showMask=false
       },
       async getPendingPnut(){
-        let tspLPPool = this.$store.state.tspLPPoolInstance
+        let tspLPPool = await getContract('TSP_LP_POOL')
         // console.log(235236,tspPool)
         let s = await tspLPPool.getPendingPeanuts().call()
-        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
+        this.pendingPnut = intToAmount(s)
       //  console.log("getPendingPnut", this.pendingPnut)
-        let p = await tspLPPool.shareAcc().call()
+        // let p = await tspLPPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 
-        let p2 = await tspLPPool.totalDepositedTSPLP().call()
+        // let p2 = await tspLPPool.totalDepositedTSPLP().call()
         // console.log("totalDepositedTSPLP", p2*1)  //totalDepositedSP
       },
       async update(){
         try {
-          await this.getTSPTRXPoolInfo()
-          await this.getTSPLPBalance()
+          this.getTSPTRXPoolInfo()
+          this.getTSPLPBalance()
            //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。

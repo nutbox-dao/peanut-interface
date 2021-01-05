@@ -104,6 +104,8 @@
 
 <script>
     import SmallLoading from './SmallLoading'
+    import {getContract} from '../utils/chain/contract'
+    import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
     export default {
         name: "ChangeDelegateMask",
         props: ['changeDegate',
@@ -111,6 +113,7 @@
                     'balanceOfDelegate',
                     'balanceOfDelegate2',
                     'spToVests',
+                    'addr'
         ],
         data(){
             return {
@@ -171,7 +174,7 @@
                     this.isLoading = true
                     this.canAddFlag = false
                     let username = this.$store.state.username
-                    let addr = this.$store.state.addr
+                    let addr = this.addr
                     //steem代理
                     let delegator = this.$store.state.username
                     let delegatee = process.env.VUE_APP_STEEM_MINE
@@ -181,12 +184,6 @@
                     let res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
                     if(res.success === true) {
-                        //代理成功才挖矿
-                        // console.log(123, "代理成功才挖矿")
-                        // let nutPool = this.$store.state.nutPoolInstance2
-                        // let value = this.dataToSun(this.addvalue * this.spToVests)
-                        // console.log(123, "value", value)
-                        // await nutPool.deposit(username, addr, value).send()
                         await  this.sleep()
                         //直接刷新当前页面
                         this.$router.go(0)
@@ -206,7 +203,7 @@
                     this.isLoading = true
                     this.canSubFlag = false
                     let username = this.$store.state.username
-                    let addr = this.$store.state.addr
+                    let addr = this.addr
                     //steem代理
                     let delegator = this.$store.state.username
                     let delegatee = process.env.VUE_APP_STEEM_MINE
@@ -216,17 +213,13 @@
                     let res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
                     if(res.success === true) {
-                        //转帐成功才铸币
-                        // let nutPool = this.$store.state.nutPoolInstance2
-                        // let value = this.dataToSun(this.subvalue * this.spToVests)
-                        // await nutPool.withdraw(addr, value).send()
                         await  this.sleep()
                         //直接刷新当前页面
                         this.$router.go(0)
                     }else{
                         this.subvalue = ''
                         this.isLoading = false
-                        alert(alert(this.$t("error.changeDelegateFail") + "\n"+res.message)+"\n"+res.message)
+                        alert(this.$t("error.changeDelegateFail") + "\n"+res.message)
                     }
                 }
                 catch(e){
@@ -248,18 +241,13 @@
                     let res = await this.steemDelegation(delegator, delegatee, amount, addr)
 
                     if(res.success === true) {
-                        // let nutPool = this.$store.state.nutPoolInstance2
-                        // await nutPool.update(username, addr, '0').send()
-                        // this.$emit('hideMask')
-
                         this.showMask = false
                         await this.withdrawPeanuts()
-                        await this.sleep()
                         //直接刷新当前页面
                         this.$router.go(0)
                     }else{
                         this.isLoading = false
-                        alert(alert(this.$t("error.changeDelegateFail") + "\n"+res.message)+"\n"+res.message)
+                        alert(this.$t("error.changeDelegateFail") + "\n"+res.message)
                     }
                 }
                 catch(e){
@@ -269,8 +257,17 @@
             },
             async withdrawPeanuts(){
                 try {
-                    let instance = this.$store.state.nutPoolInstance
-                    await instance.withdrawPeanuts().send()
+                    let instance = await getContract("PNUT_POOL")
+                    let res = await instance.withdrawPeanuts().send({feeLimit:10_000_000})
+                    if (res && (await isTransactionSuccess(res))){
+                        return true
+                    }else{
+                        if(await isInsufficientEnerge(res)){
+                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge") + '\n' + this.$t('error.withdrawFail'))
+                        }else{
+                            alert(this.$t('error.error') + "\n" + this.$t("error.withdrawFail"))
+                        }
+                    }
                 }
                 catch(e){
                     alert(this.$t('error.error')+"\n" + e)

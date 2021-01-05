@@ -34,6 +34,9 @@
 </template>
 
 <script>
+  import {getContractByDefaultAcc, getContract} from '../../utils/chain/contract'
+  import {vestsToSteem} from '../../utils/chain/steemOperations'
+  import {getAddress, intToAmount} from '../../utils/chain/tron'
 
   export default {
     name: "DelegatorLists",
@@ -69,41 +72,37 @@
         this.vestsToSp = parseFloat(a.total_vesting_fund_steem) / parseFloat(a.total_vesting_shares)
       },
       async getDelegateList(){
-        let nutPool = this.$store.state.nutPoolInstance2
-        // let s = await nutPool.delegatorList(1).call()
+        let nutPool = await getContract('PNUT_POOL')
         let s = await nutPool.getDelegatorListLength().call()
-        // console.log(256, "lists", this.tronWeb2.toBigNumber(s).toFixed(0))
-        // let length = parseInt(this.tronWeb2.toBigNumber(s))
         let length = s * 1
 
         for(let i = 0; i < length; i++){
           let p = await nutPool.delegatorList(i).call()
           let res = await nutPool.delegators(p).call()
-          // console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
-          let amount = (this.dataFromSun(res.amount) * this.vestsToSp).toFixed(3)
-          let t = { isActive: true, id: i, steemId: res.steemAccount, tron: this.tronWeb2.address.fromHex(p), delegatedSP: amount }
+          let amount = (intToAmount(res.amount) * this.vestsToSp).toFixed(3)
+          let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
           this.lists.push(t)
         }
       },
       async getTspDepositList(){
-        let tspPool = this.$store.state.tspPoolInstance2
+        let tspPool = await getContract('TSP_POOL')
         let tspDelegatorLength = (await tspPool.getDelegatorListLength().call())*1
         for (let i = 0; i < tspDelegatorLength; i++){
           let addr = await tspPool.delegatorsList(i).call()
           let res = await tspPool.delegators(addr).call()
-          let amount = (this.dataFromSun(res.tspAmount) * 1.0).toFixed(3)
-          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTsp: amount}
+          let amount = (intToAmount(res.tspAmount) * 1.0).toFixed(3)
+          let t = {isActive: true, id:i, tron: getAddress(addr), depositedTsp: amount}
           this.tspDepositList.push(t)
         }
       },
       async getTspLPDepositList(){
-        let tspLPPool = this.$store.state.tspLPPoolInstance2
+        let tspLPPool = await getContract('TSP_LP_POOL')
         let tspLPDelegatorLenth = (await tspLPPool.getDelegatorListLength().call())*1
         for (let i = 0;i < tspLPDelegatorLenth; i++){
           let addr = await tspLPPool.delegatorsList(i).call()
           let res = await tspLPPool.delegators(addr).call()
-          let amount = (this.dataFromSun(res.tspLPAmount) * 1.0).toFixed(3)
-          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTspLP: amount}
+          let amount = (intToAmount(res.tspLPAmount) * 1.0).toFixed(3)
+          let t = {isActive: true, id:i, tron: getAddress(addr), depositedTspLP: amount}
           this.tspLPDepositList.push(t)
         }
       },
@@ -115,10 +114,7 @@
       let that = this
       async function main(){
         try{
-          await that.getNutsPool()
-          await that.getTspPoolInstance()
           await that.getSteemStates()
-          await that.getTspLPPoolInstance()
           // await that.sleep()
           that.getDelegateList()
           that.getTspDepositList()
