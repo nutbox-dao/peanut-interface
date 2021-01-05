@@ -115,9 +115,7 @@ export const isTransactionSuccess = async function (trxId) {
 };
 
 export const isInsufficientEnerge = async function (trxId) {
-  const ret = await getTransactionResult(trxId);
-  console.log(ret)
-  console.log(ret[0].contractRet)
+  const ret = trxId && (await getTransactionResult(trxId));
   return ret && ret[0] && ret[0].contractRet === "OUT_OF_ENERGY"
 };
 
