@@ -73,16 +73,48 @@
       },
       async getDelegateList(){
         let nutPool = await getContract('PNUT_POOL')
-        let s = await nutPool.getDelegatorListLength().call()
-        let length = s * 1
+        let length = (await nutPool.getDelegatorListLength().call()) * 1
+        let that = this
+        const numPerRound = 5
 
-        for(let i = 0; i < length; i++){
-          let p = await nutPool.delegatorList(i).call()
-          let res = await nutPool.delegators(p).call()
-          let amount = (intToAmount(res.amount) * this.vestsToSp).toFixed(3)
-          let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
-          this.lists.push(t)
+        for (let j = 0; j < parseInt(length / numPerRound); j++){
+          var promises = []
+          for (let i = j*numPerRound; i < j*numPerRound+numPerRound; i++){
+            promises.push(new Promise(async function(resolve,reject){
+              let p = await nutPool.delegatorList(i).call()
+              let res = await nutPool.delegators(p).call()
+              let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(3)
+              let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
+              resolve(t)
+            }))
+          }
+          let arr = (await Promise.all(promises))
+          this.lists.push(...arr)
         }
+
+        if (length % numPerRound > 0){
+          var promises = []
+          for (let i = parseInt(length/numPerRound); i < length; i++){
+            promises.push(new Promise(async function(resolve,reject){
+              let p = await nutPool.delegatorList(i).call()
+              let res = await nutPool.delegators(p).call()
+              let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(3)
+              let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
+              resolve(t)
+            }))
+          }
+          let arr = (await Promise.all(promises))
+          this.lists.push(...arr)
+        }
+
+
+        // for(let i = 0; i < length; i++){
+        //   let p = await nutPool.delegatorList(i).call()
+        //   let res = await nutPool.delegators(p).call()
+        //   let amount = (intToAmount(res.amount) * this.vestsToSp).toFixed(3)
+        //   let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
+        //   this.lists.push(t)
+        // }
       },
       async getTspDepositList(){
         let tspPool = await getContract('TSP_POOL')
