@@ -81,15 +81,23 @@
           var promises = []
           for (let i = j*numPerRound; i < j*numPerRound+numPerRound; i++){
             promises.push(new Promise(async function(resolve,reject){
-              let p = await nutPool.delegatorList(i).call()
-              let res = await nutPool.delegators(p).call()
-              let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(3)
-              let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
-              resolve(t)
+              try{
+                let p = await nutPool.delegatorList(i).call()
+                let res = await nutPool.delegators(p).call()
+                let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(3)
+                let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
+                resolve(t)
+              }catch(e){
+                reject()
+              }
             }))
           }
-          let arr = (await Promise.all(promises))
-          this.lists.push(...arr)
+          try{
+            let arr = (await Promise.all(promises))
+            this.lists.push(...arr)
+          }catch(e){
+            console.log(8746538,e)
+          }
         }
 
         if (length % numPerRound > 0){
@@ -147,7 +155,6 @@
       async function main(){
         try{
           await that.getSteemStates()
-          // await that.sleep()
           that.getDelegateList()
           that.getTspDepositList()
           that.getTspLPDepositList()
