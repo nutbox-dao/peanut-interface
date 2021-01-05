@@ -36,6 +36,7 @@
 <script>
   import {getContractByDefaultAcc, getContract} from '../../utils/chain/contract'
   import {vestsToSteem} from '../../utils/chain/steemOperations'
+  import {getAddress, intToAmount} from '../../utils/chain/tron'
 
   export default {
     name: "DelegatorLists",
@@ -78,8 +79,8 @@
         for(let i = 0; i < length; i++){
           let p = await nutPool.delegatorList(i).call()
           let res = await nutPool.delegators(p).call()
-          let amount = (this.dataFromSun(res.amount) * this.vestsToSp).toFixed(3)
-          let t = { isActive: true, id: i, steemId: res.steemAccount, tron: this.tronWeb2.address.fromHex(p), delegatedSP: amount }
+          let amount = (intToAmount(res.amount) * this.vestsToSp).toFixed(3)
+          let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
           this.lists.push(t)
         }
       },
@@ -89,8 +90,8 @@
         for (let i = 0; i < tspDelegatorLength; i++){
           let addr = await tspPool.delegatorsList(i).call()
           let res = await tspPool.delegators(addr).call()
-          let amount = (this.dataFromSun(res.tspAmount) * 1.0).toFixed(3)
-          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTsp: amount}
+          let amount = (intToAmount(res.tspAmount) * 1.0).toFixed(3)
+          let t = {isActive: true, id:i, tron: getAddress(addr), depositedTsp: amount}
           this.tspDepositList.push(t)
         }
       },
@@ -100,8 +101,8 @@
         for (let i = 0;i < tspLPDelegatorLenth; i++){
           let addr = await tspLPPool.delegatorsList(i).call()
           let res = await tspLPPool.delegators(addr).call()
-          let amount = (this.dataFromSun(res.tspLPAmount) * 1.0).toFixed(3)
-          let t = {isActive: true, id:i, tron: this.tronWeb2.address.fromHex(addr), depositedTspLP: amount}
+          let amount = (intToAmount(res.tspLPAmount) * 1.0).toFixed(3)
+          let t = {isActive: true, id:i, tron: getAddress(addr), depositedTspLP: amount}
           this.tspLPDepositList.push(t)
         }
       },

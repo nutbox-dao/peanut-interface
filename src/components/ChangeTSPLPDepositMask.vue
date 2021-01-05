@@ -172,7 +172,7 @@ export default {
                 this.checkApproveFlag = false
                 let addr = this.addr
                 let a = parseFloat(this.addvalue)
-                let value = this.dataToSun(a)
+                let value = amountToInt(a)
 
                 let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
                 let tronLink = await getTronLink()
@@ -220,7 +220,7 @@ export default {
                 //开始挖矿
                 let tspLPPool = await getContract('TSP_LP_POOL')
                 let b = parseFloat(this.addvalue)
-                let value = this.dataToSun(b)
+                let value = amountToInt(b)
                 // commit deposit
                 let res = await tspLPPool.deposit(value).send({feeLimit:20_000_000})
                 if (res && (await isTransactionSuccess(res))){
@@ -252,7 +252,7 @@ export default {
                 this.canSubFlag = false
                 let addr = this.addr
                 let a = parseFloat(this.subvalue)
-                let value = this.dataToSun(a)
+                let value = amountToInt(a)
 
                 let tspLPPool = await getContract('TSP_LP_POOL')
                 let res = await tspLPPool.withdraw(value).send({feeLimit:20_000_000})
@@ -286,7 +286,7 @@ export default {
                 this.canDelFlag = false
                 let addr = this.addr
                 let a = parseFloat(this.balanceOfDelegate2)
-                let value = this.dataToSun(a)
+                let value = amountToInt(a)
 
                 let tspPool = await getContract('TSP_LP_POOL')
                 let delDepositTx = await tspPool.withdraw(value).send({feeLimit:20_000_000})

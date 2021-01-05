@@ -105,7 +105,7 @@
 <script>
     import SmallLoading from './SmallLoading'
     import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
-    import {isTransactionSuccess,isInsufficientEnerge} from '../utils/chain/tron.js'
+    import {isTransactionSuccess,isInsufficientEnerge, amountToInt} from '../utils/chain/tron.js'
     export default {
         name: "ChangeTSPDepositMask",
         props: ['changeDegate',
@@ -173,7 +173,7 @@
                     this.checkApproveFlag = false
                     let addr = this.addr
                     let a = parseFloat(this.addvalue)
-                    let value = this.dataToSun(a)
+                    let value = amountToInt(a)
 
                     let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
                     let tsp = await getContract('TSP')
@@ -204,7 +204,7 @@
                     this.canAddFlag = false
                     let addr = this.addr
                     let a = parseFloat(this.addvalue)
-                    let value = this.dataToSun(a)
+                    let value = amountToInt(a)
                     
                     let tspPool = await getContract('TSP_POOL')
                     let res =await tspPool.deposit(value).send({feeLimit:20_000_000})
@@ -233,7 +233,7 @@
                     this.canSubFlag = false
                     let addr = this.addr
                     let a = parseFloat(this.subvalue)
-                    let value = this.dataToSun(a)
+                    let value = amountToInt(a)
 
                     let tspPool = await getContract('TSP_POOL')
                     let tsp = this.$store.state.tspInstance
@@ -264,7 +264,7 @@
                     this.canDelFlag = false
                     let addr = this.addr
                     let a = parseFloat(this.balanceOfDelegate2)
-                    let value = this.dataToSun(a)
+                    let value = amountToInt(a)
 
                     let tspPool = await getContract('TSP_POOL')
                     await tspPool.withdrawPeanuts().send({feeLimit:20_000_000})

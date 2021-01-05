@@ -55,6 +55,14 @@ export function getAddress(hex) {
   return tron.address.fromHex(hex);
 }
 
+export const isAddress = async function(addr){
+  if(!addr){
+    return false
+  }
+  let tronweb = getTron()
+  return tronweb.isAddress(addr)
+}
+
 export const amountToInt = function (amount) {
   const tron = getTron();
   return tron.toBigNumber(amount * 1e6).toFixed(0);

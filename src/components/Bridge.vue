@@ -262,7 +262,7 @@
 <script>
   import SmallLoading from './SmallLoading'
   import {transferSteem} from '../utils/chain/steemOperations.js'
-  import {getTronLinkAddr, isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron'
+  import {getTronLinkAddr, isTransactionSuccess, isInsufficientEnerge, isAddress, intToAmount, amountToInt} from '../utils/chain/tron'
   import {getContract} from '../utils/chain/contract'
   export default {
     name: "Bridge",
@@ -328,19 +328,19 @@
         let instance = await getContract("STEEM")
         // console.log(1235, 'steeeminstance', instance)
         let a = await instance.balanceOf(this.addr).call()
-        this.balanceOf = this.formatData(this.dataFromSun(a))  //tsteem
-        this.balanceOf2 = this.dataFromSun(a)
+        this.balanceOf = this.formatData(intToAmount(a))  //tsteem
+        this.balanceOf2 = intToAmount(a)
       },
       async getTsbdBalance(){ //tsbd
         let instance = await getContract("SBD")
         let a = await instance.balanceOf(this.addr).call()
-        this.balanceOfTsbd = this.formatData(this.dataFromSun(a))
-        this.balanceOfTsbd2 = this.dataFromSun(a)
+        this.balanceOfTsbd = this.formatData(intToAmount(a))
+        this.balanceOfTsbd2 = intToAmount(a)
       },
       async getTspBalance(){// tsp
         let instance = await getContract("TSP")
         let a = await instance.balanceOf(this.addr).call()
-        this.balanceOfTsp2 = this.dataFromSun(a)
+        this.balanceOfTsp2 = intToAmount(a)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
       },
       async getSteemStates(){
@@ -397,7 +397,7 @@
           this.isLoading = true
           this.canTransFlag = false
           //steem转帐
-          let isAddr = this.tronWeb2.isAddress(this.addr)
+          let isAddr = await isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address,please refresh!"
@@ -442,7 +442,7 @@
           let instance = await getContract("STEEM")
           //销毁
           let ss = parseFloat(this.transValue).toFixed(3)
-          let value = this.dataToSun(ss)
+          let value = amountToInt(ss)
           let res = await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
           if(res && (await isTransactionSuccess(res))){
             await  this.sleep()
@@ -525,7 +525,7 @@
           this.isLoading = true
           this.canTransSbdFlag = false
           //steem转帐
-          let isAddr = this.tronWeb2.isAddress(this.addr)
+          let isAddr = await isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address,please refresh!"
@@ -567,7 +567,7 @@
           let instance = await getContract('SBD')
           //销毁
           let ss = parseFloat(this.transSbdValue).toFixed(3)
-          let value = this.dataToSun(ss)
+          let value = amountToInt(ss)
           let res = await instance.tsbdToSbd(to, value).send({feeLimit:20_000_000})
           if(res && (await isTransactionSuccess(res))){
             await this.getTsbdBalance()
@@ -637,7 +637,7 @@
             this.isLoading = true
             this.canTransTspFlag = false
             //steem转帐
-            let isAddr = this.tronWeb2.isAddress(this.addr)
+            let isAddr = await isAddress(this.addr)
             if (!isAddr){
               this.isLoadingAddr = false
               this.maskInfo = "Can not get tron address,please refresh!"
@@ -682,7 +682,7 @@
           // let from =  process.env.VUE_APP_STEEM
           let from = this.$store.state.username
           let to = process.env.VUE_APP_STEEM_GAS || "nutbox.gas"
-          let isAddr = this.tronWeb2.isAddress(this.addr)
+          let isAddr = await isAddress(this.addr)
           if (!isAddr){
             this.isLoadingAddr = false
             this.maskInfo = "Can not get tron address, please refresh!"
@@ -693,7 +693,7 @@
           //销毁
           let ss = parseFloat(this.transTspValue).toFixed(3)
           // let value = this.web3.utils.toWei(ss, 'ether')
-          let value = this.dataToSun(ss)
+          let value = amountToInt(ss)
           //steem转帐gas费
           let f = parseFloat(this.transTspValue) * 0.002
           let tspfee = f > this.steemtotspfee ? f : this.steemtotspfee

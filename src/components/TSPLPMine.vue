@@ -216,14 +216,14 @@
           await this.getTspLPPoolInstance()
         }
         let delegator = await poolInstance.delegators(addr).call()
-        let tsplp = this.dataFromSun(delegator.tspLPAmount)
+        let tsplp = intToAmount(delegator.tspLPAmount)
         this.minedTspLP = this.formatData(tsplp)
         this.minedTspLP2 = tsplp
 
         let tspAddr = TSP_LP_TOKEN_ADDRESS
         let tsplpBalance = await getBalanceOfToken(tspAddr, addr)
 
-        this.balanceOfTSPLP2 = this.dataFromSun(tsplpBalance)
+        this.balanceOfTSPLP2 = intToAmount(tsplpBalance)
         this.balanceOfTSPLP = this.formatData(this.balanceOfTSPLP2)
       },
       fillMaxAmount(){
@@ -236,7 +236,7 @@
           this.checkApproveFlag = false
           let addr = this.addr
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
+          let value = amountToInt(b)
           console.log(1)
           let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
           console.log(2)
@@ -289,7 +289,7 @@
           //开始挖矿
           let tspLPPool = await getContract('TSP_LP_POOL')
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
+          let value = amountToInt(b)
           // commit deposit
           let res = await tspLPPool.deposit(value).send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
@@ -342,7 +342,7 @@
         let tspLPPool = await getContract('TSP_LP_POOL')
         // console.log(235236,tspPool)
         let s = await tspLPPool.getPendingPeanuts().call()
-        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
+        this.pendingPnut = intToAmount(s)
       //  console.log("getPendingPnut", this.pendingPnut)
         // let p = await tspLPPool.shareAcc().call()
         // console.log("shareAcc", p*1)

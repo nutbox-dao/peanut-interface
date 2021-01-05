@@ -138,8 +138,9 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
-import { isTransactionSuccess, isInsufficientEnerge, getTronLinkAddr} from '../utils/chain/tron'
-import {getContract} from '../utils/chain/contract'
+  import { isTransactionSuccess, isInsufficientEnerge, getTronLinkAddr, intToAmount} from '../utils/chain/tron'
+  import {getContract} from '../utils/chain/contract'
+  import axios from 'axios'
   export default {
     name: "Index",
     data() {
@@ -198,25 +199,25 @@ import {getContract} from '../utils/chain/contract'
         let instance = await getContract('PNUT')
         let a = await instance.balanceOf(this.addr).call()
 
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
+        this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
+        this.nutBalanceOf2 = intToAmount(a)
 
         let poolinstance = await getContract('PNUT_POOL')
         let f = await poolinstance.delegators(this.addr).call()  //balanceOfDelegate
-        let p = this.dataFromSun(f.amount) * this.vestsToSp
+        let p = intToAmount(f.amount) * this.vestsToSp
         this.balanceOfDelegate =  this.formatData(p)
         this.balanceOfDelegate2 = p
 
         let g = await poolinstance.getTotalDepositedSP().call()
-        let g2 = this.dataFromSun(g) * this.vestsToSp
+        let g2 = intToAmount(g) * this.vestsToSp
         this.totalDepositedSP = this.formatData(g2)
         this.totalDepositedSP2 = g2
 
         let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
 
         let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
+        let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
 
       },
@@ -244,7 +245,6 @@ import {getContract} from '../utils/chain/contract'
 
           let nutPool = await getContract('PNUT_POOL')
           var res = await nutPool.delegators(this.addr).call()
-          // console.log(i, this.tronWeb2.address.fromHex(p), res.steemAccount)
           let steemAcc = res.steemAccount
 
           //steem代理
@@ -306,12 +306,12 @@ import {getContract} from '../utils/chain/contract'
       async getPendingPnut(){
         let nutPool = await getContract('PNUT_POOL')
         let s = await nutPool.getPendingPeanuts().call()
-        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
+        this.pendingPnut = intToAmount(s)
         // console.log(599, "pending pnut", this.pendingPnut)
       },
 
       async getSteemPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/steem',
           headers: {
@@ -328,7 +328,7 @@ import {getContract} from '../utils/chain/contract'
         }
       },
       async getTronPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/tron',
           headers: {
@@ -345,7 +345,7 @@ import {getContract} from '../utils/chain/contract'
         }
       },
       async getPnutPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.justswap.io/v2/allpairs',
           headers: {

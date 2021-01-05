@@ -127,7 +127,7 @@
 <script>
     import SmallLoading from './SmallLoading'
     import {getContract} from '../utils/chain/contract.js'
-    import {getTronLinkAddr} from '../utils/chain/tron'
+    import {getTronLinkAddr, getTron, getAddress, intToAmount} from '../utils/chain/tron'
     export default {
         name: "Wallet",
         data() {
@@ -165,31 +165,31 @@
             async getBalance(){ //tsteem
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('STEEM')
-                let c = await this.tronWeb2.trx.getBalance(addr)
-                this.balanceOfTron = this.formatData(this.dataFromSun(c))
+                let c = await getTron().trx.getBalance(addr)
+                this.balanceOfTron = this.formatData(intToAmount(c))
                 let a = await instance.balanceOf(addr).call()
-                this.balanceOf = this.formatData(this.dataFromSun(a))  //tsteem
-                this.balanceOf2 = this.dataFromSun(a)
+                this.balanceOf = this.formatData(intToAmount(a))  //tsteem
+                this.balanceOf2 = intToAmount(a)
             },
             async getOtherBalance(){  //nuts
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('PNUT')
                 let poolinstance = await getContract('PNUT_POOL')
                 let f = await poolinstance.delegators(addr).call()  //balanceOfDelegate
-                let p = this.dataFromSun(f.amount) * this.vestsToSp
+                let p = intToAmount(f.amount) * this.vestsToSp
                 this.balanceOfDelegate =  this.formatData(p)
-                this.balanceOfDelegate2 = this.dataFromSun(f.amount)
+                this.balanceOfDelegate2 = intToAmount(f.amount)
                 let a = await instance.balanceOf(addr).call()
-                this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-                this.nutBalanceOf2 = this.dataFromSun(a)
+                this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
+                this.nutBalanceOf2 = intToAmount(a)
                 // console.log(1232, "nutBalanceOf2", this.nutBalanceOf2)
             },
             async getTsbdBalance(){ //tsbd
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('SBD')
                 let a = await instance.balanceOf(addr).call()
-                this.balanceOfTsbd = this.formatData(this.dataFromSun(a))
-                this.balanceOfTsbd2 = this.dataFromSun(a)
+                this.balanceOfTsbd = this.formatData(intToAmount(a))
+                this.balanceOfTsbd2 = intToAmount(a)
                 // console.log(1235, "balanceOfTsbd2", this.balanceOfTsbd2)
             },
             async getSteemStates(){
@@ -208,14 +208,14 @@
                 let addr = await getTronLinkAddr()
                 let instance = await getContract('TSP')
                 let a = await instance.balanceOf(addr).call()
-                this.balanceOfTsp = this.formatData(this.dataFromSun(a))
-                this.balanceOfTsp2 = this.dataFromSun(a)
+                this.balanceOfTsp = this.formatData(intToAmount(a))
+                this.balanceOfTsp2 = intToAmount(a)
             },
             async owner() {
                 let addr = this.anyaddr
                 let instance = this.$store.state.steemInstance2
                 let s = await instance.owner().call()
-                let a = this.tronWeb2.address.fromHex(s)
+                let a = getAddress(s)
             },
         },
         filters: {

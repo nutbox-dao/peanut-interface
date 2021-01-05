@@ -126,7 +126,7 @@
   import ChangeTSPDepositMask from './ChangeTSPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
   import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
-  import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
+  import {isTransactionSuccess, isInsufficientEnerge, intToAmount, amountToInt} from '../utils/chain/tron.js'
   
   export default {
     name: "TSPMine",
@@ -197,14 +197,14 @@
         let poolInstance = await getContract('TSP_POOL')
         let addr = this.addr
         let delegator = await poolInstance.delegators(addr).call()
-        let tsp = this.dataFromSun(delegator.tspAmount)
+        let tsp = intToAmount(delegator.tspAmount)
         this.minedTsp = this.formatData(tsp)
         this.minedTsp2 = tsp
 
         let tspInstance2 = await getContract('TSP')
         let tspBalance = await tspInstance2.balanceOf(addr).call()
 
-        this.balanceOfTsp2 = this.dataFromSun(tspBalance)
+        this.balanceOfTsp2 = intToAmount(tspBalance)
         this.balanceOfTsp = this.formatData(this.balanceOfTsp2)
       },
       fillMaxAmount(){
@@ -217,7 +217,7 @@
           this.loadingFlag = true
           this.checkApproveFlag = false
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
+          let value = amountToInt(b)
           let tsp = await getContract('TSP')
           let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
           let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
@@ -248,7 +248,7 @@
           //开始挖矿
           let tspPool = await getContract('TSP_POOL')
           let b = parseFloat(this.mineAmount)
-          let value = this.dataToSun(b)
+          let value = amountToInt(b)
           // commit deposit
           let res = await tspPool.deposit(value).send({feeLimit:20_000_000})
           if (res && isTransactionSuccess(res)){
@@ -305,15 +305,7 @@
       async getPendingPnut(){
         let tspPool = await getContract("TSP_POOL")
         let s = await tspPool.getPendingPeanuts().call()
-        this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
-        // this.pendingPnut = this.tronWeb2.fromSun(s)
-
-      //  console.log("getPendingPnut", this.pendingPnut)
-        // let p = await tspPool.shareAcc().call()
-        // console.log("shareAcc", p*1)
-
-        // let p2 = await tspPool.totalDepositedTSP().call()
-        // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
+        this.pendingPnut = intToAmount(s)
         },
       
       // 父控件加载完数据后调用此方法更新数据

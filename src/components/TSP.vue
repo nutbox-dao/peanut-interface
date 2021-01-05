@@ -36,9 +36,10 @@
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
 import {vestsToSteem} from '../utils/chain/steemOperations.js'
-import {whatchWallet,getTronLinkAddr} from '../utils/chain/tron.js'
+import {whatchWallet,getTronLinkAddr, intToAmount} from '../utils/chain/tron.js'
 import {getContract} from '../utils/chain/contract'
 import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
+import axios from 'axios'
   
   export default {
     name: "TSP",
@@ -66,24 +67,24 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
         let instance = await getContract('PNUT')
         let a = await instance.balanceOf(this.addr).call()
 
-        this.nutBalanceOf = this.formatData(this.dataFromSun(a))  //nuts
-        this.nutBalanceOf2 = this.dataFromSun(a)
+        this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
+        this.nutBalanceOf2 = intToAmount(a)
 
         let poolinstance = await getContract('PNUT_POOL')
 
         let g = await poolinstance.getTotalDepositedSP().call()
-        this.totalDepositedSP2 = await vestsToSteem(this.dataFromSun(g))
+        this.totalDepositedSP2 = await vestsToSteem(intToAmount(g))
         this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
 
         let t = await poolinstance.getRewardsPerBlock().call()
 
-        this.rewardsPerBlock = this.formatData(this.dataFromSun(t))
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
         let i = await poolinstance.getTotalPendingPeanuts().call()
-        let i2 = this.dataFromSun(i)
+        let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
       },
       async getSteemPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/steem',
           headers: {
@@ -100,7 +101,7 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
         }
       },
       async getTronPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.coingecko.com/api/v3/coins/tron',
           headers: {
@@ -117,7 +118,7 @@ import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
         }
       },
       async getPnutPrice(){
-        let res = await this.axios.request({
+        let res = await axios.request({
           method:"get",
           url:'https://api.justswap.io/v2/allpairs',
           headers: {
