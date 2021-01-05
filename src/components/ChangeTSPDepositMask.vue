@@ -104,7 +104,7 @@
 
 <script>
     import SmallLoading from './SmallLoading'
-    import {getAbiAndContractAddress} from '../utils/chain/contract.js'
+    import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
     import {isTransactionSuccess,isInsufficientEnerge} from '../utils/chain/tron.js'
     export default {
         name: "ChangeTSPDepositMask",
@@ -176,7 +176,7 @@
                     let value = this.dataToSun(a)
 
                     let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
-                    let tsp = this.$store.state.tspInstance
+                    let tsp = await getContract('TSP')
                     let approved = await tsp.approve(tspPoolAddr, value).send({feeLimit:20_000_000})
                     // approved 为返回的交易hash值
                     if (approved && (await isTransactionSuccess(approved))){
@@ -206,7 +206,7 @@
                     let a = parseFloat(this.addvalue)
                     let value = this.dataToSun(a)
                     
-                    let tspPool = this.$store.state.tspPoolInstance
+                    let tspPool = await getContract('TSP_POOL')
                     let res =await tspPool.deposit(value).send({feeLimit:20_000_000})
                     if (res && (await isTransactionSuccess(res))){
                         //直接刷新当前页面
@@ -235,7 +235,7 @@
                     let a = parseFloat(this.subvalue)
                     let value = this.dataToSun(a)
 
-                    let tspPool = this.$store.state.tspPoolInstance
+                    let tspPool = await getContract('TSP_POOL')
                     let tsp = this.$store.state.tspInstance
                     let res = await tspPool.withdraw(value).send({feeLimit:20_000_000})
                     if (res && (await isTransactionSuccess(res))){
@@ -266,7 +266,7 @@
                     let a = parseFloat(this.balanceOfDelegate2)
                     let value = this.dataToSun(a)
 
-                    let tspPool = this.$store.state.tspPoolInstance
+                    let tspPool = await getContract('TSP_POOL')
                     await tspPool.withdrawPeanuts().send({feeLimit:20_000_000})
                     await tspPool.withdraw(value).send({feeLimit:20_000_000})
                     await  this.sleep()

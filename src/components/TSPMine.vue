@@ -125,7 +125,7 @@
   import SmallLoading from './SmallLoading'
   import ChangeTSPDepositMask from './ChangeTSPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {getAbiAndContractAddress} from '../utils/chain/contract.js'
+  import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
   import {isTransactionSuccess, isInsufficientEnerge} from '../utils/chain/tron.js'
   
   export default {
@@ -194,14 +194,14 @@
           this.canMineFlag = false
       },
       async getTspBalance(){
-        let poolInstance = this.$store.state.tspPoolInstance2
+        let poolInstance = await getContract('TSP_POOL')
         let addr = this.addr
         let delegator = await poolInstance.delegators(addr).call()
         let tsp = this.dataFromSun(delegator.tspAmount)
         this.minedTsp = this.formatData(tsp)
         this.minedTsp2 = tsp
 
-        let tspInstance2 = this.$store.state.tspInstance2
+        let tspInstance2 = await getContract('TSP')
         let tspBalance = await tspInstance2.balanceOf(addr).call()
 
         this.balanceOfTsp2 = this.dataFromSun(tspBalance)
@@ -218,7 +218,7 @@
           this.checkApproveFlag = false
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
-          let tsp = this.$store.state.tspInstance
+          let tsp = await getContract('TSP')
           let tspPoolAddr = (await getAbiAndContractAddress('TSP_POOL')).address
           let approved = await tsp.approve(tspPoolAddr,value).send({feeLimit:20_000_000})
           if (approved && (await isTransactionSuccess(approved))){
@@ -246,7 +246,7 @@
           this.canMineFlag = false
           let addr = this.addr
           //开始挖矿
-          let tspPool = this.$store.state.tspPoolInstance
+          let tspPool = await getContract('TSP_POOL')
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           // commit deposit
@@ -276,7 +276,7 @@
         try {
           this.isLoading = true
           this.loadingFlag = false
-          let instance = this.$store.state.tspPoolInstance
+          let instance = await getContract("TSP_POOL")
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
@@ -303,16 +303,16 @@
       },
 
       async getPendingPnut(){
-        let tspPool = this.$store.state.tspPoolInstance
+        let tspPool = await getContract("TSP_POOL")
         let s = await tspPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
         // this.pendingPnut = this.tronWeb2.fromSun(s)
 
       //  console.log("getPendingPnut", this.pendingPnut)
-        let p = await tspPool.shareAcc().call()
+        // let p = await tspPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 
-        let p2 = await tspPool.totalDepositedTSP().call()
+        // let p2 = await tspPool.totalDepositedTSP().call()
         // console.log("totalDepositedTSP", p2*1)  //totalDepositedSP
         },
       
@@ -320,8 +320,7 @@
       async update(){
         try{
           this.vestsToSp = await vestsToSteem(1)
-          await this.getTspBalance()
-
+          this.getTspBalance()
           //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。

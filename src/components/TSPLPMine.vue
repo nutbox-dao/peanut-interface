@@ -131,7 +131,7 @@
   import SmallLoading from './SmallLoading'
   import ChangeTSPLPDepositMask from './ChangeTSPLPDepositMask'
   import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-  import {getAbiAndContractAddress} from '../utils/chain/contract.js'
+  import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
 
   import {
   isTransactionSuccess,
@@ -210,7 +210,7 @@
       },
 
       async getTSPLPBalance(){
-        let poolInstance = this.$store.state.tspLPPoolInstance2
+        let poolInstance = await getContract('TSP_LP_POOL')
         let addr = this.addr
         if (!poolInstance || !poolInstance.delegators){
           await this.getTspLPPoolInstance()
@@ -237,23 +237,29 @@
           let addr = this.addr
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
-
-          let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL)')).address
+          console.log(1)
+          let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
+          console.log(2)
           let tronLink = await getTronLink()
+          console.log(3)
           let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
+          console.log(4)
           // 创建交易
           let approve = await tronLink.transactionBuilder
                         .triggerSmartContract(TSP_LP_TOKEN_ADDRESS, 
                                               "approve(address,uint256)", 
                                               {feeLimit:20_000_000}, 
                                               params, addr)
+          console.log(5)
           if (!approve || approve["result"]["result"] !== true){
             this.checkMineAmount()
             alert("Approve fail")
             return
           }
+          console.log(6)
           // 签名交易
           let signedTx = await tronLink.trx.sign(approve['transaction'])
+          console.log(7)
           // 广播交易
           let broastTx = await tronLink.trx.sendRawTransaction(signedTx)
           if (broastTx && broastTx['txid'] && (await isTransactionSuccess(broastTx['txid']))){
@@ -281,7 +287,7 @@
           this.canMineFlag = false
           let addr = this.addr
           //开始挖矿
-          let tspLPPool = this.$store.state.tspLPPoolInstance
+          let tspLPPool = await getContract('TSP_LP_POOL')
           let b = parseFloat(this.mineAmount)
           let value = this.dataToSun(b)
           // commit deposit
@@ -311,7 +317,7 @@
       async withdrawPeanuts(){
         try {
           this.isLoading = true
-          let instance = this.$store.state.tspLPPoolInstance
+          let instance = await getContract('TSP_LP_POOL')
           let res = await instance.withdrawPeanuts().send({feeLimit:20_000_000})
           if (res && (await isTransactionSuccess(res))){
             await this.$parent.getOtherBalance()
@@ -333,21 +339,21 @@
         this.showMask=false
       },
       async getPendingPnut(){
-        let tspLPPool = this.$store.state.tspLPPoolInstance
+        let tspLPPool = await getContract('TSP_LP_POOL')
         // console.log(235236,tspPool)
         let s = await tspLPPool.getPendingPeanuts().call()
         this.pendingPnut = this.tronWeb2.toBigNumber(s * 1e-6).toFixed(6)
       //  console.log("getPendingPnut", this.pendingPnut)
-        let p = await tspLPPool.shareAcc().call()
+        // let p = await tspLPPool.shareAcc().call()
         // console.log("shareAcc", p*1)
 
-        let p2 = await tspLPPool.totalDepositedTSPLP().call()
+        // let p2 = await tspLPPool.totalDepositedTSPLP().call()
         // console.log("totalDepositedTSPLP", p2*1)  //totalDepositedSP
       },
       async update(){
         try {
-          await this.getTSPTRXPoolInfo()
-          await this.getTSPLPBalance()
+          this.getTSPTRXPoolInfo()
+          this.getTSPLPBalance()
            //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
           //通过$once来监听定时器，在beforeDestroy钩子时被清除。

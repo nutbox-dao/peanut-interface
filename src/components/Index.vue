@@ -107,6 +107,7 @@
           :balanceOfDelegate = 'balanceOfDelegate'
           :balanceOfDelegate2 = 'balanceOfDelegate2'
           :spToVests = 'spToVests'
+          :addr = 'addr'
 
           v-if="showDelegateMask"
           @hideMask="showDelegateMask=false"

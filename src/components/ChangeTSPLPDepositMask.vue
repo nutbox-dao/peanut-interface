@@ -91,20 +91,20 @@
 </template>
 
 <script>
-    import SmallLoading from './SmallLoading'
-    import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
-    import {getAbiAndContractAddress} from '../utils/chain/contract.js'
+import SmallLoading from './SmallLoading'
+import {steemToVest, vestsToSteem} from '../utils/chain/steemOperations.js'
+import {getAbiAndContractAddress, getContract} from '../utils/chain/contract.js'
 
-    import {
-            isTransactionSuccess,
-            isInsufficientEnerge,
-            getBalanceOfToken,
-            getSupplyOfToken,
-            amountToInt,
-            intToAmount,
-            getTronLink} from '../utils/chain/tron.js'
+import {
+        isTransactionSuccess,
+        isInsufficientEnerge,
+        getBalanceOfToken,
+        getSupplyOfToken,
+        amountToInt,
+        intToAmount,
+        getTronLink} from '../utils/chain/tron.js'
 
-    import {TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS} from '../const.js'
+import {TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS} from '../const.js'
 export default {
     name: "ChangeTSPLPDepositMask",
     props: ['changeDegate',
@@ -135,7 +135,6 @@ export default {
     },
     methods:{
         checkAddValue(){
-            console.log("check")
             let reg = /^\d+(\.\d+)?$/
             let res = reg.test(this.addvalue)
             let res1 = false
@@ -186,7 +185,7 @@ export default {
                                                     params, addr)
                 if (!approve || approve["result"]["result"] !== true){
                     this.checkAddValue()
-                    alert("Approve fail")
+                    alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
                     return
                 }
                 // 签名交易
@@ -198,10 +197,10 @@ export default {
                     this.canAddFlag = true
                 }else{
                     if (await isInsufficientEnerge(broastTx['txid'])){
-                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
-                        }else{
-                            alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
-                        }
+                        alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                    }else{
+                        alert(this.$t('error.error')+"\n" + this.$t("error.approveFail"))
+                    }
                     this.checkAddValue()
                 }
             }catch (e){
@@ -219,7 +218,7 @@ export default {
                 this.canAddFlag = false
                 let addr = this.addr
                 //开始挖矿
-                let tspLPPool = this.$store.state.tspLPPoolInstance
+                let tspLPPool = await getContract('TSP_LP_POOL')
                 let b = parseFloat(this.addvalue)
                 let value = this.dataToSun(b)
                 // commit deposit
@@ -232,11 +231,11 @@ export default {
                     this.$parent.balanceOfTSPLP = parseFloat(this.$parent.balanceOfTSPLP2).toFixed(3)
                     this.hideMask()
                 }else{
-                    if (await isInsufficientEnerge(res)){
-                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
-                        }else{
-                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
-                        }
+                    if (res && await isInsufficientEnerge(res)){
+                        alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                    }else{
+                        alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                    }
                     this.checkAddValue()
                 }
             }
@@ -255,8 +254,8 @@ export default {
                 let a = parseFloat(this.subvalue)
                 let value = this.dataToSun(a)
 
-                let tspPool = this.$store.state.tspLPPoolInstance
-                let res = await tspPool.withdraw(value).send({feeLimit:20_000_000})
+                let tspLPPool = await getContract('TSP_LP_POOL')
+                let res = await tspLPPool.withdraw(value).send({feeLimit:20_000_000})
                 if (res && (await isTransactionSuccess(res))){
                     // 直接更新数字
                     this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) - a
@@ -266,11 +265,11 @@ export default {
                    await this.$parent.$parent.getOtherBalance()
                    this.hideMask()
                 }else{
-                    if (await isInsufficientEnerge(res)){
-                            alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
-                        }else{
-                            alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
-                        }
+                    if (res && await isInsufficientEnerge(res)){
+                        alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
+                    }else{
+                        alert(this.$t('error.error')+"\n" + this.$t("error.changeDepsitFail"))
+                    }
                     this.checkSubValue()
                 }
             }
@@ -289,7 +288,7 @@ export default {
                 let a = parseFloat(this.balanceOfDelegate2)
                 let value = this.dataToSun(a)
 
-                let tspPool = this.$store.state.tspLPPoolInstance
+                let tspPool = await getContract('TSP_LP_POOL')
                 let delDepositTx = await tspPool.withdraw(value).send({feeLimit:20_000_000})
                 if(delDepositTx && (await isTransactionSuccess(delDepositTx))){
                     // 直接更新数字
