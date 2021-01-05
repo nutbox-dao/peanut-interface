@@ -237,29 +237,22 @@
           let addr = this.addr
           let b = parseFloat(this.mineAmount)
           let value = amountToInt(b)
-          console.log(1)
           let tspLPPoolAddr = (await getAbiAndContractAddress('TSP_LP_POOL')).address
-          console.log(2)
           let tronLink = await getTronLink()
-          console.log(3)
           let params = [{type:"address",value:tspLPPoolAddr},{type:"uint256",value:value}]
-          console.log(4)
           // 创建交易
           let approve = await tronLink.transactionBuilder
                         .triggerSmartContract(TSP_LP_TOKEN_ADDRESS, 
                                               "approve(address,uint256)", 
                                               {feeLimit:20_000_000}, 
                                               params, addr)
-          console.log(5)
           if (!approve || approve["result"]["result"] !== true){
             this.checkMineAmount()
             alert("Approve fail")
             return
           }
-          console.log(6)
           // 签名交易
           let signedTx = await tronLink.trx.sign(approve['transaction'])
-          console.log(7)
           // 广播交易
           let broastTx = await tronLink.trx.sendRawTransaction(signedTx)
           if (broastTx && broastTx['txid'] && (await isTransactionSuccess(broastTx['txid']))){

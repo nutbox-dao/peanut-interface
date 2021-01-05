@@ -411,29 +411,25 @@
           let currency =  'STEEM'
           let memo = this.addr+" +"+amount+' TSTEEM'
            let res = await this.steemTransfer(from, to, amount, memo, currency, this.addr, 0.1)
-
            if(res.success === true){
-               await this.sleep()
-               await this.getTsteemBalance()
-               await this.getSteemStates()
-               this.transValue = ''
-               this.isLoading = false
-               this.canTransFlag = true
+              await this.sleep()
+              this.getTsteemBalance()
+              await this.getSteemStates()
             }else{
-                this.transValue = ''
-                this.isLoading = false
-                this.canTransFlag = true
-                this.maskInfo = this.$t('error.error')+"\n"+res.message
-                this.showMask = true
+              this.maskInfo = this.$t('error.error')+"\n"+res.message
+              this.showMask = true
             }
         }
         catch(e){
           this.isLoading = false
-          this.canTransFlag = true
           this.maskInfo = this.$t('error.error')+"\n"+e.message
           this.showMask = true
+        }finally{
+          this.isLoading = false
+          this.transValue = ''
+          this.checkTransValue()
         }
-        },
+      },
       async TSteemToSteem() {
         try{
           this.isLoading = true
@@ -446,10 +442,8 @@
           let res = await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
           if(res && (await isTransactionSuccess(res))){
             await  this.sleep()
-            await this.getTsteemBalance()
             await this.getSteemStates()
-            this.transValue = ''
-            this.canTransFlag = true
+            this.getTsteemBalance()
           }else{
             if (await isInsufficientEnerge(res)){
               alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
@@ -464,6 +458,7 @@
         }finally{
           this.isLoading = false
           this.transValue = ''
+          this.checkTransValue()
         }
       },
       async trans(){
@@ -540,23 +535,20 @@
           let memo = this.addr+" +"+amount+' TSBD'
           let res = await this.sbdTransfer(from, to, amount, memo, currency, this.addr)
           if(res.success === true){
-            await this.getTsbdBalance()
             await this.getSteemStates()
-            this.transSbdValue = ''
-            this.isLoading = false
-            this.canTransSbdFlag = true
+            this.getTsbdBalance()
           }else{
-            this.transSbdValue = ''
-            this.isLoading = false
-            this.canTransSbdFlag = true
             this.maskInfo =  this.$t('error.error')+"\n"+res.message
             this.showMask = true
           }
         }
         catch(e){
-          this.isLoading = false
           this.maskInfo = this.$t('error.error')+"\n"+e;
           this.showMask = true
+        }finally{
+          this.isLoading = false
+          this.transSbdValue = ''
+          this.checkTransSbdValue()
         }
       },
       async TSbdToSbd() {
@@ -570,8 +562,8 @@
           let value = amountToInt(ss)
           let res = await instance.tsbdToSbd(to, value).send({feeLimit:20_000_000})
           if(res && (await isTransactionSuccess(res))){
-            await this.getTsbdBalance()
             await this.getSteemStates()
+            this.getTsbdBalance()
           }else{
             if (await isInsufficientEnerge(res)){
               alert(this.$t('error.error') + "\n" + this.$t("error.insufficientEnerge"))
@@ -586,6 +578,7 @@
         }finally{
           this.isLoading = false
           this.transSbdValue = ''
+          this.checkTransSbdValue()
         }
       },
       async transSbd(){
@@ -653,26 +646,20 @@
             let memo = this.addr+" +"+amount+' TSP'
             let res = await this.steemTransferVest(from, to, amount, this.addr, tspfee)
              if(res.success === true){
-                 await this.sleep(3)
-                 await this.getTsteemBalance()
-                 await this.getSteemStates()
+                 await this.sleep()
                  await this.getTspBalance()
-                 this.transTspValue = ''
-                 this.isLoading = false
-                 this.canTransTspFlag = true
               }else{
-                  this.transTspValue = ''
-                  this.isLoading = false
-                  this.canTransFlag = true
                   this.maskInfo = this.$t('error.error')+"\n"+res.message
                   this.showMask = true
               }
           }
           catch(e){
-            this.isLoading = false
-            this.canTransFlag = true
             this.maskInfo = this.$t('error.error')+"\n"+e.message
             this.showMask = true
+          }finally{
+            this.isLoading = false
+            this.transTspValue = ''
+            this.checkTransTspValue()
           }
       },
       async transTspToSteem(){
@@ -700,10 +687,8 @@
           let memo = this.addr+" -"+this.transTspValue+' TSP'
           let res = await transferSteem(from,to,tspfee,memo)
           if (res.success === true){
-            let res = await instance.tspToSteem(to, value).send()
+            let res = await instance.tspToSteem(to, value).send({feeLimit:20_000_000})
             if (res && (await isTransactionSuccess(res))){
-              await this.getTsteemBalance()
-              await this.getSteemStates()
               await this.getTspBalance()
             }else{
               if (await isInsufficientEnerge(res)){
@@ -715,6 +700,7 @@
           }else{
             this.maskInfo = this.$t('error.error') + "\n" + "steem operate fail!"
             this.showMask = true
+            this.checkTransTspValue()
           }
         }
         catch(e){
