@@ -324,7 +324,7 @@
         this.sbdFlag = false
         this.tspFlag = true
       },
-      async getBalance(){ //tsteem
+      async getTsteemBalance(){ //tsteem
         let instance = await getContract("STEEM")
         // console.log(1235, 'steeeminstance', instance)
         let a = await instance.balanceOf(this.addr).call()
@@ -414,7 +414,7 @@
 
            if(res.success === true){
                await this.sleep()
-               await this.getBalance()
+               await this.getTsteemBalance()
                await this.getSteemStates()
                this.transValue = ''
                this.isLoading = false
@@ -446,7 +446,7 @@
           let res = await instance.tsteemToSteem(to, value).send({feeLimit:20_000_000})
           if(res && (await isTransactionSuccess(res))){
             await  this.sleep()
-            await this.getBalance()
+            await this.getTsteemBalance()
             await this.getSteemStates()
             this.transValue = ''
             this.canTransFlag = true
@@ -654,7 +654,7 @@
             let res = await this.steemTransferVest(from, to, amount, this.addr, tspfee)
              if(res.success === true){
                  await this.sleep(3)
-                 await this.getBalance()
+                 await this.getTsteemBalance()
                  await this.getSteemStates()
                  await this.getTspBalance()
                  this.transTspValue = ''
@@ -702,7 +702,7 @@
           if (res.success === true){
             let res = await instance.tspToSteem(to, value).send()
             if (res && (await isTransactionSuccess(res))){
-              await this.getBalance()
+              await this.getTsteemBalance()
               await this.getSteemStates()
               await this.getTspBalance()
             }else{
@@ -749,7 +749,7 @@
           //如果刷新页面, instance未定义
           try{
             await that.getSteemStates()
-            that.getBalance()
+            that.getTsteemBalance()
             that.getTsbdBalance()
             that.getTspBalance()
           }catch(e){
