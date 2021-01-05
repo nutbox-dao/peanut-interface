@@ -64,24 +64,33 @@ import axios from 'axios'
     methods: {
       // 获取子控件共用数据，通过属性传进去
       async getOtherBalance(){  //nuts
+        this.getBalanceOfPnut()
+        this.getTotalDepositedSP()
+        this.getTotalPendingPnut()
+        this.getRewardsPerBlock()
+      },
+      async getBalanceOfPnut(){
         let instance = await getContract('PNUT')
         let a = await instance.balanceOf(this.addr).call()
-
         this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
         this.nutBalanceOf2 = intToAmount(a)
-
+      },
+      async getTotalDepositedSP(){
         let poolinstance = await getContract('PNUT_POOL')
-
         let g = await poolinstance.getTotalDepositedSP().call()
         this.totalDepositedSP2 = await vestsToSteem(intToAmount(g))
         this.totalDepositedSP = this.formatData(this.totalDepositedSP2)
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-
-        this.rewardsPerBlock = this.formatData(intToAmount(t))
+      },
+      async getTotalPendingPnut(){
+        let poolinstance = await getContract('PNUT_POOL')
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
+      },
+      async getRewardsPerBlock(){
+        let poolinstance = await getContract('PNUT_POOL')
+        let t = await poolinstance.getRewardsPerBlock().call()
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
       },
       async getSteemPrice(){
         let res = await axios.request({

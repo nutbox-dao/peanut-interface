@@ -196,30 +196,42 @@
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
       async getOtherBalance(){  //nuts
+        this.getBalanceOfPnut()
+        this.getDelegatedSp()
+        this.getTotalDepositedSp()
+        this.getTotalPendingPnuts()
+        this.getRewardsPerBlock()
+      },
+      async getBalanceOfPnut(){
         let instance = await getContract('PNUT')
         let a = await instance.balanceOf(this.addr).call()
-
         this.nutBalanceOf = this.formatData(intToAmount(a))  //nuts
         this.nutBalanceOf2 = intToAmount(a)
-
+      },
+      async getDelegatedSp(){
         let poolinstance = await getContract('PNUT_POOL')
         let f = await poolinstance.delegators(this.addr).call()  //balanceOfDelegate
         let p = intToAmount(f.amount) * this.vestsToSp
         this.balanceOfDelegate =  this.formatData(p)
         this.balanceOfDelegate2 = p
-
+      },
+      async getTotalDepositedSp(){
+        let poolinstance = await getContract('PNUT_POOL')
         let g = await poolinstance.getTotalDepositedSP().call()
         let g2 = intToAmount(g) * this.vestsToSp
         this.totalDepositedSP = this.formatData(g2)
         this.totalDepositedSP2 = g2
-
-        let t = await poolinstance.getRewardsPerBlock().call()
-        this.rewardsPerBlock = this.formatData(intToAmount(t))
-
+      },
+      async getTotalPendingPnuts(){
+        let poolinstance = await getContract('PNUT_POOL')
         let i = await poolinstance.getTotalPendingPeanuts().call()
         let i2 = intToAmount(i)
         this.totalPendingPeanuts = this.formatData(i2)
-
+      },
+      async getRewardsPerBlock(){
+        let poolinstance = await getContract('PNUT_POOL')
+        let t = await poolinstance.getRewardsPerBlock().call()
+        this.rewardsPerBlock = this.formatData(intToAmount(t))
       },
       async getSteemStates(){
         let username = this.$store.state.username
