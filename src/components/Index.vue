@@ -382,6 +382,9 @@
         let pnutPrice = await this.getPnutPrice()
         let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
         this.apy = (apy * 100).toFixed(3)
+        if (!this.apy){
+          return
+        }
         localStorage.setItem('apy', this.apy)
       },
     },
