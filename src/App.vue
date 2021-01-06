@@ -177,7 +177,6 @@
       formatAddr(data){
         return data.substring(0,6)+'...'+data.substring(30)
       },
-
     },
     async beforeMount(){
       let that = this

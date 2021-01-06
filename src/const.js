@@ -8,7 +8,6 @@ export const STEEM_API_URLS = [
     "https://aksaiapi.wherein.mobi",
   ];
 
-  
 export const STEEM_CONF_KEY = 'steemNodeKey'
 
 export const LOCALE_KEY = 'localeLanguage'

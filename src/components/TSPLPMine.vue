@@ -143,7 +143,7 @@
   getTronLink} from '../utils/chain/tron.js'
 
   import {TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS} from '../const.js'
-
+  
   export default {
     name: "TSPLPMine",
     props:[
@@ -345,7 +345,7 @@
       },
       async update(){
         try {
-          this.getTSPTRXPoolInfo()
+          // this.getTSPTRXPoolInfo()
           this.getTSPLPBalance()
            //设置定时器以更新当前时间
           let timer = setInterval(this.getPendingPnut, 3000)
@@ -367,10 +367,11 @@
       },
 
     async mounted() {
-
+      
     },
+    
 
-    }
+  }
 </script>
 
 <style scoped>
@@ -637,4 +638,3 @@
   }
 
 </style>
-

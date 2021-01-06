@@ -147,9 +147,7 @@ import axios from 'axios'
         return price
       },
       async calPnutApy(){
-        let steemPrice = await this.getSteemPrice()
-        let tronPrice = await this.getTronPrice()
-        let pnutPrice = await this.getPnutPrice()
+        const [steemPrice,tronPrice,pnutPrice] = await Promise.all([this.getSteemPrice(),this.getTronPrice(),this.getPnutPrice()])
         let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
         this.apy = (apy * 100).toFixed(3)
         if(!this.apy){
@@ -172,7 +170,7 @@ import axios from 'axios'
       }
       this.apy = localStorage.getItem('apy')
       this.addr = await getTronLinkAddr()
-      main()
+      await  main()
       this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()

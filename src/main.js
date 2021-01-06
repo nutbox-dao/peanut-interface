@@ -7,14 +7,14 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import steem from 'steem'
 import VueI18n from 'vue-i18n'
-import {STEEM_API_URLS, STEEM_CONF_KEY} from './const.js'
+import {STEEM_API_URLS, STEEM_CONF_KEY, LOCALE_KEY} from './const.js'
 
 
 Vue.use(BootstrapVue)
 Vue.use(VueI18n)
 
 const DEFAULT_LANG = navigator.language
-const LOCALE_KEY = 'localeLanguage'
+console.log('default language',DEFAULT_LANG)
 
 const i18n = new VueI18n({
   locale:'en',
@@ -69,21 +69,21 @@ Vue.prototype.steemWrap = steemWrap
 
 Vue.config.productionTip = false
 
-Vue.filter('formatAmount',function(value,digit=3){
-  const str =
-      digit != null && digit >= 0
-          ? Number(value)
-              .toFixed(digit)
-              .toString()
-          : value.toString()
-  let integer = str
-  let fraction = ''
-  if (str.includes('.')) {
-    integer = str.split('.')[0]
-    fraction = '.' + str.split('.')[1]
-  }
-  return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + fraction
-})
+// Vue.filter('formatAmount',function(value,digit=3){
+//   const str =
+//       digit != null && digit >= 0
+//           ? Number(value)
+//               .toFixed(digit)
+//               .toString()
+//           : value.toString()
+//   let integer = str
+//   let fraction = ''
+//   if (str.includes('.')) {
+//     integer = str.split('.')[0]
+//     fraction = '.' + str.split('.')[1]
+//   }
+//   return integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + fraction
+// })
 
 new Vue({
   i18n,
