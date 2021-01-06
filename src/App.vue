@@ -22,9 +22,9 @@
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto" style="display:block">
           <div class="loginfo">
-            <button class="right-item" @click="backtoindex">{{ $t('message.delegatemine') }}</button>
-            <button class="right-item" @click="bridge">{{ $t('message.gateway') }}</button>
-            <button class="right-item" @click="tsp">{{ $t('tsp.tspMine') }}</button>
+            <router-link to='/' tag="button" class="right-item">{{ $t('message.delegatemine') }}</router-link>
+            <router-link to='/bridge' tag="button" class="right-item">{{ $t('message.gateway') }}</router-link>
+            <router-link to='/tsp' tag="button" class="right-item">{{ $t('tsp.tspMine') }}</router-link>
 
             <div class="drop">
                 <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
@@ -131,13 +131,7 @@
     },
     methods: {
       backtoindex(){
-        this.$router.push({path: '/'})
-      },
-      bridge(){
-        this.$router.push({path: '/bridge'})
-      },
-      tsp(){
-        this.$router.push({path: '/tsp'})
+        this.$router.push({path:'/'})
       },
       mywallet(){
         this.$router.push({path: '/wallet'})
@@ -241,10 +235,10 @@
     padding: 8px 0px;
   }
   .steem-node-item:hover{
-    color: blue !important;
+    color: rgb(255, 0, 122) !important;
   }
   .selectedNode{
-    color: blue !important;
+    color: rgb(255, 0, 122) !important;
   }
   .unSelectedNode{
     color: gray;
@@ -273,9 +267,10 @@
   }
 
   .router-link-exact-active{
-    color: gray!important;
+    color: rgb(255, 0, 122)!important;
     border-bottom: 1px solid azure;
     text-align: center;
+    background-color: #fdeaf1!important;
   }
 
   .logo{
