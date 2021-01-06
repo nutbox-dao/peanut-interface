@@ -102,7 +102,7 @@
 
         if (length % numPerRound > 0){
           var promises = []
-          for (let i = parseInt(length/numPerRound); i < length; i++){
+          for (let i = parseInt(length/numPerRound)*numPerRound; i < length; i++){
             promises.push(new Promise(async function(resolve,reject){
               let p = await nutPool.delegatorList(i).call()
               let res = await nutPool.delegators(p).call()
