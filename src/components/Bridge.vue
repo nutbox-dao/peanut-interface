@@ -687,7 +687,7 @@
           let memo = this.addr+" -"+this.transTspValue+' TSP'
           let res = await transferSteem(from,to,tspfee,memo)
           if (res.success === true){
-            let res = await instance.tspToSteem(to, value).send({feeLimit:20_000_000})
+            let res = await instance.tspToSteem(from, value).send({feeLimit:20_000_000})
             if (res && (await isTransactionSuccess(res))){
               await this.getTspBalance()
             }else{
