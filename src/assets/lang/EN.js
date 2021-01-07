@@ -46,6 +46,7 @@ module.exports = {
         "pnutbalance":"PNUT Balance",
         "input":"Input",
 
+        'setting':"Setting",
         "whitePaper":"White Paper",
         "nps":"Nutbox Proposal System",
         "userBook":"User Handbook",
@@ -98,10 +99,10 @@ module.exports = {
         "confirmDeposit":"Confirm Deposit",
         "tspIsCirculatingSP": "Note：TSP is circulating SP",
         "addTspDeposit":"Increase Deposit",
-        "minusTspDeposit":"Minus Deposit",
+        "minusTspDeposit":"Decrease Deposit",
         "cancelTspDeposit":"Cancel Deposit",
         "confirmAddTspDeposit":"Confirm Increase Deposit",
-        "confirmMinusTspDeposit":"Confirm Minus Deposit",
+        "confirmMinusTspDeposit":"Confirm Decrease Deposit",
         "confirmCancelTspDeposit":"Confirm Cancel Deposit",
         "notEnoughFee":"Not Enough Fee",
         "approveNutbox":"Approve Nutbox",
@@ -113,10 +114,10 @@ module.exports = {
         "totalLP":"total TSP-LP",
         "totalTSP":"total TSP",
         "addTspLPDeposit":"Increase Deposit",
-        "minusTspLPDeposit":"Minus Deposit",
+        "minusTspLPDeposit":"Decrease Deposit",
         "cancelTspLPDeposit":"Cancel Deposit",
         "confirmAddTspLPDeposit":"Confirm Increase Deposit",
-        "confirmMinusTspLPDeposit":"Confirm Minus Deposit",
+        "confirmMinusTspLPDeposit":"Confirm Decrease Deposit",
         "confirmCancelTspLPDeposit":"Confirm Cancel Deposit",
 
     }

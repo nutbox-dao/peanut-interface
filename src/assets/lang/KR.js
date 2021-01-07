@@ -46,6 +46,7 @@ module.exports = {
         "pnutbalance":"피넛(PNUT) 보유량",
         "input":"숫자를 입력하세요.",
 
+        'setting':"Setting",
         "whitePaper":"백서",
         "nps":"너트박스 제안 시스템",
         "userBook":"사용 노하우",

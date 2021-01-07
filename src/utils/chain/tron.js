@@ -148,8 +148,24 @@ export const getSupplyOfToken = async function(token){
   return supply && supply['constant_result'] && supply['constant_result'][0] && tron.toDecimal('0x'+supply['constant_result'][0]);
 }
 
+function runOnce(fn, context) { //控制让函数只触发一次
+  return function () {
+      try {
+          fn.apply(context || this, arguments);
+      }
+      catch (e) {
+          console.error(e);//一般可以注释掉这行
+      }
+      finally {
+          fn = null;
+      }
+  }
+}
+
 // whatch the tronlink address every 5sec，if changed callback the new address
-export const whatchWallet = async function(callback){
+export const whatchWallet = runOnce(wa)
+
+async function wa(callback){
   try{
     const addr = await getTronLinkAddr()
     if (!addr) {
@@ -164,10 +180,45 @@ export const whatchWallet = async function(callback){
       return;
     }
   }catch(e){
-
+    console.log('watch wallet fail:',e)
   }finally{
     setTimeout(() => {
-      whatchWallet(callback);
+      wa(callback);
     }, 500)
   }
+}
+
+export const getTronPrice = async function(){
+  let res = await axios.request({
+    method:"get",
+    url:'https://api.coingecko.com/api/v3/coins/tron',
+    headers: {
+      "accept": "application/json",
+    }
+  })
+  // console.log(111,res.data.tickers)
+  let arr = res.data.tickers
+  for(let i = 0; i < arr.length; i++){
+    if(arr[i].target === "USDT"){
+      // console.log(112,arr[i].last)
+      return parseFloat(arr[i].last)
+    }
+  }
+}
+
+export const getPnutPrice = async function(){
+  let res = await axios.request({
+    method:"get",
+    url:'https://api.justswap.io/v2/allpairs',
+    headers: {
+      "accept": "application/json",
+    },
+    params: {
+      page_size : 2500,
+      page_num: 1
+    }
+  })
+  let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
+  res = null
+  return parseFloat(price)
 }

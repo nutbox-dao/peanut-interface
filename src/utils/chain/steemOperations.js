@@ -1,4 +1,5 @@
 import steem from "steem";
+import axios from "axios"
 import {STEEM_API_URLS, STEEM_CONF_KEY} from '../../const.js'
 let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
@@ -202,4 +203,23 @@ function callDatabaseApi(method, params) {
       }
     });
   });
+}
+
+
+export const getSteemPrice = async function(){
+  let res = await axios.request({
+    method:"get",
+    url:'https://api.coingecko.com/api/v3/coins/steem',
+    headers: {
+      "accept": "application/json",
+    }
+  })
+  // console.log(111,res.data.tickers)
+  let arr = res.data.tickers
+  for(let i = 0; i < arr.length; i++){
+    if(arr[i].target === "USDT"){
+      // console.log(112,arr[i].last)
+      return parseFloat(arr[i].last)
+    }
+  }
 }

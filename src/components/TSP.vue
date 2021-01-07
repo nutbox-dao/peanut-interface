@@ -35,8 +35,8 @@
 <script>
 import TSPMine from './TSPMine.vue'
 import TSPLPMine from './TSPLPMine.vue'
-import {vestsToSteem} from '../utils/chain/steemOperations.js'
-import {whatchWallet,getTronLinkAddr, intToAmount} from '../utils/chain/tron.js'
+import {vestsToSteem, getSteemPrice} from '../utils/chain/steemOperations.js'
+import {whatchWallet,getTronLinkAddr, intToAmount, getTronPrice, getPnutPrice} from '../utils/chain/tron.js'
 import {getContract} from '../utils/chain/contract'
 import {TRON_LINK_ADDR_NOT_FOUND} from '../const.js'
 import axios from 'axios'
@@ -64,10 +64,12 @@ import axios from 'axios'
     methods: {
       // 获取子控件共用数据，通过属性传进去
       async getOtherBalance(){  //nuts
-        this.getBalanceOfPnut()
-        this.getTotalDepositedSP()
-        this.getTotalPendingPnut()
-        this.getRewardsPerBlock()
+        await Promise.all([
+          this.getBalanceOfPnut(),
+          this.getTotalDepositedSP(),
+          this.getTotalPendingPnut(),
+          this.getRewardsPerBlock(),
+        ])
       },
       async getBalanceOfPnut(){
         let instance = await getContract('PNUT')
@@ -92,67 +94,16 @@ import axios from 'axios'
         let t = await poolinstance.getRewardsPerBlock().call()
         this.rewardsPerBlock = this.formatData(intToAmount(t))
       },
-      async getSteemPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/steem',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getTronPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/tron',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getPnutPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.justswap.io/v2/allpairs',
-          headers: {
-            "accept": "application/json",
-          },
-          params: {
-            page_size : 2500,
-            page_num: 1
-          }
-        })
-        // console.log(111,res.data.data)
-        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
-        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
-        // console.log(114,price)
-        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
-        res = null
-        return price
-      },
       async calPnutApy(){
-        const [steemPrice,tronPrice,pnutPrice] = await Promise.all([this.getSteemPrice(),this.getTronPrice(),this.getPnutPrice()])
+        const [steemPrice,tronPrice,pnutPrice] = await Promise.all([getSteemPrice(),getTronPrice(),getPnutPrice()])
         let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
-        this.apy = (apy * 100).toFixed(3)
-        if(!this.apy){
-          return
+        // console.log('prices:',steemPrice,tronPrice,pnutPrice,this.rewardsPerBlock,this.totalDepositedSP2)
+        // console.log('apy =',apy, isNaN(apy))
+        if(!apy || isNaN(apy) || !isFinite(apy)){
+          return;
         }
+        this.apy = (apy * 100).toFixed(3)
+
         localStorage.setItem('apy', this.apy)
       },
     },
@@ -161,7 +112,7 @@ import axios from 'axios'
       async function main(){
         //如果刷新页面, instance未定义
         try{
-          that.getOtherBalance()
+          await that.getOtherBalance()
         }catch(e){
           that.maskInfo = that.$t('error.tryrefreshpage')+"\n"+e
           that.showMask = true
@@ -170,7 +121,7 @@ import axios from 'axios'
       }
       this.apy = localStorage.getItem('apy')
       this.addr = await getTronLinkAddr()
-      await  main()
+      await main()
       this.calPnutApy()
       // 更新子组件,保证第一页面先加载完再加载LP页面
       await this.$refs.tsp.update()

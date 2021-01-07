@@ -138,8 +138,9 @@
 <script>
   import SmallLoading from './SmallLoading'
   import ChangeDelegateMask from './ChangeDelegateMask'
-  import { isTransactionSuccess, isInsufficientEnerge, getTronLinkAddr, intToAmount} from '../utils/chain/tron'
+  import { isTransactionSuccess, isInsufficientEnerge, getTronLinkAddr, intToAmount, getTronPrice, getPnutPrice} from '../utils/chain/tron'
   import {getContract} from '../utils/chain/contract'
+  import {getSteemPrice} from '../utils/chain/steemOperations'
   import axios from 'axios'
   export default {
     name: "Index",
@@ -196,11 +197,13 @@
         this.checkFlag = this.checkDelegateFlag = res && res1 && res2 && res3
         },
       async getOtherBalance(){  //nuts
-        this.getBalanceOfPnut()
-        this.getDelegatedSp()
-        this.getTotalDepositedSp()
-        this.getTotalPendingPnuts()
-        this.getRewardsPerBlock()
+        await Promise.all([
+          this.getBalanceOfPnut(),
+          this.getDelegatedSp(),
+          this.getTotalDepositedSp(),
+          this.getTotalPendingPnuts(),
+          this.getRewardsPerBlock(),
+        ])
       },
       async getBalanceOfPnut(){
         let instance = await getContract('PNUT')
@@ -322,71 +325,17 @@
         // console.log(599, "pending pnut", this.pendingPnut)
       },
 
-      async getSteemPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/steem',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getTronPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.coingecko.com/api/v3/coins/tron',
-          headers: {
-            "accept": "application/json",
-          }
-        })
-        // console.log(111,res.data.tickers)
-        let arr = res.data.tickers
-        for(let i = 0; i < arr.length; i++){
-          if(arr[i].target === "USDT"){
-            // console.log(112,arr[i].last)
-            return arr[i].last
-          }
-        }
-      },
-      async getPnutPrice(){
-        let res = await axios.request({
-          method:"get",
-          url:'https://api.justswap.io/v2/allpairs',
-          headers: {
-            "accept": "application/json",
-          },
-          params: {
-            page_size : 2500,
-            page_num: 1
-          }
-        })
-        // console.log(111,res.data.data)
-        // console.log(113,res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"])
-        let price = res.data.data["0_TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"].price
-        // console.log(114,price)
-        // let pnut = "TPZddNpQJHu8UtKPY1PYDBv2J5p5QpJ6XW"
-        res = null
-        return price
-      },
       async calPnutApy(){
         const [steemPrice,tronPrice,pnutPrice] = await Promise.all([
-          this.getSteemPrice(),
-          this.getTronPrice(),
-          this.getPnutPrice()
+          getSteemPrice(),
+          getTronPrice(),
+          getPnutPrice()
         ])
         let apy = 28800 * this.rewardsPerBlock * 365 * pnutPrice * tronPrice / (this.totalDepositedSP2 * steemPrice)
-        this.apy = (apy * 100).toFixed(3)
-        if (!this.apy){
+        if(!apy || isNaN(apy) || !isFinite(apy)){
           return
         }
+        this.apy = (apy * 100).toFixed(3)
         localStorage.setItem('apy', this.apy)
       },
     },

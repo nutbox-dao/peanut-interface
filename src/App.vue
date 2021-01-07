@@ -9,10 +9,12 @@
           <span style="margin-right: 1rem" @click="mywallet" v-if="$store.state.username">
             <img class="account-icon" src="../static/images/nav-steem-icon.png" alt="steem">@{{ $store.state.username }}
           </span>
-          <span @click="mywallet" v-if="$store.state.addr">
+          <span @click="mywallet" v-if="$store.state.addr" id="addr">
             <img class="account-icon" src="../static/images/nav-tron-icon.png" alt="tron">{{$store.state.addr | formatAddr}}
           </span>
-
+          <b-popover target="addr" triggers="hover focus" placement="leftbottom">
+          {{ $store.state.addr }}
+          </b-popover>
       </div>
       <br>
 
@@ -26,83 +28,104 @@
             <router-link to='/bridge' tag="button" class="right-item">{{ $t('message.gateway') }}</router-link>
             <router-link to='/tsp' tag="button" class="right-item">{{ $t('tsp.tspMine') }}</router-link>
 
-            <div class="drop">
-                <b-dropdown id="dropdown-grouped" :text="this.$t('message.language')" variant="transparent" class="m-2">
-                <b-dropdown-item-button @click="setzhlang">
-                  {{ $t('message.zh') }}
-                </b-dropdown-item-button>
-
-                <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item-button @click="setenlang">
-                  {{ $t('message.en') }}
-                </b-dropdown-item-button>
-                
-                <b-dropdown-divider></b-dropdown-divider>
-                <b-dropdown-item-button @click="setkrlang">
-                  {{ $t('message.kr') }}
-                </b-dropdown-item-button>
-
-              </b-dropdown>
-            </div>
-
               <div class="drop">
-                  <b-dropdown id="dropdown-grouped" :text="this.$t('message.about')" variant="transparent" class="m-2">
+                  <b-dropdown id="dropdown-right" right size="sm" variant="secondary" class="m-2" toggle-class="text-decoration-none" no-caret>
+                  
+                  <template #button-content>
+                    <b-icon icon="three-dots" aria-hidden="true" font-scale="1"></b-icon>
+                  </template>
 
-                   <b-dropdown-item-button>
-                    <a target="_blank" href="https://docs.nutbox.io/user_guide.html">{{ $t('message.userBook') }}</a>
-                  </b-dropdown-item-button>
+                  <!-- about -->
+                  <b-dd-group>
+                    <b-dd-header>
+                      <b-icon icon="nut" aria-hidden="true"></b-icon>
+                      {{$t('message.about')}}
+                    </b-dd-header>
+
+                    <b-dropdown-item target="_blank" href="https://docs.nutbox.io/user_guide.html">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                      {{ $t('message.userBook') }}
+                    </b-dropdown-item>
+
+                    <b-dd-item target="_blank" href="https://docs.nutbox.io">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                      {{ $t('message.docs') }}
+                    </b-dd-item>
+                    
+                    <b-dd-item target="_blank" href="https://github.com/nutbox-dao">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                      Github
+                    </b-dd-item>
+
+                    <b-dd-item to="/contract">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                    {{ $t('message.contract') }}
+                    </b-dd-item>
+
+                    <b-dd-item target="_blank" href="https://blog.nutbox.io/@nutbox/nutbox-dao-governance-is-online--the-procedure-of-nutbox-proposal-is-operating--20201105t090030122z">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                    {{ $t('message.nps') }}
+                    </b-dd-item>
+
+                    <b-dd-item to="/delegatorlists">
+                      <b-icon icon="discord"></b-icon>
+                    {{ $t('message.delegatorList') }}
+                    </b-dd-item>
+
+                    <b-dd-item target="_blank" href="https://discord.gg/zPkMuGY">
+                    <b-icon icon="discord" aria-hidden="true"></b-icon>
+                    {{ $t("message.discord") }}
+                    </b-dd-item>
+
+                    <b-dd-item target="_blank" href="https://blog.nutbox.io">
+                      <b-icon icon="discord" aria-hidden="true"></b-icon>
+                    {{$t('message.blog')}}
+                    </b-dd-item>
+
+                  </b-dd-group>
+
                   <b-dropdown-divider></b-dropdown-divider>
 
-                  <b-dropdown-item-button>
-                    <a target="_blank" href="https://docs.nutbox.io">{{ $t('message.docs') }}</a>
-                  </b-dropdown-item-button>
-                   <b-dropdown-divider></b-dropdown-divider>
+                  <!-- language -->
+                  <b-dd-group>
+                    <b-dd-header>
+                      <b-icon icon="spellcheck" aria-hidden="true"></b-icon>
+                      {{$t('message.language')}}
+                    </b-dd-header>
+                    <b-dropdown-item-button @click="setzhlang">
+                    <b-icon :icon="lang=='zh' ? 'check' : 'blank'" aria-hidden="true"></b-icon>
+                      {{ $t('message.zh') }}
+                    </b-dropdown-item-button>
+                    <b-dropdown-item-button @click="setenlang">
+                    <b-icon :icon="lang=='en' ? 'check' : 'blank'" aria-hidden="true"></b-icon>
+                      {{ $t('message.en') }}
+                    </b-dropdown-item-button>
+                    <b-dropdown-item-button @click="setkrlang">
+                    <b-icon :icon="lang=='kr' ? 'check' : 'blank'" aria-hidden="true"></b-icon>
+                      {{ $t('message.kr') }}
+                    </b-dropdown-item-button>
+                  </b-dd-group>
 
-                  <b-dropdown-item-button>
-                    <a target="_blank" href="https://github.com/nutbox-dao">Github</a>
-                  </b-dropdown-item-button>
-                   <b-dropdown-divider></b-dropdown-divider>
-
-                  <b-dropdown-item-button>
-                    <router-link to="/contract">{{ $t('message.contract') }}</router-link>
-                  </b-dropdown-item-button>
-                   <b-dropdown-divider></b-dropdown-divider>
-
-                   <b-dropdown-item-button>
-                    <a target="_blank" href="https://blog.nutbox.io/@nutbox/nutbox-dao-governance-is-online--the-procedure-of-nutbox-proposal-is-operating--20201105t090030122z">{{ $t('message.nps') }}</a>
-                  </b-dropdown-item-button>
-                  <b-dropdown-divider></b-dropdown-divider>
-
-                  <b-dropdown-item-button>
-                     <router-link to="/delegatorlists">{{ $t('message.delegatorList') }}</router-link>
-                  </b-dropdown-item-button>
-                  <b-dropdown-divider></b-dropdown-divider>
-
-                  <b-dropdown-item-button>
-                    <a target="_blank" href="https://discord.gg/zPkMuGY">{{ $t("message.discord") }}</a>
-                  </b-dropdown-item-button>
-                   <b-dropdown-divider></b-dropdown-divider>
-
-                  <b-dropdown-item-button>
-                    <a target="_blank" href="https://blog.nutbox.io">{{$t('message.blog')}}</a>
-                  </b-dropdown-item-button>
                    <b-dropdown-divider v-if="$store.state.username"></b-dropdown-divider>
 
-                   <b-dropdown-item-button v-if="$store.state.username">
-                     <div @mouseover="showSteemNode=true" @mouseleave="showSteemNode=false">
-                        <a>{{ $t('message.changeSteemNode') }}</a>
-                        <div v-show="showSteemNode">
-                          <a :class="['steem-node-item',item == currentSteemNode ? 'selectedNode' : 'unSelectedNode' ]" v-for="(item) in steemUrls" @click="selectNode(item)" v-bind:key="item">{{ item }}</a>
-                        </div>
-                     </div>
-                  </b-dropdown-item-button>
+                    <!-- steem node -->
+                   <b-dd-group v-if="$store.state.username">
+                    <b-dd-header>
+                      <b-icon icon="paperclip" aria-hidden="true"></b-icon>
+                      {{$t('message.changeSteemNode')}}
+                    </b-dd-header>
+                    <b-dropdown-item-button v-for="(item) in steemUrls" :key="item" @click="selectNode(item)" :class="item == currentSteemNode ? 'selectedNode' : 'unSelectedNode'">
+                      <b-icon :icon="item==currentSteemNode ? 'check' : 'blank'" aria-hidden="true"></b-icon>
+                      {{ item }}
+                    </b-dropdown-item-button>
+                   </b-dd-group>
+
                    <b-dropdown-divider v-if="$store.state.username"></b-dropdown-divider>
 
-              <div v-if="$store.state.username">
-                  <b-dropdown-item-button @click="logout" style="text-align:center">
-                    {{ $t('message.logout') }}
-                  </b-dropdown-item-button>
-              </div>
+                    <b-dropdown-item-button @click="logout" style="text-align:center" v-if="$store.state.username" variant="danger">
+                      <b-icon icon="power" aria-hidden="true"></b-icon>
+                      {{ $t('message.logout') }}
+                    </b-dropdown-item-button>
                 </b-dropdown>
             </div>
 
@@ -127,6 +150,7 @@
         steemUrls:STEEM_API_URLS,
         steemNodeKey:STEEM_CONF_KEY,
         currentSteemNode:window.localStorage.getItem(STEEM_CONF_KEY),
+        lang:'en'
       }
     },
     methods: {
@@ -142,18 +166,18 @@
         this.$router.push({path:'/login'})
       },
       setzhlang(){
-        let lang = 'zh'
-        localStorage.setItem(LOCALE_KEY, lang)
+        this.lang = 'zh'
+        localStorage.setItem(LOCALE_KEY, this.lang)
         this.$i18n.locale = 'zh'
       },
       setenlang(){
-        let lang = 'en'
-        localStorage.setItem(LOCALE_KEY, lang)
+        this.lang = 'en'
+        localStorage.setItem(LOCALE_KEY, this.lang)
         this.$i18n.locale = 'en'
       },
       setkrlang(){
-        let lang = 'kr'
-        localStorage.setItem(LOCALE_KEY, lang)
+        this.lang = 'kr'
+        localStorage.setItem(LOCALE_KEY, this.lang)
         this.$i18n.locale = 'kr'
       },
       selectNode(node){
@@ -189,11 +213,12 @@
           that.$store.commit('saveTronAddr',addr)
           that.$router.go(0)
         })
+        
       }
       main()
     },
     async mounted() {
-
+      this.lang = localStorage.getItem(LOCALE_KEY)
     },
 
   }
@@ -219,7 +244,7 @@
   .logos{
     /*background-color: gainsboro;*/
     position: absolute;
-    right: 12.8rem;;
+    right: 2rem;;
     margin-top: -4.5rem;
     color: grey;
   }
@@ -249,6 +274,11 @@
     /*margin-top: 1rem;*/
     position:relative;
     z-index: 2000;
+  }
+
+  .drop a{
+    color:#212529 !important;
+    margin-left: 0 !important;
   }
 
   .logos span{
@@ -335,7 +365,7 @@
   #navmanu {
        /*background-color: white !important;*/
     background-color: aliceblue  !important;
-       padding-left: 5rem;
+    padding-left: 1rem;
 
     }
   .align-top{
@@ -343,7 +373,7 @@
   }
 
   #nav-collapse{
-     margin-right: 10rem;
+     margin-right: 1rem;
     /*background-color: blueviolet;*/
   }
   #nav-collapse a{

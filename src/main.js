@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import BootstrapVue from 'bootstrap-vue'
+import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import steem from 'steem'
@@ -11,6 +11,7 @@ import {STEEM_API_URLS, STEEM_CONF_KEY, LOCALE_KEY} from './const.js'
 
 
 Vue.use(BootstrapVue)
+Vue.use(BootstrapVueIcons)
 Vue.use(VueI18n)
 
 const DEFAULT_LANG = navigator.language
