@@ -2,12 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import {BootstrapVue, BootstrapVueIcons} from 'bootstrap-vue'
+import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import steem from 'steem'
 import VueI18n from 'vue-i18n'
-import {STEEM_API_URLS, STEEM_CONF_KEY, LOCALE_KEY} from './const.js'
+import { STEEM_API_URLS, STEEM_CONF_KEY, LOCALE_KEY } from './const.js'
 
 
 Vue.use(BootstrapVue)
@@ -15,23 +15,23 @@ Vue.use(BootstrapVueIcons)
 Vue.use(VueI18n)
 
 const DEFAULT_LANG = navigator.language
-console.log('default language',DEFAULT_LANG)
+console.log('default language', DEFAULT_LANG)
 
 const i18n = new VueI18n({
-  locale:'en',
+  locale: 'en',
   messages: {
     'zh': require('./assets/lang/zh_CN'),
     'en': require('./assets/lang/EN'),
     'kr': require('./assets/lang/KR')
   },
-    fallbackLocale: 'en',
-    silentFallbackWarn: true
+  fallbackLocale: 'en',
+  silentFallbackWarn: true
 })
 
 const setup = lang => {
-  if (lang === undefined){
+  if (lang === undefined) {
     lang = window.localStorage.getItem(LOCALE_KEY)
-    if (i18n.messages[lang] === undefined){
+    if (i18n.messages[lang] === undefined) {
       lang = DEFAULT_LANG
     }
   }
@@ -53,13 +53,13 @@ let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
 steem.api.setOptions({ url: steemConf })
 Vue.prototype.steem = steem
-console.log('steem node change to:',steemConf)
+console.log('steem node change to:', steemConf)
 
-import {sleep} from "./utils/sleep"
-import {formatData} from "./utils/formatData"
-import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem} from "./utils/chain/steemOperations"
+import { sleep } from "./utils/sleep"
+import { formatData } from "./utils/formatData"
+import { steemDelegation, steemWrap, steemTransferVest, steemToVest, vestsToSteem } from "./utils/chain/steemOperations"
 
-Vue.prototype.sleep  = sleep
+Vue.prototype.sleep = sleep
 Vue.prototype.formatData = formatData
 Vue.prototype.steemDelegation = steemDelegation
 Vue.prototype.steemTransferVest = steemTransferVest
@@ -94,14 +94,14 @@ new Vue({
 }).$mount('#app')
 
 router.beforeEach(function (to, from, next) {
-  if(to.meta.requireAuth){
+  if (to.meta.requireAuth) {
     // 要去的url只有登陆成功后才能访问
     if (store.state.username) {
       next()
     } else {
-      next({name: 'login'})
+      next({ name: 'login' })
     }
-  }else{
+  } else {
     next()
   }
 })

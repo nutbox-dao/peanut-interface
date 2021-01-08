@@ -19,9 +19,9 @@ const routes = [
     path: '/',
     name: 'index',
     component: Index,
-      meta:{
-          requireAuth:true
-      }
+    meta: {
+      requireAuth: true
+    }
   },
   {
     path: '/tsp',
@@ -32,8 +32,8 @@ const routes = [
     path: '/bridge',
     name: 'bridge',
     component: Bridge,
-    meta:{
-       requireAuth:true
+    meta: {
+      requireAuth: true
     }
   },
   {

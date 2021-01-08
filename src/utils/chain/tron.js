@@ -1,7 +1,7 @@
 import axios from "axios";
 import Tron from "tronweb";
-import {TRON_NODE_API, TRON_LINK_ADDR_NOT_FOUND} from '../../const.js'
-import {sleep} from '../sleep.js'
+import { TRON_NODE_API, TRON_LINK_ADDR_NOT_FOUND } from '../../const.js'
+import { sleep } from '../sleep.js'
 
 function initTron(symbol) {
   const HttpProvider = Tron.providers.HttpProvider;
@@ -23,23 +23,23 @@ export function getTron(symbol = "DEFAULT") {
 export async function getTronLinkAddr() {
   let addr = null;
   let tronLink = await getTronLink()
-  if (!tronLink){
+  if (!tronLink) {
     // console.log('no tron link')
     return TRON_LINK_ADDR_NOT_FOUND.noTronLink;
   }
   addr = tronLink.defaultAddress.base58
   // console.log('address',addr)
-  if (addr){
+  if (addr) {
     return addr;
-  }else{
+  } else {
     return TRON_LINK_ADDR_NOT_FOUND.walletLocked;
   }
 }
 
-export const getTronLink = async function(){
+export const getTronLink = async function () {
   var tronlink = window.tronWeb
-  for (let i=0;i<10;i++){
-    if (tronlink){
+  for (let i = 0; i < 10; i++) {
+    if (tronlink) {
       // console.log('get tron link success')
       return tronlink
     }
@@ -55,8 +55,8 @@ export function getAddress(hex) {
   return tron.address.fromHex(hex);
 }
 
-export const isAddress = async function(addr){
-  if(!addr){
+export const isAddress = async function (addr) {
+  if (!addr) {
     return false
   }
   let tronweb = getTron()
@@ -124,97 +124,97 @@ export const contractConfig = {
   // shouldPollResponse: true,
 };
 
-export const getBalanceOfToken = async function(token, user){
+export const getBalanceOfToken = async function (token, user) {
   let tron = getTron()
   let balance = await tron.transactionBuilder
-              .triggerConstantContract(token,
-                                                'balanceOf(address)',
-                                                {},
-                                                [{type:'address',value:user}],
-                                                user)
+    .triggerConstantContract(token,
+      'balanceOf(address)',
+      {},
+      [{ type: 'address', value: user }],
+      user)
   // console.log("banlanceof",balance)                                              
-  return balance && balance['constant_result'] && balance['constant_result'][0] && tron.toDecimal('0x'+balance['constant_result'][0]);
+  return balance && balance['constant_result'] && balance['constant_result'][0] && tron.toDecimal('0x' + balance['constant_result'][0]);
 }
 
-export const getSupplyOfToken = async function(token){
+export const getSupplyOfToken = async function (token) {
   let tron = getTron()
   let supply = await tron.transactionBuilder
-                    .triggerConstantContract(token,
-                                              'totalSupply()',
-                                              {},
-                                              [],
-                                              token)
+    .triggerConstantContract(token,
+      'totalSupply()',
+      {},
+      [],
+      token)
   // console.log("total supply",tron.toDecimal('0x'+supply['constant_result'][0]))
-  return supply && supply['constant_result'] && supply['constant_result'][0] && tron.toDecimal('0x'+supply['constant_result'][0]);
+  return supply && supply['constant_result'] && supply['constant_result'][0] && tron.toDecimal('0x' + supply['constant_result'][0]);
 }
 
 function runOnce(fn, context) { //控制让函数只触发一次
   return function () {
-      try {
-          fn.apply(context || this, arguments);
-      }
-      catch (e) {
-          console.error(e);//一般可以注释掉这行
-      }
-      finally {
-          fn = null;
-      }
+    try {
+      fn.apply(context || this, arguments);
+    }
+    catch (e) {
+      console.error(e);//一般可以注释掉这行
+    }
+    finally {
+      fn = null;
+    }
   }
 }
 
 // whatch the tronlink address every 5sec，if changed callback the new address
 export const whatchWallet = runOnce(wa)
 
-async function wa(callback){
-  try{
+async function wa(callback) {
+  try {
     const addr = await getTronLinkAddr()
     if (!addr) {
       return;
     }
     const originalAddr = localStorage.getItem('tronLinkAddress')
-    if (addr && originalAddr && callback && addr != originalAddr){
+    if (addr && originalAddr && callback && addr != originalAddr) {
       callback(addr);
     }
-    if (addr !== TRON_LINK_ADDR_NOT_FOUND.walletLocked && addr !== TRON_LINK_ADDR_NOT_FOUND.noTronLink){
-      localStorage.setItem('tronLinkAddress',addr)
+    if (addr !== TRON_LINK_ADDR_NOT_FOUND.walletLocked && addr !== TRON_LINK_ADDR_NOT_FOUND.noTronLink) {
+      localStorage.setItem('tronLinkAddress', addr)
       return;
     }
-  }catch(e){
-    console.log('watch wallet fail:',e)
-  }finally{
+  } catch (e) {
+    console.log('watch wallet fail:', e)
+  } finally {
     setTimeout(() => {
       wa(callback);
     }, 500)
   }
 }
 
-export const getTronPrice = async function(){
+export const getTronPrice = async function () {
   let res = await axios.request({
-    method:"get",
-    url:'https://api.coingecko.com/api/v3/coins/tron',
+    method: "get",
+    url: 'https://api.coingecko.com/api/v3/coins/tron',
     headers: {
       "accept": "application/json",
     }
   })
   // console.log(111,res.data.tickers)
   let arr = res.data.tickers
-  for(let i = 0; i < arr.length; i++){
-    if(arr[i].target === "USDT"){
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].target === "USDT") {
       // console.log(112,arr[i].last)
       return parseFloat(arr[i].last)
     }
   }
 }
 
-export const getPnutPrice = async function(){
+export const getPnutPrice = async function () {
   let res = await axios.request({
-    method:"get",
-    url:'https://api.justswap.io/v2/allpairs',
+    method: "get",
+    url: 'https://api.justswap.io/v2/allpairs',
     headers: {
       "accept": "application/json",
     },
     params: {
-      page_size : 2500,
+      page_size: 2500,
       page_num: 1
     }
   })

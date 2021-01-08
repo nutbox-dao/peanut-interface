@@ -1,6 +1,6 @@
 import steem from "steem";
 import axios from "axios"
-import {STEEM_API_URLS, STEEM_CONF_KEY} from '../../const.js'
+import { STEEM_API_URLS, STEEM_CONF_KEY } from '../../const.js'
 let steemConf = window.localStorage.getItem(STEEM_CONF_KEY) || STEEM_API_URLS[0]
 window.localStorage.setItem(STEEM_CONF_KEY, steemConf)
 steem.api.setOptions({ url: steemConf })
@@ -20,7 +20,7 @@ function requestBroadcastWithFee(account, address, fee, symbol, operation, needs
     steem_keychain.requestBroadcast(account, [feeOperation, operation],
       needsActive ? 'Active' : 'Posting', function (response) {
         resolve(response)
-    });
+      });
   })
 }
 
@@ -34,7 +34,7 @@ export async function transfer(fromTron, toSteem, amount, symbol, memo) {
   );
 }
 
-export async function transferSteem(from,to,amount,memo){
+export async function transferSteem(from, to, amount, memo) {
   amount = parseFloat(amount).toFixed(3)
   const transOp = [
     'transfer',
@@ -49,7 +49,7 @@ export async function transferSteem(from,to,amount,memo){
     steem_keychain.requestBroadcast(from, [transOp],
       'Active', function (response) {
         resolve(response)
-    });
+      });
   })
 }
 
@@ -97,7 +97,7 @@ export async function steemDelegation(delegator, delegatee, amount, address) {
   ])
 }
 
-export async function steemTransferVest(from, to, amount, address, fee){
+export async function steemTransferVest(from, to, amount, address, fee) {
   fee = parseFloat(fee).toFixed(3)
   const steemGas = process.env.VUE_APP_STEEM_GAS
   const feeOperation = [
@@ -121,7 +121,7 @@ export async function steemTransferVest(from, to, amount, address, fee){
     steem_keychain.requestBroadcast(from, [feeOperation, transferVestOp],
       'Active', function (response) {
         resolve(response)
-    });
+      });
   })
 }
 
@@ -136,7 +136,7 @@ export async function steemToVest(steemPower) {
   return ((parseFloat(steemPower) * totalVests) / totalSteem).toFixed(6);
 }
 
-export async function vestsToSteem(vests){
+export async function vestsToSteem(vests) {
   const props = await getGlobalProperties();
   const totalSteem = Number(props.total_vesting_fund_steem.split(" ")[0]);
   const totalVests = Number(props.total_vesting_shares.split(" ")[0]);
@@ -206,18 +206,18 @@ function callDatabaseApi(method, params) {
 }
 
 
-export const getSteemPrice = async function(){
+export const getSteemPrice = async function () {
   let res = await axios.request({
-    method:"get",
-    url:'https://api.coingecko.com/api/v3/coins/steem',
+    method: "get",
+    url: 'https://api.coingecko.com/api/v3/coins/steem',
     headers: {
       "accept": "application/json",
     }
   })
   // console.log(111,res.data.tickers)
   let arr = res.data.tickers
-  for(let i = 0; i < arr.length; i++){
-    if(arr[i].target === "USDT"){
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].target === "USDT") {
       // console.log(112,arr[i].last)
       return parseFloat(arr[i].last)
     }
