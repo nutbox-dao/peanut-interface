@@ -24,6 +24,7 @@ const CONTRACT_STORE_NAME = {
 }
 
 export const getAbiAndContractAddress = async function (symbol) {
+    symbol = symbol.toUpperCase()
     const contract = store.state[CONTRACT_STORE_NAME[symbol] + 'Json']
     let abi = contract && contract.abi
     let address = contract && contract.contract
@@ -39,6 +40,7 @@ export const getAbiAndContractAddress = async function (symbol) {
 }
 
 export const getContract = async function (symbol) {
+    symbol = symbol.toUpperCase()
     let instance = store.state[CONTRACT_STORE_NAME[symbol] + 'Instance']
     if (Object.keys(instance).length !== 0) {
         return instance
@@ -51,6 +53,7 @@ export const getContract = async function (symbol) {
 }
 
 export const getContractByDefaultAcc = async function (symbol) {
+    symbol = symbol.toUpperCase()
     let instance = store.state[CONTRACT_STORE_NAME[symbol] + 'Instance2']
     if (Object.keys(instance).length !== 0) {
         return instance
