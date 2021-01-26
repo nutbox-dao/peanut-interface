@@ -58,14 +58,15 @@ import {
 } from "../../utils/chain/contract";
 import { vestsToSteem } from "../../utils/chain/steemOperations";
 import { getAddress, intToAmount } from "../../utils/chain/tron";
+import axios from 'axios'
 
 export default {
   name: "DelegatorLists",
   data() {
     return {
-      fields: ["id", "steemId", "tron", "delegatedSP"],
-      tspFields: ["id", "tron", "depositedTsp"],
-      tspLPFields: ["id", "tron", "depositedTspLP"],
+      fields: ["No.","steemId", "tron", "delegatedSP"],
+      tspFields: ["No.","tron", "depositedTsp"],
+      tspLPFields: ["No.","tron", "depositedTspLP"],
       showMask: false,
       maskInfo: "",
       vestsToSp: "",
@@ -95,113 +96,49 @@ export default {
         parseFloat(a.total_vesting_shares);
     },
     async getDelegateList() {
-      let nutPool = await getContract("PNUT_POOL");
-      let length = (await nutPool.getDelegatorListLength().call()) * 1;
-      let that = this;
-      const numPerRound = 5;
-
-      for (let j = 0; j < parseInt(length / numPerRound); j++) {
-        var promises = [];
-        for (let i = j * numPerRound; i < j * numPerRound + numPerRound; i++) {
-          promises.push(
-            new Promise(async function (resolve, reject) {
-              try {
-                let p = await nutPool.delegatorList(i).call();
-                let res = await nutPool.delegators(p).call();
-                let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(
-                  3
-                );
-                let t = {
-                  isActive: true,
-                  id: i,
-                  steemId: res.steemAccount,
-                  tron: getAddress(p),
-                  delegatedSP: amount,
-                };
-                resolve(t);
-              } catch (e) {
-                reject();
-              }
-            })
-          );
-        }
-        try {
-          let arr = await Promise.all(promises);
-          this.lists.push(...arr);
-        } catch (e) {
-          console.log(8746538, e);
-        }
+      var list = await axios.get('/sp_delegate_list.json')
+      if (list && list.data){
+        var arr = [...list.data]
+        this.lists = arr.sort((a, b) => {
+          return parseFloat(b.amount) - parseFloat(a.amount)
+        }).map((item, idx) => {
+         return {
+          'No.':idx+1,
+          steemId: item.steemAccount,
+          tron: item.tron,
+          delegatedSP:item.amount
+         }
+       })
       }
-
-      if (length % numPerRound > 0) {
-        var promises = [];
-        for (
-          let i = parseInt(length / numPerRound) * numPerRound;
-          i < length;
-          i++
-        ) {
-          promises.push(
-            new Promise(async function (resolve, reject) {
-              let p = await nutPool.delegatorList(i).call();
-              let res = await nutPool.delegators(p).call();
-              let amount = (intToAmount(res.amount) * that.vestsToSp).toFixed(
-                3
-              );
-              let t = {
-                isActive: true,
-                id: i,
-                steemId: res.steemAccount,
-                tron: getAddress(p),
-                delegatedSP: amount,
-              };
-              resolve(t);
-            })
-          );
-        }
-        let arr = await Promise.all(promises);
-        this.lists.push(...arr);
-      }
-
-      // for(let i = 0; i < length; i++){
-      //   let p = await nutPool.delegatorList(i).call()
-      //   let res = await nutPool.delegators(p).call()
-      //   let amount = (intToAmount(res.amount) * this.vestsToSp).toFixed(3)
-      //   let t = { isActive: true, id: i, steemId: res.steemAccount, tron: getAddress(p), delegatedSP: amount }
-      //   this.lists.push(t)
-      // }
     },
     async getTspDepositList() {
-      let tspPool = await getContract("TSP_POOL");
-      let tspDelegatorLength =
-        (await tspPool.getDelegatorListLength().call()) * 1;
-      for (let i = 0; i < tspDelegatorLength; i++) {
-        let addr = await tspPool.delegatorsList(i).call();
-        let res = await tspPool.delegators(addr).call();
-        let amount = (intToAmount(res.tspAmount) * 1.0).toFixed(3);
-        let t = {
-          isActive: true,
-          id: i,
-          tron: getAddress(addr),
-          depositedTsp: amount,
-        };
-        this.tspDepositList.push(t);
+      var list = await axios.get('/tsp_delegate_list.json')
+      if (list && list.data){
+        var arr = [...list.data]
+        this.tspDepositList = arr.sort((a, b) => {
+          return parseFloat(b.amount) - parseFloat(a.amount)
+        }).map((item, idx) => {
+         return {
+          'No.':idx+1,
+          tron: item.tron,
+          depositedTsp:item.amount
+         }
+       })
       }
     },
     async getTspLPDepositList() {
-      let tspLPPool = await getContract("TSP_LP_POOL");
-      let tspLPDelegatorLenth =
-        (await tspLPPool.getDelegatorListLength().call()) * 1;
-      for (let i = 0; i < tspLPDelegatorLenth; i++) {
-        let addr = await tspLPPool.delegatorsList(i).call();
-        let res = await tspLPPool.delegators(addr).call();
-        let amount = (intToAmount(res.tspLPAmount) * 1.0).toFixed(3);
-        let t = {
-          isActive: true,
-          id: i,
-          tron: getAddress(addr),
-          depositedTspLP: amount,
-        };
-        this.tspLPDepositList.push(t);
+     var list = await axios.get('/tsp_lp_delegate_list.json')
+      if (list && list.data){
+        var arr = [...list.data]
+        this.tspLPDepositList = arr.sort((a, b) => {
+          return parseFloat(b.amount) - parseFloat(a.amount)
+        }).map((item, idx) => {
+         return {
+          'No.':idx+1,
+          tron: item.tron,
+          depositedTspLP:item.amount
+         }
+       })
       }
     },
     hideMask() {
@@ -212,7 +149,6 @@ export default {
     let that = this;
     async function main() {
       try {
-        await that.getSteemStates();
         that.getDelegateList();
         that.getTspDepositList();
         that.getTspLPDepositList();
