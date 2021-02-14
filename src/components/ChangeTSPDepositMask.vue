@@ -160,6 +160,7 @@ import {
   isTransactionSuccess,
   isInsufficientEnerge,
   amountToInt,
+  contractConfig
 } from "../utils/chain/tron.js";
 export default {
   name: "ChangeTSPDepositMask",
@@ -236,7 +237,7 @@ export default {
         let tsp = await getContract("TSP");
         let approved = await tsp
           .approve(tspPoolAddr, value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         // approved 为返回的交易hash值
         if (approved && (await isTransactionSuccess(approved))) {
           this.checkApproveFlag = false;
@@ -269,7 +270,7 @@ export default {
         let value = amountToInt(a);
 
         let tspPool = await getContract("TSP_POOL");
-        let res = await tspPool.deposit(value).send({ feeLimit: 20_000_000 });
+        let res = await tspPool.deposit(value).send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           //直接刷新当前页面
           this.$router.go(0);
@@ -304,7 +305,7 @@ export default {
 
         let tspPool = await getContract("TSP_POOL");
         let tsp = this.$store.state.tspInstance;
-        let res = await tspPool.withdraw(value).send({ feeLimit: 20_000_000 });
+        let res = await tspPool.withdraw(value).send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           //直接刷新当前页面
           this.$router.go(0);
@@ -338,8 +339,8 @@ export default {
         let value = amountToInt(a);
 
         let tspPool = await getContract("TSP_POOL");
-        await tspPool.withdrawPeanuts().send({ feeLimit: 20_000_000 });
-        await tspPool.withdraw(value).send({ feeLimit: 20_000_000 });
+        await tspPool.withdrawPeanuts().send(contractConfig);
+        await tspPool.withdraw(value).send(contractConfig);
         await this.sleep();
         //直接刷新当前页面
         this.$router.go(0);

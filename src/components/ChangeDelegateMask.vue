@@ -179,6 +179,7 @@ import { getContract } from "../utils/chain/contract";
 import {
   isTransactionSuccess,
   isInsufficientEnerge,
+  contractConfig
 } from "../utils/chain/tron.js";
 export default {
   name: "ChangeDelegateMask",
@@ -348,7 +349,7 @@ export default {
         let instance = await getContract("PNUT_POOL");
         let res = await instance
           .withdrawPeanuts()
-          .send({ feeLimit: 10_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           return true;
         } else {

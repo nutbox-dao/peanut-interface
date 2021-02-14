@@ -149,14 +149,12 @@ import {
 import {
   isTransactionSuccess,
   isInsufficientEnerge,
-  getBalanceOfToken,
-  getSupplyOfToken,
   amountToInt,
-  intToAmount,
   getTronLink,
+  contractConfig
 } from "../utils/chain/tron.js";
 
-import { TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS } from "../const.js";
+import { TSP_LP_TOKEN_ADDRESS } from "../const.js";
 export default {
   name: "ChangeTSPLPDepositMask",
   props: [
@@ -239,7 +237,7 @@ export default {
         let approve = await tronLink.transactionBuilder.triggerSmartContract(
           TSP_LP_TOKEN_ADDRESS,
           "approve(address,uint256)",
-          { feeLimit: 20_000_000 },
+          contractConfig,
           params,
           addr
         );
@@ -289,7 +287,7 @@ export default {
         let b = parseFloat(this.addvalue);
         let value = amountToInt(b);
         // commit deposit
-        let res = await tspLPPool.deposit(value).send({ feeLimit: 20_000_000 });
+        let res = await tspLPPool.deposit(value).send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           // 直接更新数字
           this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) + b;
@@ -334,7 +332,7 @@ export default {
         let tspLPPool = await getContract("TSP_LP_POOL");
         let res = await tspLPPool
           .withdraw(value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           // 直接更新数字
           this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) - a;
@@ -380,7 +378,7 @@ export default {
         let tspPool = await getContract("TSP_LP_POOL");
         let delDepositTx = await tspPool
           .withdraw(value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (delDepositTx && (await isTransactionSuccess(delDepositTx))) {
           // 直接更新数字
           this.$parent.minedTspLP2 = parseFloat(this.$parent.minedTspLP) - a;

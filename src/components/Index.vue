@@ -192,6 +192,7 @@ import {
   intToAmount,
   getTronPrice,
   getPnutPrice,
+  contractConfig
 } from "../utils/chain/tron";
 import { getContract } from "../utils/chain/contract";
 import { getSteemPrice } from "../utils/chain/steemOperations";
@@ -364,7 +365,7 @@ export default {
         let instance = await getContract("PNUT_POOL");
         let res = await instance
           .withdrawPeanuts()
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           await this.getOtherBalance();
           this.isLoading = false;

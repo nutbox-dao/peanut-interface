@@ -479,6 +479,7 @@ import {
   isAddress,
   intToAmount,
   amountToInt,
+  contractConfig
 } from "../utils/chain/tron";
 import { getContract } from "../utils/chain/contract";
 export default {
@@ -686,7 +687,7 @@ export default {
         let value = amountToInt(ss);
         let res = await instance
           .tsteemToSteem(to, value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           await this.sleep();
           await this.getSteemStates();
@@ -829,7 +830,7 @@ export default {
         let value = amountToInt(ss);
         let res = await instance
           .tsbdToSbd(to, value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           await this.getSteemStates();
           this.getTsbdBalance();
@@ -969,7 +970,7 @@ export default {
         if (res.success === true) {
           let res = await instance
             .tspToSteem(from, value)
-            .send({ feeLimit: 20_000_000 });
+            .send(contractConfig);
           if (res && (await isTransactionSuccess(res))) {
             await this.getTspBalance();
           } else {

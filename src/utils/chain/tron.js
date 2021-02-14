@@ -119,10 +119,7 @@ export const isInsufficientEnerge = async function (trxId) {
   return ret && ret[0] && ret[0].contractRet === "OUT_OF_ENERGY"
 };
 
-export const contractConfig = {
-  feeLimit: 20 * 1000000, // 20 TRX (1TRX = 1,000,000SUN),
-  // shouldPollResponse: true,
-};
+export const contractConfig = { feeLimit: 35_000_000 };
 
 export const getBalanceOfToken = async function (token, user) {
   let tron = getTron()

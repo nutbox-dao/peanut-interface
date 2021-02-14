@@ -156,7 +156,6 @@
 <script>
 import SmallLoading from "./SmallLoading";
 import ChangeTSPLPDepositMask from "./ChangeTSPLPDepositMask";
-import { steemToVest, vestsToSteem } from "../utils/chain/steemOperations.js";
 import {
   getAbiAndContractAddress,
   getContract,
@@ -170,6 +169,7 @@ import {
   amountToInt,
   intToAmount,
   getTronLink,
+  contractConfig
 } from "../utils/chain/tron.js";
 
 import { TSP_LP_TOKEN_ADDRESS, TSP_TRX_CONTRACT_ADDRESS } from "../const.js";
@@ -282,7 +282,7 @@ export default {
         let approve = await tronLink.transactionBuilder.triggerSmartContract(
           TSP_LP_TOKEN_ADDRESS,
           "approve(address,uint256)",
-          { feeLimit: 20_000_000 },
+          contractConfig,
           params,
           addr
         );
@@ -332,7 +332,7 @@ export default {
         let b = parseFloat(this.mineAmount);
         let value = amountToInt(b);
         // commit deposit
-        let res = await tspLPPool.deposit(value).send({ feeLimit: 20_000_000 });
+        let res = await tspLPPool.deposit(value).send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           //直接更新数字
           this.minedTspLP2 = parseFloat(this.minedTspLP) + b;
@@ -364,7 +364,7 @@ export default {
         let instance = await getContract("TSP_LP_POOL");
         let res = await instance
           .withdrawPeanuts()
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           await this.$parent.getOtherBalance();
         } else {

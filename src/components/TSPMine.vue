@@ -151,7 +151,7 @@
 <script>
 import SmallLoading from "./SmallLoading";
 import ChangeTSPDepositMask from "./ChangeTSPDepositMask";
-import { steemToVest, vestsToSteem } from "../utils/chain/steemOperations.js";
+import { vestsToSteem } from "../utils/chain/steemOperations.js";
 import {
   getAbiAndContractAddress,
   getContract,
@@ -161,6 +161,7 @@ import {
   isInsufficientEnerge,
   intToAmount,
   amountToInt,
+  contractConfig
 } from "../utils/chain/tron.js";
 
 export default {
@@ -257,7 +258,7 @@ export default {
         let tspPoolAddr = (await getAbiAndContractAddress("TSP_POOL")).address;
         let approved = await tsp
           .approve(tspPoolAddr, value)
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (approved && (await isTransactionSuccess(approved))) {
           this.checkApproveFlag = false;
           this.canMineFlag = true;
@@ -291,7 +292,7 @@ export default {
         let b = parseFloat(this.mineAmount);
         let value = amountToInt(b);
         // commit deposit
-        let res = await tspPool.deposit(value).send({ feeLimit: 20_000_000 });
+        let res = await tspPool.deposit(value).send(contractConfig);
         if (res && isTransactionSuccess(res)) {
           //直接刷新当前页面
           this.$router.go(0);
@@ -323,7 +324,7 @@ export default {
         let instance = await getContract("TSP_POOL");
         let res = await instance
           .withdrawPeanuts()
-          .send({ feeLimit: 20_000_000 });
+          .send(contractConfig);
         if (res && (await isTransactionSuccess(res))) {
           await this.$parent.getOtherBalance();
         } else {
