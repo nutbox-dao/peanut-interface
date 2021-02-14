@@ -324,7 +324,7 @@ export default {
         //steem代理
         let delegator = this.$store.state.username;
 
-        if (delegator && delegator.hasDeposited && steemAcc !== delegator) {
+        if (delegator && res.hasDeposited && steemAcc !== delegator) {
           alert(
             this.$t("error.delegateerror") +
               "\n" +
